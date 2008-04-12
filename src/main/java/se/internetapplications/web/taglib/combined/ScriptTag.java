@@ -13,6 +13,12 @@ import org.apache.commons.logging.LogFactory;
 import se.internetapplications.collections.functional.Do;
 
 
+
+/**
+ * TODO add equivalent CSS tag with additional attribute media
+ *
+ */
+
 @SuppressWarnings("serial")
 public class ScriptTag extends BodyTagSupport {
 
@@ -24,6 +30,11 @@ public class ScriptTag extends BodyTagSupport {
     private String name, path = "";
     private boolean enabled = true;
     private boolean reloadable = false;
+
+    /**
+     * TODO use option to minify files or not
+     */
+    private boolean minify = true;
 
     private boolean combined;
 
