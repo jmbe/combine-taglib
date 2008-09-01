@@ -4,7 +4,7 @@
     <groupId>se.internetapplications</groupId>
     <artifactId>combine</artifactId>
     <name>Combine</name>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <build>
         <plugins>
