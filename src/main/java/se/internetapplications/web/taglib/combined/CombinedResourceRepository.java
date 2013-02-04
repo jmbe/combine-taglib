@@ -24,36 +24,36 @@ public class CombinedResourceRepository {
     /**
      * key(path, name) -> requestPath
      */
-    private static Map<String, String> scriptPaths;
+    private static Map<String, String> resourcePaths;
     /**
      * requestPath -> CombinedResource
      */
-    private static Map<String, CombinedResource> combinedScripts;
+    private static Map<String, CombinedResource> combinedResourcePaths;
 
     static {
-        scriptPaths = Maps.newHashMap();
-        combinedScripts = Maps.newHashMap();
+        resourcePaths = Maps.newHashMap();
+        combinedResourcePaths = Maps.newHashMap();
     }
 
-    public static boolean containsScriptPath(final String path, final String name) {
-        return scriptPaths.containsKey(createScriptPathKey(path, name));
+    public static boolean containsResourcePath(final String path, final String name) {
+        return resourcePaths.containsKey(createResourcePathKey(path, name));
     }
 
-    static String createScriptPathKey(final String path, final String name) {
+    static String createResourcePathKey(final String path, final String name) {
         String directory = path.replaceAll("^/+|/+$", "");
         return String.format("%s/%s", directory.trim().length() == 0 ? "" : "/" + directory, name);
     }
 
-    public static String getScriptPath(final String path, final String name) {
-        return scriptPaths.get(createScriptPathKey(path, name));
+    public static String getResourcePath(final String path, final String name) {
+        return resourcePaths.get(createResourcePathKey(path, name));
     }
 
     public static CombinedResource getCombinedResource(final String requestURI) {
-        return combinedScripts.get(requestURI);
+        return combinedResourcePaths.get(requestURI);
     }
 
-    public static String addCombinedScripts(final String path, final String name, final List<String> realPaths,
-            final boolean minify) {
+    public static String addCombinedResource(final String path, final String name, final List<String> realPaths,
+            final CombineResourceStrategy combinator) {
 
         checkNotNull(path, "Path cannot be null.");
         checkNotNull(name, "Name cannot be null.");
@@ -70,14 +70,15 @@ public class CombinedResourceRepository {
                 final StringWriter sw = new StringWriter();
                 PrintWriter pw = new PrintWriter(sw);
 
-                long timestamp = minify ? yuiCompressPaths(pw, realPaths) : joinPaths(pw, realPaths);
+                long timestamp = combinator.combineFiles(pw, realPaths);
 
                 requestPath = createRequestPath(path, name, timestamp);
 
-                log.info("Adding combined script " + requestPath);
+                log.info("Adding combined resource" + requestPath);
 
-                scriptPaths.put(createScriptPathKey(path, name), requestPath);
-                combinedScripts.put(requestPath, new ScriptCombinedResource(sw.toString(), timestamp, realPaths));
+                resourcePaths.put(createResourcePathKey(path, name), requestPath);
+                combinedResourcePaths.put(requestPath,
+                        combinator.stringToCombinedResource(sw.toString(), timestamp, realPaths));
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
@@ -92,7 +93,7 @@ public class CombinedResourceRepository {
         return requestPath;
     }
 
-    private static long joinPaths(final PrintWriter writer, final List<String> realPaths) throws IOException {
+    public static long joinPaths(final PrintWriter writer, final List<String> realPaths) throws IOException {
         log.info("Reading files");
 
         long timestamp = 0;
@@ -145,13 +146,13 @@ public class CombinedResourceRepository {
      * Creates the path that will be used in the request from the browser.
      */
     static String createRequestPath(final String directory, final String id, final long timestamp) {
-        String path = String.format("%s-%s.combined", createScriptPathKey(directory, id), timestamp);
+        String path = String.format("%s-%s.combined", createResourcePathKey(directory, id), timestamp);
         return path;
     }
 
     private static CombinedResource getCombinedResourceByKey(final String path, final String name) {
-        if (containsScriptPath(path, name)) {
-            String scriptPath = getScriptPath(path, name);
+        if (containsResourcePath(path, name)) {
+            String scriptPath = getResourcePath(path, name);
             return getCombinedResource(scriptPath);
         }
         return null;

@@ -11,14 +11,14 @@ public class CombinedResourceRepositoryTest {
     @Test
     public void testCreateScriptPathKey() {
         assertEquals("/thirdparty", CombinedResourceRepository
-                .createScriptPathKey("", "thirdparty"));
+                .createResourcePathKey("", "thirdparty"));
         assertEquals("/static/js/thirdparty", CombinedResourceRepository
-                .createScriptPathKey("/static/js", "thirdparty"));
+                .createResourcePathKey("/static/js", "thirdparty"));
         assertEquals("/static/js/thirdparty", CombinedResourceRepository
-                .createScriptPathKey("/static/js", "thirdparty"));
+                .createResourcePathKey("/static/js", "thirdparty"));
         assertEquals("/static/js/thirdparty", CombinedResourceRepository
-                .createScriptPathKey("static/js/", "thirdparty"));
+                .createResourcePathKey("static/js/", "thirdparty"));
         assertEquals("/static/js/thirdparty", CombinedResourceRepository
-                .createScriptPathKey("/static/js/", "thirdparty"));
+                .createResourcePathKey("/static/js/", "thirdparty"));
     }
 }

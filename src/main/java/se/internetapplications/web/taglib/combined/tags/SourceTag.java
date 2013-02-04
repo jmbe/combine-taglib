@@ -24,7 +24,7 @@ public class SourceTag extends TagSupport {
     @Override
     public int doEndTag() throws JspException {
 
-        ((ScriptTag) getParent()).addSource(getPath());
+        ((CombinedTagSupport) getParent()).addSource(getPath());
         // log.debug("end SourceTag");
         return EVAL_PAGE;
     }
