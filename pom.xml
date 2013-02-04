@@ -8,17 +8,27 @@
     <name>Combine</name>
     <version>1.1.0-SNAPSHOT</version>
 
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <source.level>1.6</source.level>
+    </properties>
+
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                </configuration>
-            </plugin>
-        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.5.1</version>
+                    <configuration>
+                        <source>${source.level}</source>
+                        <target>${source.level}</target>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <dependencies>
