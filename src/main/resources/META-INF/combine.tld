@@ -6,7 +6,7 @@
     <tlib-version>3.2</tlib-version>
     <jsp-version>1.2</jsp-version>
     <short-name>combine</short-name>
-    <uri>http://combine.poosty.com</uri>
+    <uri>http://combine.intem.se</uri>
     <display-name>CSS/Javascript optimizing JSP library</display-name>
 
     <tag>
