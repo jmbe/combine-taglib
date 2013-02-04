@@ -24,10 +24,7 @@ public class ScriptTag extends BodyTagSupport {
     private boolean enabled = true;
     private boolean reloadable = false;
 
-    /**
-     * TODO use option to minify files or not
-     */
-    private boolean minify = true;
+    private boolean minify = false;
 
     private boolean combined;
 
@@ -79,7 +76,7 @@ public class ScriptTag extends BodyTagSupport {
         };
         List<String> realPaths = FluentIterable.from(sources).transform(serverPathToRealPath).toImmutableList();
 
-        return CombinedResourceRepository.addCombinedScripts(getPath(), getName(), realPaths);
+        return CombinedResourceRepository.addCombinedScripts(getPath(), getName(), realPaths, minify);
     }
 
     private void writeScriptPath(final String path) throws JspException {

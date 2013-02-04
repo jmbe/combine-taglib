@@ -5,6 +5,7 @@ import com.google.common.io.Files;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +50,8 @@ public class CombinedResourceRepository {
         return combinedScripts.get(requestURI);
     }
 
-    public static String addCombinedScripts(final String path, final String name, final List<String> realPaths) {
+    public static String addCombinedScripts(final String path, final String name, final List<String> realPaths,
+            final boolean minify) {
 
         if (path == null) {
             throw new NullPointerException("Path cannot be null.");
@@ -72,31 +74,9 @@ public class CombinedResourceRepository {
             try {
 
                 final StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
 
-                YuiCompressorWriter yuiWriter = new YuiCompressorWriter(sw);
-
-                log.info("Starting compressor thread");
-                Thread compressorThread = new Thread(yuiWriter);
-                compressorThread.start();
-
-                log.info("Reading files");
-
-                long timestamp = 0;
-                for (String realPath : realPaths) {
-
-                    try {
-                        File file = new File(realPath);
-                        timestamp = Math.max(timestamp, file.lastModified());
-                        String contents = Files.toString(file, Charsets.UTF_8);
-                        yuiWriter.write(contents);
-                    } catch (IOException e) {
-                        throw new RuntimeException("Could not read file " + realPath, e);
-                    }
-                }
-                yuiWriter.flush();
-                yuiWriter.close();
-
-                compressorThread.join();
+                long timestamp = minify ? yuiCompressPaths(pw, realPaths) : joinPaths(pw, realPaths);
 
                 requestPath = createRequestPath(path, name, timestamp);
 
@@ -107,7 +87,7 @@ public class CombinedResourceRepository {
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
@@ -116,6 +96,55 @@ public class CombinedResourceRepository {
         }
 
         return requestPath;
+    }
+
+    private static long joinPaths(final PrintWriter writer, final List<String> realPaths) throws IOException {
+        log.info("Reading files");
+
+        long timestamp = 0;
+        for (String realPath : realPaths) {
+
+            try {
+                File file = new File(realPath);
+                timestamp = Math.max(timestamp, file.lastModified());
+                String contents = Files.toString(file, Charsets.UTF_8);
+                writer.println(contents);
+            } catch (IOException e) {
+                throw new RuntimeException("Could not read file " + realPath, e);
+            }
+        }
+        writer.flush();
+
+        return timestamp;
+    }
+
+    private static long yuiCompressPaths(final PrintWriter writer, final List<String> realPaths) throws IOException,
+            InterruptedException {
+        YuiCompressorWriter yuiWriter = new YuiCompressorWriter(writer);
+
+        log.info("Starting compressor thread");
+        Thread compressorThread = new Thread(yuiWriter);
+        compressorThread.start();
+
+        log.info("Reading files");
+
+        long timestamp = 0;
+        for (String realPath : realPaths) {
+
+            try {
+                File file = new File(realPath);
+                timestamp = Math.max(timestamp, file.lastModified());
+                String contents = Files.toString(file, Charsets.UTF_8);
+                yuiWriter.write(contents);
+            } catch (IOException e) {
+                throw new RuntimeException("Could not read file " + realPath, e);
+            }
+        }
+        yuiWriter.flush();
+        yuiWriter.close();
+
+        compressorThread.join();
+        return timestamp;
     }
 
     /**
