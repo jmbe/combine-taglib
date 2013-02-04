@@ -1,5 +1,8 @@
 package se.internetapplications.web.taglib.combined;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -7,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +87,7 @@ public class CombinedResourceRepository {
                     try {
                         File file = new File(realPath);
                         timestamp = Math.max(timestamp, file.lastModified());
-                        String contents = FileUtils.readFileToString(file, "UTF-8");
+                        String contents = Files.toString(file, Charsets.UTF_8);
                         yuiWriter.write(contents);
                     } catch (IOException e) {
                         throw new RuntimeException("Could not read file " + realPath, e);
