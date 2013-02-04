@@ -19,8 +19,8 @@ public class ScriptTag extends CombinedTagSupport {
         return CombinedResourceRepository.joinPaths(pw, realPaths);
     }
 
-    public CombinedResource stringToCombinedResource(final String s, final long timestamp,
-            final List<ManagedResource> realPaths) {
-        return new ScriptCombinedResource(s, timestamp, realPaths);
+    public CombinedResource stringToCombinedResource(final String contents, final long timestamp,
+            final String checksum, final List<ManagedResource> realPaths) {
+        return new ScriptCombinedResource(contents, timestamp, checksum, realPaths);
     }
 }

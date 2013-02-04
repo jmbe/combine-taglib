@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.*;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
+import com.google.common.hash.Hashing;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
 
@@ -11,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -73,15 +75,22 @@ public class CombinedResourceRepository {
                 final StringWriter sw = new StringWriter();
                 PrintWriter pw = new PrintWriter(sw);
 
+                long startReadAt = new Date().getTime();
                 long timestamp = combinator.combineFiles(pw, resources);
+                if (timestamp == 0) {
+                    timestamp = startReadAt;
+                }
 
-                requestPath = createRequestPath(path, name, timestamp);
+                String contents = sw.toString();
+                String md5 = Hashing.md5().hashString(contents).toString();
+
+                requestPath = createRequestPath(path, name, md5);
 
                 log.info("Adding combined resource" + requestPath);
 
                 resourcePaths.put(createResourcePathKey(path, name), requestPath);
                 combinedResourcePaths.put(requestPath,
-                        combinator.stringToCombinedResource(sw.toString(), timestamp, resources));
+                        combinator.stringToCombinedResource(contents, timestamp, md5, resources));
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
@@ -90,7 +99,7 @@ public class CombinedResourceRepository {
                 e.printStackTrace();
             }
         } else {
-            requestPath = createRequestPath(path, name, resource.getTimestamp());
+            requestPath = createRequestPath(path, name, resource.getChecksum());
         }
 
         return requestPath;
@@ -153,8 +162,8 @@ public class CombinedResourceRepository {
     /**
      * Creates the path that will be used in the request from the browser.
      */
-    static String createRequestPath(final String directory, final String id, final long timestamp) {
-        String path = String.format("%s-%s.combined", createResourcePathKey(directory, id), timestamp);
+    static String createRequestPath(final String directory, final String id, final String checksum) {
+        String path = String.format("%s-%s.combined", createResourcePathKey(directory, id), checksum);
         return path;
     }
 

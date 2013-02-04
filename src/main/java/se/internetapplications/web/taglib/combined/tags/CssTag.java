@@ -17,8 +17,8 @@ public class CssTag extends CombinedTagSupport {
     }
 
     public CombinedResource stringToCombinedResource(final String contents, final long timestamp,
-            final List<ManagedResource> realPaths) {
-        return new CssCombinedResource(contents, timestamp, realPaths);
+            final String checksum, final List<ManagedResource> realPaths) {
+        return new CssCombinedResource(contents, timestamp, checksum, realPaths);
     }
 
     @Override

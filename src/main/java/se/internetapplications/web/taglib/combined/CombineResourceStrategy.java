@@ -13,6 +13,7 @@ public interface CombineResourceStrategy {
      */
     long combineFiles(PrintWriter pw, List<ManagedResource> realPaths) throws IOException;
 
-    CombinedResource stringToCombinedResource(String contents, long timestamp, List<ManagedResource> realPaths);
+    CombinedResource stringToCombinedResource(String contents, long timestamp, String checksum,
+            List<ManagedResource> realPaths);
 
 }

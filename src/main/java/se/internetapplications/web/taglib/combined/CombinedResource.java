@@ -13,12 +13,14 @@ public class CombinedResource {
     protected String contents;
     protected long timestamp;
     private List<ManagedResource> filePaths;
+    private String checksum;
 
     public CombinedResource(final String contentType, final String contents, final long timestamp,
-            final List<ManagedResource> realPaths) {
+            final String checksum, final List<ManagedResource> realPaths) {
         this.contentType = contentType;
         this.contents = contents;
         this.timestamp = timestamp;
+        this.checksum = checksum;
         this.filePaths = realPaths;
 
     }
@@ -38,6 +40,10 @@ public class CombinedResource {
 
     public long getTimestamp() {
         return timestamp;
+    }
+
+    public String getChecksum() {
+        return checksum;
     }
 
     public boolean hasChangedFile(final List<ManagedResource> resources) {
