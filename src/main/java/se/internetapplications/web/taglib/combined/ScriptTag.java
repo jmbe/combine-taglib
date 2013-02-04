@@ -1,5 +1,8 @@
 package se.internetapplications.web.taglib.combined;
 
+import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
+
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,8 +12,6 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import se.internetapplications.collections.functional.Do;
 
 /**
  * TODO add equivalent CSS tag with additional attribute media
@@ -77,12 +78,12 @@ public class ScriptTag extends BodyTagSupport {
 
     private String addCombinedScripts() {
 
-        Do.MapExpression<String, String> serverPathToRealPath = new Do.MapExpression<String, String>() {
-            public String transform(final String element) {
+        Function<String, String> serverPathToRealPath = new Function<String, String>() {
+            public String apply(final String element) {
                 return pageContext.getServletContext().getRealPath(element);
             }
         };
-        List<String> realPaths = Do.with(sources).map(serverPathToRealPath).toList();
+        List<String> realPaths = FluentIterable.from(sources).transform(serverPathToRealPath).toImmutableList();
 
         return CombinedResourceRepository.addCombinedScripts(getPath(), getName(), realPaths);
     }
