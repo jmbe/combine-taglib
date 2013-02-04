@@ -69,7 +69,7 @@ public class CombinedResourceRepository {
         CombinedResource resource = getCombinedResourceByKey(path, name);
 
         if (resource == null || resource.hasChangedFile(resources)) {
-            log.info(String.format("Modified resource '%s' detected. Rebuilding...", name));
+            log.debug(String.format("Modified resource '%s' detected. Rebuilding...", name));
             try {
 
                 final StringWriter sw = new StringWriter();
@@ -86,7 +86,7 @@ public class CombinedResourceRepository {
 
                 requestPath = createRequestPath(path, name, md5);
 
-                log.info("Adding combined resource" + requestPath);
+                log.debug("Adding combined resource" + requestPath);
 
                 resourcePaths.put(createResourcePathKey(path, name), requestPath);
                 combinedResourcePaths.put(requestPath,
@@ -106,7 +106,7 @@ public class CombinedResourceRepository {
     }
 
     public static long joinPaths(final PrintWriter writer, final List<ManagedResource> realPaths) throws IOException {
-        log.info("Reading files");
+        log.trace("Reading files");
 
         long timestamp = 0;
         for (ManagedResource realPath : realPaths) {
