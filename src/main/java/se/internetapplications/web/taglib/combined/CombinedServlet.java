@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("serial")
 public class CombinedServlet extends HttpServlet {
 
     /** Logger for this class. */
@@ -22,7 +21,7 @@ public class CombinedServlet extends HttpServlet {
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException,
             IOException {
 
-        log.info(request.getRequestURI());
+        log.debug("Handling {}", request.getRequestURI());
 
         CombinedResource resource = CombinedResourceRepository.getCombinedResource(request.getRequestURI());
         response.setContentType(resource.getContentType() + CHARSET_UTF8);
