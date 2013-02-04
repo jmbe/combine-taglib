@@ -14,12 +14,13 @@ public class ScriptTag extends CombinedTagSupport {
         return String.format("<script type=\"text/javascript\" charset=\"UTF-8\" src=\"%s\"></script>\r\n", path);
     }
 
-    public long combineFiles(final PrintWriter pw, final List<String> realPaths) throws IOException {
+    public long combineFiles(final PrintWriter pw, final List<ManagedResource> realPaths) throws IOException {
         // return minify ? yuiCompressPaths(pw, realPaths) : joinPaths(pw, realPaths);
         return CombinedResourceRepository.joinPaths(pw, realPaths);
     }
 
-    public CombinedResource stringToCombinedResource(final String s, final long timestamp, final List<String> realPaths) {
+    public CombinedResource stringToCombinedResource(final String s, final long timestamp,
+            final List<ManagedResource> realPaths) {
         return new ScriptCombinedResource(s, timestamp, realPaths);
     }
 }

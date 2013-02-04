@@ -12,12 +12,12 @@ public class CssTag extends CombinedTagSupport {
 
     private String media;
 
-    public long combineFiles(final PrintWriter pw, final List<String> realPaths) throws IOException {
+    public long combineFiles(final PrintWriter pw, final List<ManagedResource> realPaths) throws IOException {
         return CombinedResourceRepository.joinPaths(pw, realPaths);
     }
 
     public CombinedResource stringToCombinedResource(final String contents, final long timestamp,
-            final List<String> realPaths) {
+            final List<ManagedResource> realPaths) {
         return new CssCombinedResource(contents, timestamp, realPaths);
     }
 

@@ -65,12 +65,13 @@ public abstract class CombinedTagSupport extends BodyTagSupport implements Combi
 
     private String addCombinedResources() {
 
-        Function<String, String> serverPathToRealPath = new Function<String, String>() {
-            public String apply(final String element) {
-                return pageContext.getServletContext().getRealPath(element);
+        Function<String, ManagedResource> serverPathManaged = new Function<String, ManagedResource>() {
+            public ManagedResource apply(final String element) {
+                return new ManagedResource(element, pageContext.getServletContext().getRealPath(element), pageContext
+                        .getServletContext().getResourceAsStream(element));
             }
         };
-        List<String> realPaths = FluentIterable.from(sources).transform(serverPathToRealPath).toImmutableList();
+        List<ManagedResource> realPaths = FluentIterable.from(sources).transform(serverPathManaged).toImmutableList();
 
         return CombinedResourceRepository.addCombinedResource(getPath(), getName(), realPaths, this);
     }

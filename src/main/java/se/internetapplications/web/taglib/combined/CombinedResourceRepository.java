@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.*;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
+import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
 
 import java.io.File;
@@ -15,6 +16,8 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import se.internetapplications.web.taglib.combined.tags.ManagedResource;
 
 public class CombinedResourceRepository {
 
@@ -52,25 +55,25 @@ public class CombinedResourceRepository {
         return combinedResourcePaths.get(requestURI);
     }
 
-    public static String addCombinedResource(final String path, final String name, final List<String> realPaths,
-            final CombineResourceStrategy combinator) {
+    public static String addCombinedResource(final String path, final String name,
+            final List<ManagedResource> resources, final CombineResourceStrategy combinator) {
 
         checkNotNull(path, "Path cannot be null.");
         checkNotNull(name, "Name cannot be null.");
-        checkNotNull(realPaths, "Real paths cannot be null.");
+        checkNotNull(resources, "Resources cannot be null.");
 
         String requestPath = null;
 
         CombinedResource resource = getCombinedResourceByKey(path, name);
 
-        if (resource == null || resource.hasChangedFile(realPaths)) {
+        if (resource == null || resource.hasChangedFile(resources)) {
             log.info(String.format("Modified resource '%s' detected. Rebuilding...", name));
             try {
 
                 final StringWriter sw = new StringWriter();
                 PrintWriter pw = new PrintWriter(sw);
 
-                long timestamp = combinator.combineFiles(pw, realPaths);
+                long timestamp = combinator.combineFiles(pw, resources);
 
                 requestPath = createRequestPath(path, name, timestamp);
 
@@ -78,7 +81,7 @@ public class CombinedResourceRepository {
 
                 resourcePaths.put(createResourcePathKey(path, name), requestPath);
                 combinedResourcePaths.put(requestPath,
-                        combinator.stringToCombinedResource(sw.toString(), timestamp, realPaths));
+                        combinator.stringToCombinedResource(sw.toString(), timestamp, resources));
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
@@ -93,16 +96,21 @@ public class CombinedResourceRepository {
         return requestPath;
     }
 
-    public static long joinPaths(final PrintWriter writer, final List<String> realPaths) throws IOException {
+    public static long joinPaths(final PrintWriter writer, final List<ManagedResource> realPaths) throws IOException {
         log.info("Reading files");
 
         long timestamp = 0;
-        for (String realPath : realPaths) {
+        for (ManagedResource realPath : realPaths) {
 
             try {
-                File file = new File(realPath);
-                timestamp = Math.max(timestamp, file.lastModified());
-                String contents = Files.toString(file, Charsets.UTF_8);
+                if (realPath.isTimestampSupported()) {
+                    File file = new File(realPath.getRealPath());
+                    timestamp = Math.max(timestamp, file.lastModified());
+                }
+
+                String contents = CharStreams.toString(CharStreams.newReaderSupplier(realPath.getInputSupplicer(),
+                        Charsets.UTF_8));
+
                 writer.println(contents);
             } catch (IOException e) {
                 throw new RuntimeException("Could not read file " + realPath, e);

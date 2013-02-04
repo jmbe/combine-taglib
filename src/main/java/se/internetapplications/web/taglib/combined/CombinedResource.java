@@ -1,24 +1,25 @@
 package se.internetapplications.web.taglib.combined;
 
-import java.io.File;
+import com.google.common.collect.Lists;
+
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+
+import se.internetapplications.web.taglib.combined.tags.ManagedResource;
 
 public class CombinedResource {
 
     private String contentType;
     protected String contents;
     protected long timestamp;
-    private List<String> filePaths;
+    private List<ManagedResource> filePaths;
 
-    public CombinedResource(final String contentType, final String contents,
-            final long timestamp, final List<String> filePaths) {
+    public CombinedResource(final String contentType, final String contents, final long timestamp,
+            final List<ManagedResource> realPaths) {
         this.contentType = contentType;
         this.contents = contents;
         this.timestamp = timestamp;
-        this.filePaths = filePaths;
+        this.filePaths = realPaths;
 
     }
 
@@ -39,33 +40,33 @@ public class CombinedResource {
         return timestamp;
     }
 
-    public boolean hasChangedFile(final List<String> realPaths) {
+    public boolean hasChangedFile(final List<ManagedResource> resources) {
 
-        if (!areListsEqual(this.filePaths, realPaths)) {
+        if (!areListsEqual(this.filePaths, resources)) {
             return true;
         }
 
-        for (String realPath : realPaths) {
-            File file = new File(realPath);
+        for (ManagedResource realPath : resources) {
 
-            if (timestamp < file.lastModified()) {
-                return true;
+            if (realPath.isTimestampSupported()) {
+
+                if (timestamp < realPath.getTimestamp()) {
+                    return true;
+                }
             }
+
         }
         return false;
     }
 
-    private boolean areListsEqual(final List<String> a, final List<String> b) {
+    private boolean areListsEqual(final List<ManagedResource> a, final List<ManagedResource> b) {
 
         if (a.size() != b.size()) {
             return false;
         }
 
-        List<String> list1 = new ArrayList<String>(a);
-        List<String> list2 = new ArrayList<String>(b);
-
-        Collections.sort(list1);
-        Collections.sort(list2);
+        List<ManagedResource> list1 = Lists.newArrayList(a);
+        List<ManagedResource> list2 = Lists.newArrayList(b);
 
         for (int i = 0; i < list1.size(); i++) {
             if (!list1.get(i).equals(list2.get(i))) {
