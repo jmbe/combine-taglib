@@ -10,19 +10,11 @@ import java.util.List;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * TODO add equivalent CSS tag with additional attribute media
  * 
  */
-
-@SuppressWarnings("serial")
 public class ScriptTag extends BodyTagSupport {
-
-    /** Logger for this class. */
-    private static final Log log = LogFactory.getLog(ScriptTag.class);
 
     private List<String> sources;
 

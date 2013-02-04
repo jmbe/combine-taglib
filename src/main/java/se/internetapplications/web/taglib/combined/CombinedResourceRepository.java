@@ -8,14 +8,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CombinedResourceRepository {
 
     /** Logger for this class. */
-    private static final Log log = LogFactory
-            .getLog(CombinedResourceRepository.class);
+    private static final Logger log = LoggerFactory.getLogger(CombinedResourceRepository.class);
 
     /**
      * key(path, name) -> requestPath
@@ -31,15 +30,13 @@ public class CombinedResourceRepository {
         combinedScripts = new HashMap<String, CombinedResource>();
     }
 
-    public static boolean containsScriptPath(final String path,
-            final String name) {
+    public static boolean containsScriptPath(final String path, final String name) {
         return scriptPaths.containsKey(createScriptPathKey(path, name));
     }
 
     static String createScriptPathKey(final String path, final String name) {
         String directory = path.replaceAll("^/+|/+$", "");
-        return String.format("%s/%s", directory.trim().length() == 0 ? "" : "/"
-                + directory, name);
+        return String.format("%s/%s", directory.trim().length() == 0 ? "" : "/" + directory, name);
     }
 
     public static String getScriptPath(final String path, final String name) {
@@ -50,8 +47,7 @@ public class CombinedResourceRepository {
         return combinedScripts.get(requestURI);
     }
 
-    public static String addCombinedScripts(final String path,
-            final String name, final List<String> realPaths) {
+    public static String addCombinedScripts(final String path, final String name, final List<String> realPaths) {
 
         if (path == null) {
             throw new NullPointerException("Path cannot be null.");
@@ -70,8 +66,7 @@ public class CombinedResourceRepository {
         CombinedResource resource = getCombinedResourceByKey(path, name);
 
         if (resource == null || resource.hasChangedFile(realPaths)) {
-            log.info(String.format(
-                    "Modified resource '%s' detected. Rebuilding...", name));
+            log.info(String.format("Modified resource '%s' detected. Rebuilding...", name));
             try {
 
                 final StringWriter sw = new StringWriter();
@@ -90,12 +85,10 @@ public class CombinedResourceRepository {
                     try {
                         File file = new File(realPath);
                         timestamp = Math.max(timestamp, file.lastModified());
-                        String contents = FileUtils.readFileToString(file,
-                                "UTF-8");
+                        String contents = FileUtils.readFileToString(file, "UTF-8");
                         yuiWriter.write(contents);
                     } catch (IOException e) {
-                        throw new RuntimeException("Could not read file "
-                                + realPath, e);
+                        throw new RuntimeException("Could not read file " + realPath, e);
                     }
                 }
                 yuiWriter.flush();
@@ -108,8 +101,7 @@ public class CombinedResourceRepository {
                 log.info("Adding combined script " + requestPath);
 
                 scriptPaths.put(createScriptPathKey(path, name), requestPath);
-                combinedScripts.put(requestPath, new ScriptCombinedResource(sw
-                        .toString(), timestamp, realPaths));
+                combinedScripts.put(requestPath, new ScriptCombinedResource(sw.toString(), timestamp, realPaths));
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
@@ -127,15 +119,12 @@ public class CombinedResourceRepository {
     /**
      * Creates the path that will be used in the request from the browser.
      */
-    static String createRequestPath(final String directory, final String id,
-            final long timestamp) {
-        String path = String.format("%s-%s.combined", createScriptPathKey(
-                directory, id), timestamp);
+    static String createRequestPath(final String directory, final String id, final long timestamp) {
+        String path = String.format("%s-%s.combined", createScriptPathKey(directory, id), timestamp);
         return path;
     }
 
-    private static CombinedResource getCombinedResourceByKey(final String path,
-            final String name) {
+    private static CombinedResource getCombinedResourceByKey(final String path, final String name) {
         if (containsScriptPath(path, name)) {
             String scriptPath = getScriptPath(path, name);
             return getCombinedResource(scriptPath);

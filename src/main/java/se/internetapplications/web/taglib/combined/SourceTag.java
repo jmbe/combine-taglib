@@ -3,14 +3,7 @@ package se.internetapplications.web.taglib.combined;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-@SuppressWarnings("serial")
 public class SourceTag extends TagSupport {
-
-    /** Logger for this class. */
-    private static final Log log = LogFactory.getLog(SourceTag.class);
 
     private String path;
 
