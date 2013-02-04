@@ -1,4 +1,4 @@
-package se.internetapplications.web.taglib.combined;
+package se.internetapplications.web.taglib.combined.tags;
 
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
@@ -9,6 +9,8 @@ import java.util.List;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
+
+import se.internetapplications.web.taglib.combined.CombinedResourceRepository;
 
 /**
  * TODO add equivalent CSS tag with additional attribute media

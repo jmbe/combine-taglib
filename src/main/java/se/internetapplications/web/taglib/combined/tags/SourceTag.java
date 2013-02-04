@@ -1,4 +1,4 @@
-package se.internetapplications.web.taglib.combined;
+package se.internetapplications.web.taglib.combined.tags;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
