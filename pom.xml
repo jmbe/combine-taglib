@@ -14,6 +14,61 @@
         <source.level>1.6</source.level>
     </properties>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>se.internetapplications-snapshots</id>
+            <url>http://nexus.intem.se/content/repositories/snapshots</url>
+            <uniqueVersion>true</uniqueVersion>
+        </snapshotRepository>
+        <repository>
+            <id>se.internetapplications-releases</id>
+            <url>http://nexus.intem.se/content/repositories/releases</url>
+            <uniqueVersion>false</uniqueVersion>
+        </repository>
+    </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>se.internetapplications-releases</id>
+            <url>
+                http://nexus.intem.se/content/groups/public
+            </url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>se.internetapplications-snapshots</id>
+            <url>
+                http://nexus.intem.se/content/groups/public-snapshots
+            </url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>se.internetapplications-releases</id>
+            <url>
+                http://nexus.intem.se/content/groups/public
+            </url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+        <pluginRepository>
+            <id>se.internetapplications-snapshots</id>
+            <url>
+                http://nexus.intem.se/content/groups/public-snapshots
+            </url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
     <build>
         <pluginManagement>
             <plugins>
