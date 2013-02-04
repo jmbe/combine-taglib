@@ -11,7 +11,7 @@
 
     <tag>
         <name>source</name>
-        <tag-class>se.internetapplications.web.taglib.combine.tags.SourceTag</tag-class>
+        <tag-class>se.internetapplications.web.taglib.combined.tags.SourceTag</tag-class>
         <body-content>empty</body-content>
 
         <attribute>
@@ -28,7 +28,7 @@
 
     <tag>
         <name>script</name>
-        <tag-class>se.internetapplications.web.taglib.combine.tags.ScriptTag</tag-class>
+        <tag-class>se.internetapplications.web.taglib.combined.tags.ScriptTag</tag-class>
         <body-content>JSP</body-content>
 
         <attribute>
