@@ -12,11 +12,9 @@ import org.apache.commons.logging.LogFactory;
 
 import se.internetapplications.collections.functional.Do;
 
-
-
 /**
  * TODO add equivalent CSS tag with additional attribute media
- *
+ * 
  */
 
 @SuppressWarnings("serial")
@@ -43,10 +41,7 @@ public class ScriptTag extends BodyTagSupport {
         // log.debug("start script");
         init();
 
-        if (!isReloadable()
-                && isEnabled()
-                && CombinedResourceRepository.containsScriptPath(getPath(),
-                        getName())) {
+        if (!isReloadable() && isEnabled() && CombinedResourceRepository.containsScriptPath(getPath(), getName())) {
             this.combined = true;
             return SKIP_BODY;
         }
@@ -72,8 +67,7 @@ public class ScriptTag extends BodyTagSupport {
                 addCombinedScripts();
             }
 
-            String scriptPath = CombinedResourceRepository.getScriptPath(
-                    getPath(), getName());
+            String scriptPath = CombinedResourceRepository.getScriptPath(getPath(), getName());
             writeScriptPath(scriptPath);
         }
         dispose();
@@ -88,11 +82,9 @@ public class ScriptTag extends BodyTagSupport {
                 return pageContext.getServletContext().getRealPath(element);
             }
         };
-        List<String> realPaths = Do.with(sources).map(serverPathToRealPath)
-                .toList();
+        List<String> realPaths = Do.with(sources).map(serverPathToRealPath).toList();
 
-        return CombinedResourceRepository.addCombinedScripts(getPath(),
-                getName(), realPaths);
+        return CombinedResourceRepository.addCombinedScripts(getPath(), getName(), realPaths);
     }
 
     private void writeScriptPath(final String path) throws JspException {
@@ -108,10 +100,7 @@ public class ScriptTag extends BodyTagSupport {
     }
 
     private String format(final String path) {
-        return String
-                .format(
-                        "<script type=\"text/javascript\" charset=\"UTF-8\" src=\"%s\"></script>\r\n",
-                        path);
+        return String.format("<script type=\"text/javascript\" charset=\"UTF-8\" src=\"%s\"></script>\r\n", path);
 
     }
 
