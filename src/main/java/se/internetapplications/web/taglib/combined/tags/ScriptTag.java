@@ -2,9 +2,9 @@ package se.internetapplications.web.taglib.combined.tags;
 
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Lists;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.jsp.JspException;
@@ -42,7 +42,7 @@ public class ScriptTag extends BodyTagSupport {
     }
 
     private void init() {
-        this.sources = new LinkedList<String>();
+        this.sources = Lists.newLinkedList();
         this.combined = false;
     }
 

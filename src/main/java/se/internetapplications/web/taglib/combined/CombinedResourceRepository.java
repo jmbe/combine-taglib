@@ -1,13 +1,15 @@
 package se.internetapplications.web.taglib.combined;
 
+import static com.google.common.base.Preconditions.*;
+
 import com.google.common.base.Charsets;
+import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,8 +31,8 @@ public class CombinedResourceRepository {
     private static Map<String, CombinedResource> combinedScripts;
 
     static {
-        scriptPaths = new HashMap<String, String>();
-        combinedScripts = new HashMap<String, CombinedResource>();
+        scriptPaths = Maps.newHashMap();
+        combinedScripts = Maps.newHashMap();
     }
 
     public static boolean containsScriptPath(final String path, final String name) {
@@ -53,17 +55,9 @@ public class CombinedResourceRepository {
     public static String addCombinedScripts(final String path, final String name, final List<String> realPaths,
             final boolean minify) {
 
-        if (path == null) {
-            throw new NullPointerException("Path cannot be null.");
-        }
-
-        if (name == null) {
-            throw new NullPointerException("Name cannot be null.");
-        }
-
-        if (realPaths == null) {
-            throw new NullPointerException("Real paths cannot be null.");
-        }
+        checkNotNull(path, "Path cannot be null.");
+        checkNotNull(name, "Name cannot be null.");
+        checkNotNull(realPaths, "Real paths cannot be null.");
 
         String requestPath = null;
 
