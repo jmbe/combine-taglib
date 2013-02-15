@@ -1,6 +1,8 @@
 package se.internetapplications.web.taglib.combined;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,6 +19,8 @@ public class CombinedServlet extends HttpServlet {
 
     private static final String CHARSET_UTF8 = ";charset=utf-8";
 
+    private static final String expiresDateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz";
+
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException,
             IOException {
@@ -25,9 +29,16 @@ public class CombinedServlet extends HttpServlet {
 
         CombinedResource resource = CombinedResourceRepository.getCombinedResource(request.getRequestURI());
         response.setContentType(resource.getContentType() + CHARSET_UTF8);
+        cacheResource(response, 365);
         resource.writeMinifiedResource(response.getWriter());
         response.getWriter().flush();
         response.getWriter().close();
+    }
 
+    private void cacheResource(final HttpServletResponse response, final int days) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, days);
+        SimpleDateFormat formatter = new SimpleDateFormat(expiresDateFormat);
+        response.setHeader("Expires", formatter.format(calendar.getTime()));
     }
 }
