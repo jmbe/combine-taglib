@@ -19,7 +19,7 @@ public abstract class CombinedTagSupport extends BodyTagSupport implements Combi
 
     private String name, path = "";
     private boolean enabled = true;
-    private boolean reloadable = false;
+    private boolean reloadable = true;
 
     private boolean minify = false;
 
