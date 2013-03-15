@@ -49,12 +49,15 @@ public class ResourceNode {
     public List<ResourceNode> resolve() {
         List<ResourceNode> resolved = Lists.newArrayList();
         List<ResourceNode> seen = Lists.newArrayList();
-        dep_resolve(resolved, seen);
+        resolve(resolved, seen);
 
         return FluentIterable.from(resolved).filter(isActual).toImmutableList();
     }
 
-    public void dep_resolve(final List<ResourceNode> resolved, final List<ResourceNode> unresolved) {
+    /**
+     * Algorithm from http://www.electricmonk.nl/docs/dependency_resolving_algorithm/dependency_resolving_algorithm.html
+     */
+    private void resolve(final List<ResourceNode> resolved, final List<ResourceNode> unresolved) {
         unresolved.add(this);
         for (ResourceNode node : edges) {
             if (!resolved.contains(node)) {
@@ -63,7 +66,7 @@ public class ResourceNode {
                             node.name));
                 }
 
-                node.dep_resolve(resolved, unresolved);
+                node.resolve(resolved, unresolved);
             }
         }
         resolved.add(this);
