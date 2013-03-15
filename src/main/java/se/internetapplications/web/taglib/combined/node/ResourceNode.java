@@ -1,30 +1,57 @@
 package se.internetapplications.web.taglib.combined.node;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 
 import java.util.List;
+import java.util.Random;
 
 public class ResourceNode {
 
     private List<ResourceNode> edges;
     private String name;
 
+    private static final Random random = new Random();
+
+    /**
+     * A virtual node is a node which simply collects other dependencies, but has no resource of its own, so it should
+     * not be output to jsp.
+     */
+    private boolean virtual;
+
+    /**
+     * Is an actual node, i.e. not a virtual node.
+     */
+    private static final Predicate<ResourceNode> isActual = new Predicate<ResourceNode>() {
+        public boolean apply(final ResourceNode input) {
+            return !input.isVirtual();
+        }
+    };
+
+    public ResourceNode() {
+        this("anonymous-" + random.nextInt());
+    }
+
     public ResourceNode(final String name) {
         this.edges = Lists.newArrayList();
         this.name = name;
     }
 
-    public void addEdge(final ResourceNode... nodes) {
+    public ResourceNode addEdges(final ResourceNode... nodes) {
         for (ResourceNode edge : nodes) {
             this.edges.add(edge);
         }
+
+        return this;
     }
 
     public List<ResourceNode> resolve() {
         List<ResourceNode> resolved = Lists.newArrayList();
         List<ResourceNode> seen = Lists.newArrayList();
         dep_resolve(resolved, seen);
-        return resolved;
+
+        return FluentIterable.from(resolved).filter(isActual).toImmutableList();
     }
 
     public void dep_resolve(final List<ResourceNode> resolved, final List<ResourceNode> unresolved) {
@@ -46,5 +73,14 @@ public class ResourceNode {
     @Override
     public String toString() {
         return name;
+    }
+
+    public ResourceNode setVirtual(final boolean virtual) {
+        this.virtual = virtual;
+        return this;
+    }
+
+    public boolean isVirtual() {
+        return virtual;
     }
 }
