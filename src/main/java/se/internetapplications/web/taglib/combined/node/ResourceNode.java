@@ -38,8 +38,8 @@ public class ResourceNode {
         this.name = name;
     }
 
-    public ResourceNode addEdges(final ResourceNode... nodes) {
-        for (ResourceNode edge : nodes) {
+    public ResourceNode addEdges(final ResourceNode... dependencies) {
+        for (ResourceNode edge : dependencies) {
             this.edges.add(edge);
         }
 
@@ -85,5 +85,9 @@ public class ResourceNode {
 
     public boolean isVirtual() {
         return virtual;
+    }
+
+    public String getName() {
+        return name;
     }
 }
