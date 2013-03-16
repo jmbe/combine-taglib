@@ -5,5 +5,5 @@
     js : [ "news.js" ]
 }, {
     name : "angular",
-    js : [ "angular.js" ]
+    js : "angular.js"
 } ]
