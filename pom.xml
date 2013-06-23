@@ -12,7 +12,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <source.level>1.6</source.level>
-        <jackson.version>1.9.11</jackson.version>
+        <jackson2.version>2.2.2</jackson2.version>
     </properties>
 
     <distributionManagement>
@@ -131,15 +131,16 @@
         </dependency>
 
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
-            <version>${jackson.version}</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson2.version}</version>
+            <scope>provided</scope>
         </dependency>
-
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>${jackson.version}</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson2.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
