@@ -1,5 +1,7 @@
 package se.internetapplications.web.taglib.combined.tags;
 
+import com.google.common.base.Strings;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -23,8 +25,16 @@ public class CssTag extends CombinedTagSupport {
 
     @Override
     protected String format(final String path) {
-        // TODO use media
-        return String.format("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\" />", path);
+        String mediaAttribute = "";
+        if (!Strings.isNullOrEmpty(media)) {
+            mediaAttribute = "media=\"" + media + "\" ";
+        }
+
+        return String.format("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\" %s/>", path, mediaAttribute);
+    }
+
+    public void setMedia(final String media) {
+        this.media = media;
     }
 
 }
