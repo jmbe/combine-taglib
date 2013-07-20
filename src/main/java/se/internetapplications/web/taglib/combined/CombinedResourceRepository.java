@@ -91,12 +91,10 @@ public class CombinedResourceRepository {
                 resourcePaths.put(createResourcePathKey(path, name), requestPath);
                 combinedResourcePaths.put(requestPath,
                         combinator.stringToCombinedResource(contents, timestamp, md5, resources));
-            } catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         } else {
             requestPath = createRequestPath(path, name, resource.getChecksum());
@@ -105,7 +103,7 @@ public class CombinedResourceRepository {
         return requestPath;
     }
 
-    public static long joinPaths(final PrintWriter writer, final List<ManagedResource> realPaths) throws IOException {
+    public static long joinPaths(final PrintWriter writer, final List<ManagedResource> realPaths) {
         log.trace("Reading files");
 
         long timestamp = 0;
@@ -130,6 +128,7 @@ public class CombinedResourceRepository {
         return timestamp;
     }
 
+    @SuppressWarnings("unused")
     private static long yuiCompressPaths(final PrintWriter writer, final List<String> realPaths) throws IOException,
             InterruptedException {
         YuiCompressorWriter yuiWriter = new YuiCompressorWriter(writer);
