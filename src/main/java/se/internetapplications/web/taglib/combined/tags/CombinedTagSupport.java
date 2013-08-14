@@ -71,7 +71,7 @@ public abstract class CombinedTagSupport extends BodyTagSupport implements Combi
                         .getServletContext().getResourceAsStream(element));
             }
         };
-        List<ManagedResource> realPaths = FluentIterable.from(sources).transform(serverPathManaged).toImmutableList();
+        List<ManagedResource> realPaths = FluentIterable.from(sources).transform(serverPathManaged).toList();
 
         return CombinedResourceRepository.addCombinedResource(getPath(), getName(), realPaths, this);
     }
