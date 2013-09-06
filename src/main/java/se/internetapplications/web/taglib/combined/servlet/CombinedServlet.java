@@ -1,4 +1,4 @@
-package se.internetapplications.web.taglib.combined;
+package se.internetapplications.web.taglib.combined.servlet;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -11,6 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import se.internetapplications.web.taglib.combined.CombinedResource;
+import se.internetapplications.web.taglib.combined.CombinedResourceRepository;
 
 public class CombinedServlet extends HttpServlet {
 
