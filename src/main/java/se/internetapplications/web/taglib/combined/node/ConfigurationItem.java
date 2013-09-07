@@ -86,9 +86,9 @@ public class ConfigurationItem implements ResourceParent {
         this.css.add(new ResourceLink(css));
     }
 
-    public void setRequires(final String requires) {
+    public void addRequires(final String requires) {
         Iterable<String> split = Splitter.on(",").trimResults().omitEmptyStrings().split(Strings.nullToEmpty(requires));
-        this.requires = FluentIterable.from(split).toList();
+        this.requires.addAll(FluentIterable.from(split).toList());
     }
 
     public boolean isEnabled() {

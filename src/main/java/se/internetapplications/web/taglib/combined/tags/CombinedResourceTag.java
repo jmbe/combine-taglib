@@ -46,7 +46,7 @@ public class CombinedResourceTag extends ConfigurationItemAwareTagSupport implem
     }
 
     public void setRequires(final String requires) {
-        this.configurationItem.setRequires(requires);
+        this.configurationItem.addRequires(requires);
     }
 
     public void setOptional(final boolean optional) {
