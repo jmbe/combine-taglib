@@ -58,8 +58,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
     @Override
     public int doEndTag() throws JspException {
 
-        Stopwatch stopwatch = new Stopwatch();
-        stopwatch.start();
+        Stopwatch stopwatch = Stopwatch.createStarted();
 
         List<ConfigurationItem> resolved = new TreeBuilder().resolve(getConfigurationItems());
 
