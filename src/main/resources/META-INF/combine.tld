@@ -17,26 +17,33 @@
             <name>name</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
+            <description>Symbolic name of this resource collection.</description>
         </attribute>
         <attribute>
             <name>requires</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
+            <description>Comma-separated list of resource names which this resource depends on.</description>
         </attribute>
         <attribute>
             <name>optional</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
+            <type>boolean</type>
+            <description>True if this resource is optional, and should only be included if some other resource depends
+                on it.</description>
         </attribute>
         <attribute>
             <name>reloadable</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
+            <type>boolean</type>
         </attribute>
         <attribute>
             <name>enabled</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
+            <type>boolean</type>
         </attribute>
     </tag>
 
@@ -49,6 +56,7 @@
             <name>path</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
+            <description>Local or remote link to javascript file.</description>
         </attribute>
     </tag>
 
@@ -61,6 +69,7 @@
             <name>path</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
+            <description>Local or remote link to css file.</description>
         </attribute>
         <attribute>
             <name>media</name>
@@ -73,11 +82,13 @@
         <name>layout-css</name>
         <tag-class>se.internetapplications.web.taglib.combined.tags.LayoutCssTag</tag-class>
         <body-content>empty</body-content>
+        <description>Output queued CSS resources. Typically added in head.</description>
     </tag>
     <tag>
         <name>layout-script</name>
         <tag-class>se.internetapplications.web.taglib.combined.tags.LayoutScriptTag</tag-class>
         <body-content>empty</body-content>
+        <description>Output queued Javascript resources. Typically added just before closing /body tag.</description>
     </tag>
 
 </taglib>
