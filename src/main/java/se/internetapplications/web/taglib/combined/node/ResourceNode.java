@@ -19,6 +19,7 @@ public class ResourceNode {
      * not be output to jsp.
      */
     private boolean virtual;
+    private ConfigurationItem item;
 
     /**
      * Is an actual node, i.e. not a virtual node.
@@ -34,8 +35,15 @@ public class ResourceNode {
     }
 
     public ResourceNode(final String name) {
+        this(name, null);
+        this.virtual = true;
+    }
+
+    public ResourceNode(final String name, final ConfigurationItem item) {
         this.edges = Lists.newArrayList();
         this.name = name;
+        this.item = item;
+
     }
 
     public ResourceNode addEdges(final ResourceNode... dependencies) {
@@ -89,5 +97,9 @@ public class ResourceNode {
 
     public String getName() {
         return name;
+    }
+
+    public ConfigurationItem getItem() {
+        return item;
     }
 }

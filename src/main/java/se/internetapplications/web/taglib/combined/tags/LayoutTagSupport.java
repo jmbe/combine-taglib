@@ -1,11 +1,13 @@
 package se.internetapplications.web.taglib.combined.tags;
 
 import com.google.common.base.Function;
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.FluentIterable;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.jsp.JspException;
 
@@ -16,6 +18,7 @@ import se.internetapplications.web.taglib.combined.CombineResourceStrategy;
 import se.internetapplications.web.taglib.combined.CombinedResourceRepository;
 import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
 import se.internetapplications.web.taglib.combined.node.ResourceLink;
+import se.internetapplications.web.taglib.combined.node.TreeBuilder;
 
 public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport implements CombineResourceStrategy {
 
@@ -55,9 +58,12 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
     @Override
     public int doEndTag() throws JspException {
 
-        // log.info("Layout resources end tag");
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.start();
 
-        for (ConfigurationItem ci : getConfigurationItems()) {
+        List<ConfigurationItem> resolved = new TreeBuilder().resolve(getConfigurationItems());
+
+        for (ConfigurationItem ci : resolved) {
 
             if (!ci.isEnabled() || ci.isRemote()) {
                 /* Output resources as is */
@@ -78,6 +84,8 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
             }
 
         }
+
+        log.info("Handled {} resources in {} ms.", resolved.size(), stopwatch.elapsed(TimeUnit.MILLISECONDS));
 
         return EVAL_PAGE;
     }

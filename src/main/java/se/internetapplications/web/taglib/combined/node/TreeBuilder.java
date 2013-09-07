@@ -3,6 +3,8 @@ package se.internetapplications.web.taglib.combined.node;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Maps;
 
 import java.io.IOException;
@@ -30,12 +32,15 @@ public class TreeBuilder {
     public Map<String, ResourceNode> build(final InputStream stream) throws JsonParseException, JsonMappingException,
             IOException {
         List<ConfigurationItem> items = parse(stream);
+        return build(items);
+    }
 
+    public Map<String, ResourceNode> build(final List<ConfigurationItem> items) {
         Map<String, ResourceNode> nodes = Maps.newHashMap();
 
         /* Pass 1: Populate map */
         for (ConfigurationItem item : items) {
-            nodes.put(item.getName(), new ResourceNode(item.getName()));
+            nodes.put(item.getName(), new ResourceNode(item.getName(), item));
         }
 
         /* Pass 2: populate dependencies */
@@ -54,6 +59,29 @@ public class TreeBuilder {
         }
 
         return nodes;
+    }
+
+    public List<ConfigurationItem> resolve(final List<ConfigurationItem> configurationItems) {
+        Map<String, ResourceNode> build = build(configurationItems);
+
+        ResourceNode root = new ResourceNode();
+        root.setVirtual(true);
+
+        for (ConfigurationItem configurationItem : configurationItems) {
+            if (!configurationItem.isOptional()) {
+                root.addEdges(build.get(configurationItem.getName()));
+            }
+        }
+
+        List<ResourceNode> resolved = root.resolve();
+
+        return FluentIterable.from(resolved).transform(new Function<ResourceNode, ConfigurationItem>() {
+
+            public ConfigurationItem apply(final ResourceNode input) {
+                return input.getItem();
+            }
+        }).toList();
+
     }
 
 }
