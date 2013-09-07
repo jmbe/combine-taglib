@@ -36,7 +36,6 @@ public class ResourceNode {
 
     public ResourceNode(final String name) {
         this(name, null);
-        this.virtual = true;
     }
 
     public ResourceNode(final String name, final ConfigurationItem item) {
