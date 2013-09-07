@@ -51,7 +51,7 @@ public class ResourceNode {
         List<ResourceNode> seen = Lists.newArrayList();
         resolve(resolved, seen);
 
-        return FluentIterable.from(resolved).filter(isActual).toImmutableList();
+        return FluentIterable.from(resolved).filter(isActual).toList();
     }
 
     /**
