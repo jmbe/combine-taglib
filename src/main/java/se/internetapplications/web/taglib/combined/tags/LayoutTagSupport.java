@@ -19,6 +19,7 @@ import se.internetapplications.web.taglib.combined.CombinedResourceRepository;
 import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
 import se.internetapplications.web.taglib.combined.node.ResourceLink;
 import se.internetapplications.web.taglib.combined.node.TreeBuilder;
+import se.internetapplications.web.taglib.combined.servlet.CombinedConfigurationHolder;
 
 public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport implements CombineResourceStrategy {
 
@@ -64,7 +65,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
 
         for (ConfigurationItem ci : resolved) {
 
-            if (!ci.isCombine() || ci.isRemote()) {
+            if ((CombinedConfigurationHolder.isDevMode() && ci.isSupportsDevMode()) || !ci.isCombine() || ci.isRemote()) {
                 /* Output resources as is */
                 List<ResourceLink> resources = getResources(ci);
                 for (ResourceLink resourceLink : resources) {

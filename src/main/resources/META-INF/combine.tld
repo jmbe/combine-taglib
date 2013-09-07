@@ -48,6 +48,13 @@
             <description>True if resources should be combined. False if resources should be output as is (typically for
                 development reloading extension).</description>
         </attribute>
+        <attribute>
+            <name>supportsDevMode</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>boolean</type>
+            <description>True if dev mode should be honored for this resource.</description>
+        </attribute>
     </tag>
 
     <tag>

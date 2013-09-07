@@ -22,6 +22,7 @@ public class ConfigurationItem implements ResourceParent {
     private List<String> requires = Lists.newArrayList();
     private List<ResourceLink> js = Lists.newArrayList();
     private List<ResourceLink> css = Lists.newArrayList();
+    private boolean supportsDevMode;
 
     public List<String> getRequires() {
         return requires;
@@ -97,6 +98,14 @@ public class ConfigurationItem implements ResourceParent {
 
     public void setCombine(final boolean combine) {
         this.combine = combine;
+    }
+
+    public void setSupportsDevMode(final boolean supportsDevMode) {
+        this.supportsDevMode = supportsDevMode;
+    }
+
+    public boolean isSupportsDevMode() {
+        return supportsDevMode;
     }
 
 }

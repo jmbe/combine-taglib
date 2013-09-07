@@ -57,4 +57,8 @@ public class CombinedResourceTag extends ConfigurationItemAwareTagSupport implem
         this.configurationItem.setCombine(combine);
     }
 
+    public void setSupportsDevMode(final boolean supportsDevMode) {
+        this.configurationItem.setSupportsDevMode(supportsDevMode);
+    }
+
 }
