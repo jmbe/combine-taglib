@@ -8,7 +8,7 @@ Add maven dependency
     <dependency>
         <groupId>se.intem</groupId>
         <artifactId>combine-taglib</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <version>1.2.0-SNAPSHOT</version>
     </dependency>
 
 Add method and call it from onStartup(:ServletContext) in WebApplicationInitializer
@@ -41,17 +41,41 @@ Add taglib to jsp
     
 Combine javascript resources
 
-    <combine:script name="combined-javascript" reloadable="true">
-        <combine:source path="/js/AngularAtmosphere.js" />
-        <combine:source path="/js/Humanized.js" />
+    <combine:resource name="jquery" library="true">
+      <combine:script path="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" />
+    </combine:resource>
+
+    <combine:resource name="angular" library="true" requires="jquery">
+      <combine:script path="//ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js" />
+      <combine:script path="//ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular-resource.min.js" />
+    </combine:resource>
+
+    <combine:resource name="combined-javascript" requires="angular">
+        <combine:script path="/js/AngularAtmosphere.js" />
+        <combine:script path="/js/Humanized.js" />
         ...
-    </combine:script>
+    </combine:resource>
     
 Combine css resources
 
-    <combine:css name="combined-css" reloadable="true">
-        <combine:source path="/css/tpa.css"/>
+    <combine:resource name="combined-css" reloadable="true">
+        <combine:css path="/css/tpa.css"/>
         ...
-    </combine:css>
+    </combine:resource>
     
+
+Output queued resources
+
+    <html>
+        <body>
+        <head>
+            ...
+            <combine:layout-css />
+        </head>
+        <body>
+            ...
+            <combine:layout-javascript />
+        </body>
+    </html>
+
 
