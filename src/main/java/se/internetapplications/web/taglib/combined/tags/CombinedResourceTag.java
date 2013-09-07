@@ -53,8 +53,8 @@ public class CombinedResourceTag extends ConfigurationItemAwareTagSupport implem
         this.configurationItem.setLibrary(library);
     }
 
-    public void setEnabled(final boolean enabled) {
-        this.configurationItem.setEnabled(enabled);
+    public void setCombine(final boolean combine) {
+        this.configurationItem.setCombine(combine);
     }
 
 }

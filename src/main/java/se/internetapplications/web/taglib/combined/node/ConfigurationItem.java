@@ -17,7 +17,7 @@ public class ConfigurationItem implements ResourceParent {
     private String name;
     private boolean reloadable = true;
     private boolean library = false;
-    private boolean enabled = true;
+    private boolean combine = true;
 
     private List<String> requires = Lists.newArrayList();
     private List<ResourceLink> js = Lists.newArrayList();
@@ -91,12 +91,12 @@ public class ConfigurationItem implements ResourceParent {
         this.requires.addAll(FluentIterable.from(split).toList());
     }
 
-    public boolean isEnabled() {
-        return enabled;
+    public boolean isCombine() {
+        return combine;
     }
 
-    public void setEnabled(final boolean enabled) {
-        this.enabled = enabled;
+    public void setCombine(final boolean combine) {
+        this.combine = combine;
     }
 
 }

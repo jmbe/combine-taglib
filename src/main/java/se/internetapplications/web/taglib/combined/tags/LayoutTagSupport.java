@@ -64,7 +64,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
 
         for (ConfigurationItem ci : resolved) {
 
-            if (!ci.isEnabled() || ci.isRemote()) {
+            if (!ci.isCombine() || ci.isRemote()) {
                 /* Output resources as is */
                 List<ResourceLink> resources = getResources(ci);
                 for (ResourceLink resourceLink : resources) {

@@ -38,12 +38,15 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>boolean</type>
+            <description>True if resource should be checked for changes on each load.</description>
         </attribute>
         <attribute>
-            <name>enabled</name>
+            <name>combine</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>boolean</type>
+            <description>True if resources should be combined. False if resources should be output as is (typically for
+                development reloading extension).</description>
         </attribute>
     </tag>
 
