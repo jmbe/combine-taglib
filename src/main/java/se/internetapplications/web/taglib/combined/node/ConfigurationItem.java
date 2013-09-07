@@ -87,7 +87,7 @@ public class ConfigurationItem implements ResourceParent {
     }
 
     public void setRequires(final String requires) {
-        Iterable<String> split = Splitter.on(",").trimResults().split(Strings.nullToEmpty(requires));
+        Iterable<String> split = Splitter.on(",").trimResults().omitEmptyStrings().split(Strings.nullToEmpty(requires));
         this.requires = FluentIterable.from(split).toList();
     }
 
