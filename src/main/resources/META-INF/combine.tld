@@ -10,8 +10,51 @@
     <display-name>CSS/Javascript optimizing JSP library</display-name>
 
     <tag>
-        <name>source</name>
-        <tag-class>se.internetapplications.web.taglib.combined.tags.SourceTag</tag-class>
+        <name>resource</name>
+        <tag-class>se.internetapplications.web.taglib.combined.tags.CombinedResourceTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>name</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>requires</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>optional</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>reloadable</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>enabled</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>script</name>
+        <tag-class>se.internetapplications.web.taglib.combined.tags.ScriptSourceTag</tag-class>
+        <body-content>empty</body-content>
+
+        <attribute>
+            <name>path</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>css</name>
+        <tag-class>se.internetapplications.web.taglib.combined.tags.CssSourceTag</tag-class>
         <body-content>empty</body-content>
 
         <attribute>
@@ -20,64 +63,21 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
-            <name>minify</name>
+            <name>media</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
     </tag>
 
     <tag>
-        <name>script</name>
-        <tag-class>se.internetapplications.web.taglib.combined.tags.ScriptTag</tag-class>
-        <body-content>JSP</body-content>
-
-        <attribute>
-            <name>name</name>
-            <required>true</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-        <attribute>
-            <name>enabled</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-        <attribute>
-            <name>path</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-        <attribute>
-            <name>reloadable</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
+        <name>layout-css</name>
+        <tag-class>se.internetapplications.web.taglib.combined.tags.LayoutCssTag</tag-class>
+        <body-content>empty</body-content>
     </tag>
-
     <tag>
-        <name>css</name>
-        <tag-class>se.internetapplications.web.taglib.combined.tags.CssTag</tag-class>
-        <body-content>JSP</body-content>
-
-        <attribute>
-            <name>name</name>
-            <required>true</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-        <attribute>
-            <name>enabled</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-        <attribute>
-            <name>path</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-        <attribute>
-            <name>reloadable</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
+        <name>layout-script</name>
+        <tag-class>se.internetapplications.web.taglib.combined.tags.LayoutScriptTag</tag-class>
+        <body-content>empty</body-content>
     </tag>
 
 </taglib>

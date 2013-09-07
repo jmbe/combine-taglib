@@ -40,36 +40,34 @@ public class CombinedResourceRepository {
         combinedResourcePaths = Maps.newHashMap();
     }
 
-    public static boolean containsResourcePath(final String path, final String name) {
-        return resourcePaths.containsKey(createResourcePathKey(path, name));
+    public static boolean containsResourcePath(final String name) {
+        return resourcePaths.containsKey(createResourcePathKey(name));
     }
 
-    static String createResourcePathKey(final String path, final String name) {
-        String directory = path.replaceAll("^/+|/+$", "");
-        return String.format("%s/%s", directory.trim().length() == 0 ? "" : "/" + directory, name);
+    static String createResourcePathKey(final String name) {
+        return String.format("/%s", name);
     }
 
-    public static String getResourcePath(final String path, final String name) {
-        return resourcePaths.get(createResourcePathKey(path, name));
+    public static String getResourcePath(final String name) {
+        return resourcePaths.get(createResourcePathKey(name));
     }
 
-    public static CombinedResource getCombinedResource(final String requestURI) {
-        return combinedResourcePaths.get(requestURI);
+    public static CombinedResource getCombinedResource(final String requestUri) {
+        return combinedResourcePaths.get(requestUri);
     }
 
-    public static String addCombinedResource(final String path, final String name,
-            final List<ManagedResource> resources, final CombineResourceStrategy combinator) {
+    public static String addCombinedResource(final String name, final List<ManagedResource> resources,
+            final CombineResourceStrategy combinator) {
 
-        checkNotNull(path, "Path cannot be null.");
         checkNotNull(name, "Name cannot be null.");
         checkNotNull(resources, "Resources cannot be null.");
 
         String requestPath = null;
 
-        CombinedResource resource = getCombinedResourceByKey(path, name);
+        CombinedResource resource = getCombinedResourceByKey(name);
 
         if (resource == null || resource.hasChangedFile(resources)) {
-            log.debug(String.format("Modified resource '%s' detected. Rebuilding...", name));
+            log.info(String.format("Modified resource '%s' detected. Rebuilding...", name));
             try {
 
                 final StringWriter sw = new StringWriter();
@@ -84,11 +82,11 @@ public class CombinedResourceRepository {
                 String contents = sw.toString();
                 String md5 = Hashing.md5().hashString(contents).toString();
 
-                requestPath = createRequestPath(path, name, md5);
+                requestPath = createRequestPath(name, md5);
 
                 log.debug("Adding combined resource" + requestPath);
 
-                resourcePaths.put(createResourcePathKey(path, name), requestPath);
+                resourcePaths.put(createResourcePathKey(name), requestPath);
                 combinedResourcePaths.put(requestPath,
                         combinator.stringToCombinedResource(contents, timestamp, md5, resources));
             } catch (IOException e) {
@@ -97,7 +95,7 @@ public class CombinedResourceRepository {
                 throw new RuntimeException(e);
             }
         } else {
-            requestPath = createRequestPath(path, name, resource.getChecksum());
+            requestPath = createRequestPath(name, resource.getChecksum());
         }
 
         return requestPath;
@@ -161,14 +159,14 @@ public class CombinedResourceRepository {
     /**
      * Creates the path that will be used in the request from the browser.
      */
-    static String createRequestPath(final String directory, final String id, final String checksum) {
-        String path = String.format("%s-%s.combined", createResourcePathKey(directory, id), checksum);
+    static String createRequestPath(final String id, final String checksum) {
+        String path = String.format("%s-%s.combined", createResourcePathKey(id), checksum);
         return path;
     }
 
-    private static CombinedResource getCombinedResourceByKey(final String path, final String name) {
-        if (containsResourcePath(path, name)) {
-            String scriptPath = getResourcePath(path, name);
+    private static CombinedResource getCombinedResourceByKey(final String name) {
+        if (containsResourcePath(name)) {
+            String scriptPath = getResourcePath(name);
             return getCombinedResource(scriptPath);
         }
         return null;

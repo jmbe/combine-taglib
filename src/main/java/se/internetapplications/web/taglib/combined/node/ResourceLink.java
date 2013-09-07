@@ -1,10 +1,19 @@
 package se.internetapplications.web.taglib.combined.node;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
 
 public class ResourceLink {
 
     private String link;
+
+    static final Predicate<ResourceLink> isRemote = new Predicate<ResourceLink>() {
+
+        public boolean apply(final ResourceLink item) {
+            return item.isRemote();
+
+        }
+    };
 
     public ResourceLink(final String link) {
         Preconditions.checkNotNull(link);

@@ -1,12 +1,23 @@
 package se.internetapplications.web.taglib.combined.node;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 
 import java.util.List;
 
-public class ConfigurationItem {
+/**
+ * Limitation: ConfigurationItem can contain only either remote or local resources, not both. If they contain both, then
+ * no combining will be made on any resources.
+ */
+public class ConfigurationItem implements ResourceParent {
 
     private String name;
+    private boolean reloadable = true;
+    private boolean optional = false;
+    private boolean enabled = true;
 
     private List<String> requires = Lists.newArrayList();
     private List<ResourceLink> js = Lists.newArrayList();
@@ -42,6 +53,50 @@ public class ConfigurationItem {
 
     public void setName(final String name) {
         this.name = name;
+    }
+
+    public boolean isReloadable() {
+        return reloadable && !isRemote();
+    }
+
+    public boolean isRemote() {
+        Optional<ResourceLink> optional = FluentIterable.from(js).firstMatch(ResourceLink.isRemote);
+        return optional.isPresent() || FluentIterable.from(css).firstMatch(ResourceLink.isRemote).isPresent();
+    }
+
+    public void setReloadable(final boolean reloadable) {
+        this.reloadable = reloadable;
+    }
+
+    public boolean isOptional() {
+        return optional;
+    }
+
+    public void setOptional(final boolean enabled) {
+        this.optional = enabled;
+    }
+
+    @Override
+    public void addJavascript(final String js) {
+        this.js.add(new ResourceLink(js));
+    }
+
+    @Override
+    public void addCss(final String css) {
+        this.css.add(new ResourceLink(css));
+    }
+
+    public void setRequires(final String requires) {
+        Iterable<String> split = Splitter.on(",").trimResults().split(Strings.nullToEmpty(requires));
+        this.requires = FluentIterable.from(split).toList();
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(final boolean enabled) {
+        this.enabled = enabled;
     }
 
 }

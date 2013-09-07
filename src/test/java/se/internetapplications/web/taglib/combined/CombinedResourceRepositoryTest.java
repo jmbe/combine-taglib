@@ -9,10 +9,7 @@ public class CombinedResourceRepositoryTest {
 
     @Test
     public void testCreateScriptPathKey() {
-        assertEquals("/thirdparty", createResourcePathKey("", "thirdparty"));
-        assertEquals("/static/js/thirdparty", createResourcePathKey("/static/js", "thirdparty"));
-        assertEquals("/static/js/thirdparty", createResourcePathKey("/static/js", "thirdparty"));
-        assertEquals("/static/js/thirdparty", createResourcePathKey("static/js/", "thirdparty"));
-        assertEquals("/static/js/thirdparty", createResourcePathKey("/static/js/", "thirdparty"));
+        assertEquals("/thirdparty", createResourcePathKey("thirdparty"));
+        assertEquals("/static/js/thirdparty", createResourcePathKey("static/js/thirdparty"));
     }
 }
