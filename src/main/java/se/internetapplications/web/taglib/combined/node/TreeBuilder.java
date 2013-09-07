@@ -68,7 +68,7 @@ public class TreeBuilder {
         root.setVirtual(true);
 
         for (ConfigurationItem configurationItem : configurationItems) {
-            if (!configurationItem.isOptional()) {
+            if (!configurationItem.isLibrary()) {
                 root.addEdges(build.get(configurationItem.getName()));
             }
         }

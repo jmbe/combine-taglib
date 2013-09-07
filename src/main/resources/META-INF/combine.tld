@@ -26,7 +26,7 @@
             <description>Comma-separated list of resource names which this resource depends on.</description>
         </attribute>
         <attribute>
-            <name>optional</name>
+            <name>library</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>boolean</type>

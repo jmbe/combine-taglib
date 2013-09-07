@@ -16,7 +16,7 @@ public class ConfigurationItem implements ResourceParent {
 
     private String name;
     private boolean reloadable = true;
-    private boolean optional = false;
+    private boolean library = false;
     private boolean enabled = true;
 
     private List<String> requires = Lists.newArrayList();
@@ -68,12 +68,12 @@ public class ConfigurationItem implements ResourceParent {
         this.reloadable = reloadable;
     }
 
-    public boolean isOptional() {
-        return optional;
+    public boolean isLibrary() {
+        return library;
     }
 
-    public void setOptional(final boolean enabled) {
-        this.optional = enabled;
+    public void setLibrary(final boolean library) {
+        this.library = library;
     }
 
     @Override
