@@ -22,7 +22,7 @@ Or add servlet to web.xml
 
     <servlet>
         <servlet-name>CombinedServlet</servlet-name>
-        <servlet-class>se.internetapplications.web.taglib.combined.CombinedServlet</servlet-class>
+        <servlet-class>se.internetapplications.web.taglib.combined.servlet.CombinedServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
