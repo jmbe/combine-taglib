@@ -64,10 +64,13 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
         List<ConfigurationItem> resolved = new TreeBuilder().resolve(getConfigurationItems());
 
         for (ConfigurationItem ci : resolved) {
+            List<ResourceLink> resources = getResources(ci);
+            if (resources.isEmpty()) {
+                continue;
+            }
 
             if ((CombinedConfigurationHolder.isDevMode() && ci.isSupportsDevMode()) || !ci.isCombine() || ci.isRemote()) {
                 /* Output resources as is */
-                List<ResourceLink> resources = getResources(ci);
                 for (ResourceLink resourceLink : resources) {
                     writeOutputPath(resourceLink.getLink());
                 }
@@ -75,7 +78,6 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
 
                 if (ci.isReloadable() || !CombinedResourceRepository.containsResourcePath(ci.getName())) {
                     log.info("Reloading {}", ci.getName());
-                    List<ResourceLink> resources = getResources(ci);
                     addCombinedResources(ci.getName(), resources);
                 }
 
