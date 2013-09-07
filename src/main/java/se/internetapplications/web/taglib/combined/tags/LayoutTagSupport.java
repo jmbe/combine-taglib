@@ -28,7 +28,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
 
     protected void writeOutputPath(final String path) throws JspException {
         try {
-            pageContext.getOut().write(format(path));
+            pageContext.getOut().println(format(path));
         } catch (IOException e) {
             throw new JspException(e);
         }

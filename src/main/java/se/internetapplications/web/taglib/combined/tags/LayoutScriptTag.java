@@ -20,7 +20,7 @@ public class LayoutScriptTag extends LayoutTagSupport {
     }
 
     protected String format(final String path) {
-        return String.format("<script type=\"text/javascript\" charset=\"UTF-8\" src=\"%s\"></script>\r\n", path);
+        return String.format("<script type=\"text/javascript\" charset=\"UTF-8\" src=\"%s\"></script>", path);
     }
 
     public CombinedResource stringToCombinedResource(final String contents, final long timestamp,
