@@ -77,7 +77,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
             } else {
 
                 if (ci.isReloadable() || !CombinedResourceRepository.containsResourcePath(ci.getName())) {
-                    log.info("Reloading {}", ci.getName());
+                    log.info("Checking for changes in {}", ci.getName());
                     addCombinedResources(ci.getName(), resources);
                 }
 

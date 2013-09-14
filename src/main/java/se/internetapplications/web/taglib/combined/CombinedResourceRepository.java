@@ -67,7 +67,11 @@ public class CombinedResourceRepository {
         CombinedResource resource = getCombinedResourceByKey(name);
 
         if (resource == null || resource.hasChangedFile(resources)) {
-            log.info(String.format("Modified resource '%s' detected. Rebuilding...", name));
+            if (resource == null) {
+                log.info("Building resource for '{}'...", name);
+            } else {
+                log.info(String.format("Modified resource '%s' detected. Rebuilding...", name));
+            }
             try {
 
                 final StringWriter sw = new StringWriter();
