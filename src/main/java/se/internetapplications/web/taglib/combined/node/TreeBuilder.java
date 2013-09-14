@@ -12,6 +12,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import se.internetapplications.web.taglib.combined.tags.ConfigurationItemsCollection;
+
 public class TreeBuilder {
 
     private CombineObjectMapper mapper;
@@ -20,22 +22,22 @@ public class TreeBuilder {
         this.mapper = new CombineObjectMapper();
     }
 
-    List<ConfigurationItem> parse(final InputStream stream) throws JsonParseException, JsonMappingException,
+    ConfigurationItemsCollection parse(final InputStream stream) throws JsonParseException, JsonMappingException,
             IOException {
 
-        List<ConfigurationItem> config = mapper.readValue(stream, new TypeReference<List<ConfigurationItem>>() {
+        List<ConfigurationItem> items = mapper.readValue(stream, new TypeReference<List<ConfigurationItem>>() {
         });
 
-        return config;
+        return new ConfigurationItemsCollection(items);
     }
 
     public Map<String, ResourceNode> build(final InputStream stream) throws JsonParseException, JsonMappingException,
             IOException {
-        List<ConfigurationItem> items = parse(stream);
+        ConfigurationItemsCollection items = parse(stream);
         return build(items);
     }
 
-    public Map<String, ResourceNode> build(final List<ConfigurationItem> items) {
+    public Map<String, ResourceNode> build(final ConfigurationItemsCollection items) {
         Map<String, ResourceNode> nodes = Maps.newHashMap();
 
         /* Pass 1: Populate map */
@@ -51,7 +53,7 @@ public class TreeBuilder {
             for (String string : requires) {
                 ResourceNode edge = nodes.get(string);
                 if (edge == null) {
-                    throw new IllegalStateException(String.format("Could not find dependency: %s -> %s",
+                    throw new IllegalStateException(String.format("Could not find dependency: %s requires %s",
                             current.getName(), string));
                 }
                 current.addEdges(edge);
@@ -61,13 +63,13 @@ public class TreeBuilder {
         return nodes;
     }
 
-    public List<ConfigurationItem> resolve(final List<ConfigurationItem> configurationItems) {
-        Map<String, ResourceNode> build = build(configurationItems);
+    public List<ConfigurationItem> resolve(final ConfigurationItemsCollection configurationItemsCollection) {
+        Map<String, ResourceNode> build = build(configurationItemsCollection);
 
         ResourceNode root = new ResourceNode();
         root.setVirtual(true);
 
-        for (ConfigurationItem configurationItem : configurationItems) {
+        for (ConfigurationItem configurationItem : configurationItemsCollection) {
             if (!configurationItem.isLibrary()) {
                 root.addEdges(build.get(configurationItem.getName()));
             }

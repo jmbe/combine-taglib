@@ -1,7 +1,5 @@
 package se.internetapplications.web.taglib.combined.tags;
 
-import java.util.List;
-
 import javax.servlet.jsp.JspException;
 
 import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
@@ -19,7 +17,7 @@ public class CombinedResourceTag extends ConfigurationItemAwareTagSupport implem
     @Override
     public int doEndTag() throws JspException {
 
-        List<ConfigurationItem> configurations = getConfigurationItems();
+        ConfigurationItemsCollection configurations = getConfigurationItems();
         configurations.add(this.configurationItem);
         pageContext.getRequest().setAttribute(ConfigurationItemAwareTagSupport.REQUEST_CONFIGURATION_ITEMS_KEY,
                 configurations);

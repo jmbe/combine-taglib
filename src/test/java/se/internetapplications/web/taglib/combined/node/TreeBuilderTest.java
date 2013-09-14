@@ -7,11 +7,12 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import se.internetapplications.web.taglib.combined.tags.ConfigurationItemsCollection;
 
 public class TreeBuilderTest extends TreeBuilder {
 
@@ -34,11 +35,11 @@ public class TreeBuilderTest extends TreeBuilder {
 
     @Test
     public void parse_configuration_items() throws JsonParseException, JsonMappingException, IOException {
-        List<ConfigurationItem> config = builder.parse(stream);
+        ConfigurationItemsCollection config = builder.parse(stream);
 
         assertEquals(2, config.size());
 
-        ConfigurationItem item = config.get(0);
+        ConfigurationItem item = config.iterator().next();
 
         assertEquals(1, item.getRequires().size());
         ResourceLink link = item.getCss().get(0);
@@ -69,7 +70,7 @@ public class TreeBuilderTest extends TreeBuilder {
             builder.build(illegal);
             fail("Should have thrown exception");
         } catch (IllegalStateException e) {
-            assertEquals("Could not find dependency: news -> MISSING-DEPENDENCY", e.getMessage());
+            assertEquals("Could not find dependency: news requires MISSING-DEPENDENCY", e.getMessage());
         }
     }
 }

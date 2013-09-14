@@ -1,15 +1,9 @@
 package se.internetapplications.web.taglib.combined.tags;
 
-import com.google.common.collect.Lists;
-
-import java.util.List;
-
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
 
 public abstract class ConfigurationItemAwareTagSupport extends BodyTagSupport {
 
@@ -18,17 +12,16 @@ public abstract class ConfigurationItemAwareTagSupport extends BodyTagSupport {
     /** Logger for this class. */
     private static final Logger log = LoggerFactory.getLogger(ConfigurationItemAwareTagSupport.class);
 
-    public List<ConfigurationItem> getConfigurationItems() {
-        @SuppressWarnings("unchecked")
-        List<ConfigurationItem> scripts = (List<ConfigurationItem>) pageContext.getRequest().getAttribute(
+    public ConfigurationItemsCollection getConfigurationItems() {
+        ConfigurationItemsCollection collection = (ConfigurationItemsCollection) pageContext.getRequest().getAttribute(
                 REQUEST_CONFIGURATION_ITEMS_KEY);
-        log.debug("Configuration items: {}", scripts);
+        log.debug("Configuration items: {}", collection);
 
-        if (scripts == null) {
+        if (collection == null) {
             log.debug("Creating new list");
-            return Lists.newArrayList();
+            return new ConfigurationItemsCollection();
         }
 
-        return scripts;
+        return collection;
     }
 }
