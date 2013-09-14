@@ -84,7 +84,7 @@ public class CombinedResourceRepository {
                 }
 
                 String contents = sw.toString();
-                String md5 = Hashing.md5().hashString(contents).toString();
+                String md5 = Hashing.md5().hashUnencodedChars(contents).toString();
 
                 requestPath = createRequestPath(name, md5);
 
