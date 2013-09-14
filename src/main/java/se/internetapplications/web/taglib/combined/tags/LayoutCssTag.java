@@ -6,6 +6,7 @@ import java.util.List;
 
 import se.internetapplications.web.taglib.combined.CombinedResource;
 import se.internetapplications.web.taglib.combined.CssCombinedResource;
+import se.internetapplications.web.taglib.combined.RequestPath;
 import se.internetapplications.web.taglib.combined.ResourceType;
 import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
 import se.internetapplications.web.taglib.combined.node.ResourceLink;
@@ -19,7 +20,7 @@ public class LayoutCssTag extends LayoutTagSupport {
     }
 
     @Override
-    protected String format(final String path) {
+    protected String format(final RequestPath path) {
         String mediaAttribute = "";
         if (!Strings.isNullOrEmpty(media)) {
             mediaAttribute = "media=\"" + media + "\" ";

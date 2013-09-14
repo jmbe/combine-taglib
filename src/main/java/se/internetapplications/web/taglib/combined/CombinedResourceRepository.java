@@ -25,11 +25,11 @@ public class CombinedResourceRepository {
     /**
      * key(path, name) -> requestPath
      */
-    private static Map<String, String> resourcePaths;
+    private static Map<String, RequestPath> resourcePaths;
     /**
      * requestPath -> CombinedResource
      */
-    private static Map<String, CombinedResource> combinedResourcePaths;
+    private static Map<RequestPath, CombinedResource> combinedResourcePaths;
 
     static {
         resourcePaths = Maps.newHashMap();
@@ -44,21 +44,21 @@ public class CombinedResourceRepository {
         return String.format("/%s/%s", name, type);
     }
 
-    public static String getResourcePath(final String name, final ResourceType type) {
+    public static RequestPath getResourcePath(final String name, final ResourceType type) {
         return resourcePaths.get(createResourcePathKey(name, type));
     }
 
-    public static CombinedResource getCombinedResource(final String requestUri) {
+    public static CombinedResource getCombinedResource(final RequestPath requestUri) {
         return combinedResourcePaths.get(requestUri);
     }
 
-    public static String addCombinedResource(final String name, final ResourceType type,
+    public static RequestPath addCombinedResource(final String name, final ResourceType type,
             final List<ManagedResource> resources, final CombineResourceStrategy combinator) {
 
         checkNotNull(name, "Name cannot be null.");
         checkNotNull(resources, "Resources cannot be null.");
 
-        String requestPath = null;
+        RequestPath requestPath = null;
 
         CombinedResource resource = getCombinedResourceByKey(name, type);
 
@@ -104,14 +104,14 @@ public class CombinedResourceRepository {
     /**
      * Creates the path that will be used in the request from the browser.
      */
-    private static String createRequestPath(final String name, final ResourceType type, final String checksum) {
+    private static RequestPath createRequestPath(final String name, final ResourceType type, final String checksum) {
         String path = String.format("%s-%s.combined", createResourcePathKey(name, type), checksum);
-        return path;
+        return new RequestPath(path);
     }
 
     private static CombinedResource getCombinedResourceByKey(final String name, final ResourceType type) {
         if (containsResourcePath(name, type)) {
-            String scriptPath = getResourcePath(name, type);
+            RequestPath scriptPath = getResourcePath(name, type);
             return getCombinedResource(scriptPath);
         }
         return null;

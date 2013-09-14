@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import se.internetapplications.web.taglib.combined.CombinedResource;
+import se.internetapplications.web.taglib.combined.RequestPath;
 import se.internetapplications.web.taglib.combined.ResourceType;
 import se.internetapplications.web.taglib.combined.ScriptCombinedResource;
 import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
@@ -20,7 +21,8 @@ public class LayoutScriptTag extends LayoutTagSupport {
         return configuration.getJs();
     }
 
-    protected String format(final String path) {
+    @Override
+    protected String format(final RequestPath path) {
         return String.format("<script type=\"text/javascript\" charset=\"UTF-8\" src=\"%s\"></script>", path);
     }
 

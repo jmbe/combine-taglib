@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import se.internetapplications.web.taglib.combined.CombinedResource;
 import se.internetapplications.web.taglib.combined.CombinedResourceRepository;
+import se.internetapplications.web.taglib.combined.RequestPath;
 
 public class CombinedServlet extends HttpServlet {
 
@@ -30,7 +31,8 @@ public class CombinedServlet extends HttpServlet {
 
         log.debug("Handling {}", request.getRequestURI());
 
-        CombinedResource resource = CombinedResourceRepository.getCombinedResource(request.getRequestURI());
+        RequestPath path = new RequestPath(request.getRequestURI());
+        CombinedResource resource = CombinedResourceRepository.getCombinedResource(path);
         response.setContentType(resource.getContentType() + CHARSET_UTF8);
         cacheResource(response, 365);
         resource.writeMinifiedResource(response.getWriter());

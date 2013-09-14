@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import se.internetapplications.web.taglib.combined.CombineResourceStrategy;
 import se.internetapplications.web.taglib.combined.CombinedResourceRepository;
 import se.internetapplications.web.taglib.combined.ConcatCombineResourceStrategy;
+import se.internetapplications.web.taglib.combined.RequestPath;
 import se.internetapplications.web.taglib.combined.ResourceType;
 import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
 import se.internetapplications.web.taglib.combined.node.ResourceLink;
@@ -28,7 +29,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
     /** Logger for this class. */
     private static final Logger log = LoggerFactory.getLogger(LayoutTagSupport.class);
 
-    protected void writeOutputPath(final String path) throws JspException {
+    protected void writeOutputPath(final RequestPath path) throws JspException {
         try {
             pageContext.getOut().println(format(path));
         } catch (IOException e) {
@@ -37,9 +38,10 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
     }
 
     /* Format path for output in jsp, e.g. as script or link tag. */
-    protected abstract String format(String path);
+    protected abstract String format(RequestPath path);
 
-    protected String addCombinedResources(final String name, final ResourceType type, final List<ResourceLink> sources) {
+    protected RequestPath addCombinedResources(final String name, final ResourceType type,
+            final List<ResourceLink> sources) {
 
         Function<ResourceLink, ManagedResource> serverPathManaged = new Function<ResourceLink, ManagedResource>() {
             public ManagedResource apply(final ResourceLink element) {
@@ -77,7 +79,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
             if ((CombinedConfigurationHolder.isDevMode() && ci.isSupportsDevMode()) || !ci.isCombine() || ci.isRemote()) {
                 /* Output resources as is */
                 for (ResourceLink resourceLink : resources) {
-                    writeOutputPath(resourceLink.getLink());
+                    writeOutputPath(new RequestPath(resourceLink.getLink()));
                 }
             } else {
 
@@ -86,7 +88,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
                     addCombinedResources(ci.getName(), getType(), resources);
                 }
 
-                String path = CombinedResourceRepository.getResourcePath(ci.getName(), getType());
+                RequestPath path = CombinedResourceRepository.getResourcePath(ci.getName(), getType());
                 writeOutputPath(path);
             }
 
