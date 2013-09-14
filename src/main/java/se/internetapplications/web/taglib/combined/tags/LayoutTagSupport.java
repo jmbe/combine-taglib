@@ -20,7 +20,6 @@ import se.internetapplications.web.taglib.combined.ConcatCombineResourceStrategy
 import se.internetapplications.web.taglib.combined.RequestPath;
 import se.internetapplications.web.taglib.combined.ResourceType;
 import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
-import se.internetapplications.web.taglib.combined.node.ResourceLink;
 import se.internetapplications.web.taglib.combined.node.TreeBuilder;
 import se.internetapplications.web.taglib.combined.servlet.CombinedConfigurationHolder;
 
@@ -41,15 +40,15 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
     protected abstract String format(RequestPath path);
 
     protected RequestPath addCombinedResources(final String name, final ResourceType type,
-            final List<ResourceLink> sources) {
+            final List<RequestPath> sources) {
 
-        Function<ResourceLink, ManagedResource> serverPathManaged = new Function<ResourceLink, ManagedResource>() {
-            public ManagedResource apply(final ResourceLink element) {
+        Function<RequestPath, ManagedResource> serverPathManaged = new Function<RequestPath, ManagedResource>() {
+            public ManagedResource apply(final RequestPath element) {
                 if (element.isRemote()) {
-                    return new ManagedResource(element.getLink(), null, null);
+                    return new ManagedResource(element.getPath(), null, null);
                 }
-                return new ManagedResource(element.getLink(), pageContext.getServletContext().getRealPath(
-                        element.getLink()), pageContext.getServletContext().getResourceAsStream(element.getLink()));
+                return new ManagedResource(element.getPath(), pageContext.getServletContext().getRealPath(
+                        element.getPath()), pageContext.getServletContext().getResourceAsStream(element.getPath()));
             }
         };
         List<ManagedResource> realPaths = FluentIterable.from(sources).transform(serverPathManaged).toList();
@@ -61,7 +60,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
         return new ConcatCombineResourceStrategy().joinPaths(pw, realPaths);
     }
 
-    public abstract List<ResourceLink> getResources(final ConfigurationItem configuration);
+    public abstract List<RequestPath> getResources(final ConfigurationItem configuration);
 
     @Override
     public int doEndTag() throws JspException {
@@ -71,15 +70,15 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
         List<ConfigurationItem> resolved = new TreeBuilder().resolve(getConfigurationItems());
 
         for (ConfigurationItem ci : resolved) {
-            List<ResourceLink> resources = getResources(ci);
+            List<RequestPath> resources = getResources(ci);
             if (resources.isEmpty()) {
                 continue;
             }
 
             if ((CombinedConfigurationHolder.isDevMode() && ci.isSupportsDevMode()) || !ci.isCombine() || ci.isRemote()) {
                 /* Output resources as is */
-                for (ResourceLink resourceLink : resources) {
-                    writeOutputPath(new RequestPath(resourceLink.getLink()));
+                for (RequestPath path : resources) {
+                    writeOutputPath(path);
                 }
             } else {
 

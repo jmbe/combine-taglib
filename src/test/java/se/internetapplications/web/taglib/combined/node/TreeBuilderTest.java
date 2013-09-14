@@ -12,6 +12,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import se.internetapplications.web.taglib.combined.RequestPath;
 import se.internetapplications.web.taglib.combined.tags.ConfigurationItemsCollection;
 
 public class TreeBuilderTest extends TreeBuilder {
@@ -42,8 +43,8 @@ public class TreeBuilderTest extends TreeBuilder {
         ConfigurationItem item = config.iterator().next();
 
         assertEquals(1, item.getRequires().size());
-        ResourceLink link = item.getCss().get(0);
-        assertEquals("1.css", link.getLink());
+        RequestPath link = item.getCss().get(0);
+        assertEquals("1.css", link.getPath());
         assertFalse(link.isRemote());
     }
 

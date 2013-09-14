@@ -9,13 +9,12 @@ import se.internetapplications.web.taglib.combined.CssCombinedResource;
 import se.internetapplications.web.taglib.combined.RequestPath;
 import se.internetapplications.web.taglib.combined.ResourceType;
 import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
-import se.internetapplications.web.taglib.combined.node.ResourceLink;
 
 public class LayoutCssTag extends LayoutTagSupport {
 
     private String media = null; // TODO support media
 
-    public List<ResourceLink> getResources(final ConfigurationItem configuration) {
+    public List<RequestPath> getResources(final ConfigurationItem configuration) {
         return configuration.getCss();
     }
 

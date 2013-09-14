@@ -8,6 +8,8 @@ import com.google.common.collect.Lists;
 
 import java.util.List;
 
+import se.internetapplications.web.taglib.combined.RequestPath;
+
 /**
  * Limitation: ConfigurationItem can contain only either remote or local resources, not both. If they contain both, then
  * no combining will be made on any resources.
@@ -20,8 +22,8 @@ public class ConfigurationItem implements ResourceParent {
     private boolean combine = true;
 
     private List<String> requires = Lists.newArrayList();
-    private List<ResourceLink> js = Lists.newArrayList();
-    private List<ResourceLink> css = Lists.newArrayList();
+    private List<RequestPath> js = Lists.newArrayList();
+    private List<RequestPath> css = Lists.newArrayList();
     private boolean supportsDevMode;
 
     public List<String> getRequires() {
@@ -32,19 +34,19 @@ public class ConfigurationItem implements ResourceParent {
         this.requires = requires;
     }
 
-    public List<ResourceLink> getJs() {
+    public List<RequestPath> getJs() {
         return js;
     }
 
-    public void setJs(final List<ResourceLink> js) {
+    public void setJs(final List<RequestPath> js) {
         this.js = js;
     }
 
-    public List<ResourceLink> getCss() {
+    public List<RequestPath> getCss() {
         return css;
     }
 
-    public void setCss(final List<ResourceLink> css) {
+    public void setCss(final List<RequestPath> css) {
         this.css = css;
     }
 
@@ -61,8 +63,8 @@ public class ConfigurationItem implements ResourceParent {
     }
 
     public boolean isRemote() {
-        Optional<ResourceLink> optional = FluentIterable.from(js).firstMatch(ResourceLink.isRemote);
-        return optional.isPresent() || FluentIterable.from(css).firstMatch(ResourceLink.isRemote).isPresent();
+        Optional<RequestPath> optional = FluentIterable.from(js).firstMatch(RequestPath.isRemote);
+        return optional.isPresent() || FluentIterable.from(css).firstMatch(RequestPath.isRemote).isPresent();
     }
 
     public void setReloadable(final boolean reloadable) {
@@ -79,12 +81,12 @@ public class ConfigurationItem implements ResourceParent {
 
     @Override
     public void addJavascript(final String js) {
-        this.js.add(new ResourceLink(js));
+        this.js.add(new RequestPath(js));
     }
 
     @Override
     public void addCss(final String css) {
-        this.css.add(new ResourceLink(css));
+        this.css.add(new RequestPath(css));
     }
 
     public void addRequires(final String requires) {

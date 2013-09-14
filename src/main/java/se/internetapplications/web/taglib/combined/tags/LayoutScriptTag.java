@@ -10,14 +10,13 @@ import se.internetapplications.web.taglib.combined.RequestPath;
 import se.internetapplications.web.taglib.combined.ResourceType;
 import se.internetapplications.web.taglib.combined.ScriptCombinedResource;
 import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
-import se.internetapplications.web.taglib.combined.node.ResourceLink;
 
 public class LayoutScriptTag extends LayoutTagSupport {
 
     /** Logger for this class. */
     static final Logger log = LoggerFactory.getLogger(LayoutScriptTag.class);
 
-    public List<ResourceLink> getResources(final ConfigurationItem configuration) {
+    public List<RequestPath> getResources(final ConfigurationItem configuration) {
         return configuration.getJs();
     }
 

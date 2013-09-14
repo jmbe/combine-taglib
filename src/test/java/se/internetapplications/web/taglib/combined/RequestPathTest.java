@@ -12,4 +12,9 @@ public class RequestPathTest {
         assertEquals("//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js", path.getPath());
     }
 
+    @Test
+    public void should_detect_remote_paths_without_protocol() {
+        RequestPath path = new RequestPath("//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js");
+        assertTrue(path.isRemote());
+    }
 }
