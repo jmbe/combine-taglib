@@ -108,4 +108,9 @@ public class ConfigurationItem implements ResourceParent {
         return supportsDevMode;
     }
 
+    @Override
+    public String toString() {
+        return Strings.nullToEmpty(name);
+    }
+
 }
