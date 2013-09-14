@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import se.internetapplications.web.taglib.combined.CombineResourceStrategy;
 import se.internetapplications.web.taglib.combined.CombinedResourceRepository;
+import se.internetapplications.web.taglib.combined.ResourceType;
 import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
 import se.internetapplications.web.taglib.combined.node.ResourceLink;
 import se.internetapplications.web.taglib.combined.node.TreeBuilder;
@@ -37,7 +38,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
     /* Format path for output in jsp, e.g. as script or link tag. */
     protected abstract String format(String path);
 
-    protected String addCombinedResources(final String name, final List<ResourceLink> sources) {
+    protected String addCombinedResources(final String name, final ResourceType type, final List<ResourceLink> sources) {
 
         Function<ResourceLink, ManagedResource> serverPathManaged = new Function<ResourceLink, ManagedResource>() {
             public ManagedResource apply(final ResourceLink element) {
@@ -47,7 +48,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
         };
         List<ManagedResource> realPaths = FluentIterable.from(sources).transform(serverPathManaged).toList();
 
-        return CombinedResourceRepository.addCombinedResource(name, realPaths, this);
+        return CombinedResourceRepository.addCombinedResource(name, type, realPaths, this);
     }
 
     public long combineFiles(final PrintWriter pw, final List<ManagedResource> realPaths) throws IOException {
@@ -76,12 +77,12 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
                 }
             } else {
 
-                if (ci.isReloadable() || !CombinedResourceRepository.containsResourcePath(ci.getName())) {
+                if (ci.isReloadable() || !CombinedResourceRepository.containsResourcePath(ci.getName(), getType())) {
                     log.info("Checking for changes in {}", ci.getName());
-                    addCombinedResources(ci.getName(), resources);
+                    addCombinedResources(ci.getName(), getType(), resources);
                 }
 
-                String path = CombinedResourceRepository.getResourcePath(ci.getName());
+                String path = CombinedResourceRepository.getResourcePath(ci.getName(), getType());
                 writeOutputPath(path);
             }
 
@@ -91,4 +92,6 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
 
         return EVAL_PAGE;
     }
+
+    protected abstract ResourceType getType();
 }

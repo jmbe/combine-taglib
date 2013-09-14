@@ -6,6 +6,7 @@ import java.util.List;
 
 import se.internetapplications.web.taglib.combined.CombinedResource;
 import se.internetapplications.web.taglib.combined.CssCombinedResource;
+import se.internetapplications.web.taglib.combined.ResourceType;
 import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
 import se.internetapplications.web.taglib.combined.node.ResourceLink;
 
@@ -38,6 +39,11 @@ public class LayoutCssTag extends LayoutTagSupport {
 
     public String getMedia() {
         return media;
+    }
+
+    @Override
+    protected ResourceType getType() {
+        return ResourceType.css;
     }
 
 }

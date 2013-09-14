@@ -40,31 +40,31 @@ public class CombinedResourceRepository {
         combinedResourcePaths = Maps.newHashMap();
     }
 
-    public static boolean containsResourcePath(final String name) {
-        return resourcePaths.containsKey(createResourcePathKey(name));
+    public static boolean containsResourcePath(final String name, final ResourceType type) {
+        return resourcePaths.containsKey(createResourcePathKey(name, type));
     }
 
-    static String createResourcePathKey(final String name) {
-        return String.format("/%s", name);
+    static String createResourcePathKey(final String name, final ResourceType type) {
+        return String.format("/%s/%s", name, type);
     }
 
-    public static String getResourcePath(final String name) {
-        return resourcePaths.get(createResourcePathKey(name));
+    public static String getResourcePath(final String name, final ResourceType type) {
+        return resourcePaths.get(createResourcePathKey(name, type));
     }
 
     public static CombinedResource getCombinedResource(final String requestUri) {
         return combinedResourcePaths.get(requestUri);
     }
 
-    public static String addCombinedResource(final String name, final List<ManagedResource> resources,
-            final CombineResourceStrategy combinator) {
+    public static String addCombinedResource(final String name, final ResourceType type,
+            final List<ManagedResource> resources, final CombineResourceStrategy combinator) {
 
         checkNotNull(name, "Name cannot be null.");
         checkNotNull(resources, "Resources cannot be null.");
 
         String requestPath = null;
 
-        CombinedResource resource = getCombinedResourceByKey(name);
+        CombinedResource resource = getCombinedResourceByKey(name, type);
 
         if (resource == null || resource.hasChangedFile(resources)) {
             if (resource == null) {
@@ -86,11 +86,11 @@ public class CombinedResourceRepository {
                 String contents = sw.toString();
                 String md5 = Hashing.md5().hashUnencodedChars(contents).toString();
 
-                requestPath = createRequestPath(name, md5);
+                requestPath = createRequestPath(name, type, md5);
 
                 log.debug("Adding combined resource" + requestPath);
 
-                resourcePaths.put(createResourcePathKey(name), requestPath);
+                resourcePaths.put(createResourcePathKey(name, type), requestPath);
                 combinedResourcePaths.put(requestPath,
                         combinator.stringToCombinedResource(contents, timestamp, md5, resources));
             } catch (IOException e) {
@@ -99,7 +99,7 @@ public class CombinedResourceRepository {
                 throw new RuntimeException(e);
             }
         } else {
-            requestPath = createRequestPath(name, resource.getChecksum());
+            requestPath = createRequestPath(name, type, resource.getChecksum());
         }
 
         return requestPath;
@@ -163,14 +163,14 @@ public class CombinedResourceRepository {
     /**
      * Creates the path that will be used in the request from the browser.
      */
-    static String createRequestPath(final String id, final String checksum) {
-        String path = String.format("%s-%s.combined", createResourcePathKey(id), checksum);
+    private static String createRequestPath(final String name, final ResourceType type, final String checksum) {
+        String path = String.format("%s-%s.combined", createResourcePathKey(name, type), checksum);
         return path;
     }
 
-    private static CombinedResource getCombinedResourceByKey(final String name) {
-        if (containsResourcePath(name)) {
-            String scriptPath = getResourcePath(name);
+    private static CombinedResource getCombinedResourceByKey(final String name, final ResourceType type) {
+        if (containsResourcePath(name, type)) {
+            String scriptPath = getResourcePath(name, type);
             return getCombinedResource(scriptPath);
         }
         return null;
