@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import se.internetapplications.web.taglib.combined.CombineResourceStrategy;
 import se.internetapplications.web.taglib.combined.CombinedResourceRepository;
+import se.internetapplications.web.taglib.combined.ConcatCombineResourceStrategy;
 import se.internetapplications.web.taglib.combined.ResourceType;
 import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
 import se.internetapplications.web.taglib.combined.node.ResourceLink;
@@ -42,6 +43,9 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
 
         Function<ResourceLink, ManagedResource> serverPathManaged = new Function<ResourceLink, ManagedResource>() {
             public ManagedResource apply(final ResourceLink element) {
+                if (element.isRemote()) {
+                    return new ManagedResource(element.getLink(), null, null);
+                }
                 return new ManagedResource(element.getLink(), pageContext.getServletContext().getRealPath(
                         element.getLink()), pageContext.getServletContext().getResourceAsStream(element.getLink()));
             }
@@ -52,7 +56,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
     }
 
     public long combineFiles(final PrintWriter pw, final List<ManagedResource> realPaths) throws IOException {
-        return CombinedResourceRepository.joinPaths(pw, realPaths);
+        return new ConcatCombineResourceStrategy().joinPaths(pw, realPaths);
     }
 
     public abstract List<ResourceLink> getResources(final ConfigurationItem configuration);
