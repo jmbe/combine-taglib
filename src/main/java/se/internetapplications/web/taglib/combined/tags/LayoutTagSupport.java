@@ -30,8 +30,11 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
 
     private CombinedResourceRepository repository;
 
+    private TreeBuilder tb;
+
     public LayoutTagSupport() {
         this.repository = CombinedResourceRepository.get();
+        this.tb = new TreeBuilder();
     }
 
     protected void writeOutputPath(final RequestPath path) throws JspException {
@@ -73,7 +76,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
 
         Stopwatch stopwatch = Stopwatch.createStarted();
 
-        List<ConfigurationItem> resolved = new TreeBuilder().resolve(getConfigurationItems());
+        List<ConfigurationItem> resolved = tb.resolve(getConfigurationItems());
 
         for (ConfigurationItem ci : resolved) {
             List<RequestPath> resources = getResources(ci);
