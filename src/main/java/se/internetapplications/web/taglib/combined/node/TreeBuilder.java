@@ -49,7 +49,7 @@ public class TreeBuilder {
             for (String string : requires) {
                 ResourceNode edge = nodes.get(string);
                 if (edge == null) {
-                    throw new IllegalStateException(String.format("Could not find dependency: %s requires %s",
+                    throw new IllegalStateException(String.format("Could not find dependency: %s requires '%s'",
                             current.getName(), string));
                 }
                 current.addEdges(edge);
