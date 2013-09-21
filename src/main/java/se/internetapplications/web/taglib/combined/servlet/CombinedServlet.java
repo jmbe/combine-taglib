@@ -18,6 +18,8 @@ import se.internetapplications.web.taglib.combined.RequestPath;
 
 public class CombinedServlet extends HttpServlet {
 
+    private CombinedResourceRepository repository;
+
     /** Logger for this class. */
     private static final Logger log = LoggerFactory.getLogger(CombinedServlet.class);
 
@@ -26,13 +28,19 @@ public class CombinedServlet extends HttpServlet {
     private static final String expiresDateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz";
 
     @Override
+    public void init() throws ServletException {
+        log.debug("Init " + this.getClass().getSimpleName());
+        this.repository = CombinedResourceRepository.get();
+    }
+
+    @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException,
             IOException {
 
         log.debug("Handling {}", request.getRequestURI());
 
         RequestPath path = new RequestPath(request.getRequestURI());
-        CombinedResource resource = CombinedResourceRepository.getCombinedResource(path);
+        CombinedResource resource = repository.getCombinedResource(path);
         response.setContentType(resource.getContentType() + CHARSET_UTF8);
         cacheResource(response, 365);
         resource.writeMinifiedResource(response.getWriter());

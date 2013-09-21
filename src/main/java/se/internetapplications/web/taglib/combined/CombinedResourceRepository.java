@@ -25,18 +25,18 @@ public class CombinedResourceRepository {
     /**
      * key(path, name) -> requestPath
      */
-    private static Map<String, RequestPath> resourcePaths;
+    private Map<String, RequestPath> resourcePaths;
     /**
      * requestPath -> CombinedResource
      */
-    private static Map<RequestPath, CombinedResource> combinedResourcePaths;
+    private Map<RequestPath, CombinedResource> combinedResourcePaths;
 
-    static {
+    private CombinedResourceRepository() {
         resourcePaths = Maps.newHashMap();
         combinedResourcePaths = Maps.newHashMap();
     }
 
-    public static boolean containsResourcePath(final String name, final ResourceType type) {
+    public boolean containsResourcePath(final String name, final ResourceType type) {
         return resourcePaths.containsKey(createResourcePathKey(name, type));
     }
 
@@ -44,15 +44,15 @@ public class CombinedResourceRepository {
         return String.format("/%s/%s", name, type);
     }
 
-    public static RequestPath getResourcePath(final String name, final ResourceType type) {
+    public RequestPath getResourcePath(final String name, final ResourceType type) {
         return resourcePaths.get(createResourcePathKey(name, type));
     }
 
-    public static CombinedResource getCombinedResource(final RequestPath requestUri) {
+    public CombinedResource getCombinedResource(final RequestPath requestUri) {
         return combinedResourcePaths.get(requestUri);
     }
 
-    public static RequestPath addCombinedResource(final String name, final ResourceType type,
+    public RequestPath addCombinedResource(final String name, final ResourceType type,
             final List<ManagedResource> resources, final CombineResourceStrategy combinator) {
 
         checkNotNull(name, "Name cannot be null.");
@@ -104,17 +104,28 @@ public class CombinedResourceRepository {
     /**
      * Creates the path that will be used in the request from the browser.
      */
-    private static RequestPath createRequestPath(final String name, final ResourceType type, final String checksum) {
+    private RequestPath createRequestPath(final String name, final ResourceType type, final String checksum) {
         String path = String.format("%s-%s.combined", createResourcePathKey(name, type), checksum);
         return new RequestPath(path);
     }
 
-    private static CombinedResource getCombinedResourceByKey(final String name, final ResourceType type) {
+    private CombinedResource getCombinedResourceByKey(final String name, final ResourceType type) {
         if (containsResourcePath(name, type)) {
             RequestPath scriptPath = getResourcePath(name, type);
             return getCombinedResource(scriptPath);
         }
         return null;
+    }
+
+    public static CombinedResourceRepository get() {
+        return InstanceHolder.instance;
+    }
+
+    /**
+     * http://en.wikipedia.org/wiki/Singleton_pattern#The_solution_of_Bill_Pugh
+     */
+    private static class InstanceHolder {
+        private static final CombinedResourceRepository instance = new CombinedResourceRepository();
     }
 
 }

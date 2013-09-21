@@ -28,6 +28,12 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
     /** Logger for this class. */
     private static final Logger log = LoggerFactory.getLogger(LayoutTagSupport.class);
 
+    private CombinedResourceRepository repository;
+
+    public LayoutTagSupport() {
+        this.repository = CombinedResourceRepository.get();
+    }
+
     protected void writeOutputPath(final RequestPath path) throws JspException {
         try {
             pageContext.getOut().println(format(path));
@@ -53,7 +59,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
         };
         List<ManagedResource> realPaths = FluentIterable.from(sources).transform(serverPathManaged).toList();
 
-        return CombinedResourceRepository.addCombinedResource(name, type, realPaths, this);
+        return repository.addCombinedResource(name, type, realPaths, this);
     }
 
     public long combineFiles(final PrintWriter pw, final List<ManagedResource> realPaths) throws IOException {
@@ -82,12 +88,12 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
                 }
             } else {
 
-                if (ci.isReloadable() || !CombinedResourceRepository.containsResourcePath(ci.getName(), getType())) {
+                if (ci.isReloadable() || !repository.containsResourcePath(ci.getName(), getType())) {
                     log.info("Checking for changes in {}", ci.getName());
                     addCombinedResources(ci.getName(), getType(), resources);
                 }
 
-                RequestPath path = CombinedResourceRepository.getResourcePath(ci.getName(), getType());
+                RequestPath path = repository.getResourcePath(ci.getName(), getType());
                 writeOutputPath(path);
             }
 
