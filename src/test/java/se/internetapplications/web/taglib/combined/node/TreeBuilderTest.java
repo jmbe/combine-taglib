@@ -71,7 +71,7 @@ public class TreeBuilderTest extends TreeBuilder {
             builder.build(illegal);
             fail("Should have thrown exception");
         } catch (IllegalStateException e) {
-            assertEquals("Could not find dependency: news requires MISSING-DEPENDENCY", e.getMessage());
+            assertEquals("Could not find dependency: news requires 'MISSING-DEPENDENCY'", e.getMessage());
         }
     }
 }
