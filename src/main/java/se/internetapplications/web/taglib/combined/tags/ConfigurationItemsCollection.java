@@ -1,5 +1,8 @@
 package se.internetapplications.web.taglib.combined.tags;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 
 import java.io.Serializable;
@@ -15,8 +18,13 @@ public class ConfigurationItemsCollection implements Iterable<ConfigurationItem>
      * Use LinkedHashMap since it maintains insertion order.
      */
     private Map<String, ConfigurationItem> nameToItem = Maps.newLinkedHashMap();
+    private Optional<ConfigurationItemsCollection> parent = Optional.absent();
 
     public ConfigurationItemsCollection() {
+    }
+
+    public ConfigurationItemsCollection(final ConfigurationItemsCollection parent) {
+        this.parent = Optional.fromNullable(parent);
     }
 
     public ConfigurationItemsCollection(final Collection<ConfigurationItem> items) {
@@ -25,10 +33,20 @@ public class ConfigurationItemsCollection implements Iterable<ConfigurationItem>
 
     @Override
     public Iterator<ConfigurationItem> iterator() {
+        if (parent.isPresent()) {
+            return Iterables.concat(parent.get().nameToItem.values(), nameToItem.values()).iterator();
+        }
         return nameToItem.values().iterator();
     }
 
     public void add(final ConfigurationItem configurationItem) {
+        if (parent.isPresent()) {
+            if (parent.get().nameToItem.containsKey(configurationItem.getName())) {
+                throw new IllegalStateException(String.format("Resource %s already exists in parent configuration.",
+                        configurationItem.getName()));
+            }
+        }
+
         if (nameToItem.containsKey(configurationItem.getName())) {
             throw new IllegalStateException(String.format("Duplicate resource %s detected.",
                     configurationItem.getName()));
@@ -43,8 +61,9 @@ public class ConfigurationItemsCollection implements Iterable<ConfigurationItem>
         }
     }
 
+    @VisibleForTesting
     public int size() {
-        return nameToItem.size();
+        return (parent.isPresent() ? parent.get().size() : 0) + nameToItem.size();
     }
 
 }
