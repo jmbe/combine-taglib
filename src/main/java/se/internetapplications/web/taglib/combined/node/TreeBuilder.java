@@ -1,8 +1,6 @@
 package se.internetapplications.web.taglib.combined.node;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Maps;
@@ -22,8 +20,7 @@ public class TreeBuilder {
         this.mapper = new CombineObjectMapper();
     }
 
-    ConfigurationItemsCollection parse(final InputStream stream) throws JsonParseException, JsonMappingException,
-            IOException {
+    public ConfigurationItemsCollection parse(final InputStream stream) throws IOException {
 
         List<ConfigurationItem> items = mapper.readValue(stream, new TypeReference<List<ConfigurationItem>>() {
         });
@@ -31,8 +28,7 @@ public class TreeBuilder {
         return new ConfigurationItemsCollection(items);
     }
 
-    public Map<String, ResourceNode> build(final InputStream stream) throws JsonParseException, JsonMappingException,
-            IOException {
+    public Map<String, ResourceNode> build(final InputStream stream) throws IOException {
         ConfigurationItemsCollection items = parse(stream);
         return build(items);
     }
