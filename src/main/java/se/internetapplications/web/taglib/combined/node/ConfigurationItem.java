@@ -31,7 +31,9 @@ public class ConfigurationItem implements ResourceParent {
     }
 
     public void setRequires(final List<String> requires) {
-        this.requires = requires;
+        for (String require : requires) {
+            addRequires(require);
+        }
     }
 
     public List<RequestPath> getJs() {
