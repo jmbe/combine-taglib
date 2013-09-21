@@ -149,6 +149,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Only used for ClassPathResource. TODO remove -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>3.2.4.RELEASE</version>
+        </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
