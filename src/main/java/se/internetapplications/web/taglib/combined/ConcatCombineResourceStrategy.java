@@ -30,7 +30,7 @@ public class ConcatCombineResourceStrategy {
                     timestamp = Math.max(timestamp, file.lastModified());
                 }
 
-                String contents = CharStreams.toString(CharStreams.newReaderSupplier(realPath.getInputSupplicer(),
+                String contents = CharStreams.toString(CharStreams.newReaderSupplier(realPath.getInputSupplier(),
                         Charsets.UTF_8));
 
                 writer.println(contents);

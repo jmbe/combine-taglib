@@ -45,7 +45,7 @@ public class ManagedResource {
         this.input = input;
     }
 
-    public InputSupplier<InputStream> getInputSupplicer() {
+    public InputSupplier<InputStream> getInputSupplier() {
         return new InputSupplier<InputStream>() {
             public InputStream getInput() {
                 return input;
