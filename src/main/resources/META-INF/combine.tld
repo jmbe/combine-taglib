@@ -58,8 +58,8 @@
     </tag>
 
     <tag>
-        <name>script</name>
-        <tag-class>se.internetapplications.web.taglib.combined.tags.ScriptSourceTag</tag-class>
+        <name>js</name>
+        <tag-class>se.internetapplications.web.taglib.combined.tags.JavaScriptSourceTag</tag-class>
         <body-content>empty</body-content>
 
         <attribute>

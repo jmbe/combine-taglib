@@ -4,7 +4,7 @@ import javax.servlet.jsp.JspException;
 
 import se.internetapplications.web.taglib.combined.node.ResourceParent;
 
-public class ScriptSourceTag extends SourceTagSupport {
+public class JavaScriptSourceTag extends SourceTagSupport {
 
     @Override
     public int doEndTag() throws JspException {

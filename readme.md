@@ -42,17 +42,17 @@ Add taglib to jsp
 Combine javascript resources
 
     <combine:resource name="jquery" library="true">
-      <combine:script path="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" />
+      <combine:js path="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" />
     </combine:resource>
 
     <combine:resource name="angular" library="true" requires="jquery">
-      <combine:script path="//ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js" />
-      <combine:script path="//ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular-resource.min.js" />
+      <combine:js path="//ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js" />
+      <combine:js path="//ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular-resource.min.js" />
     </combine:resource>
 
     <combine:resource name="combined-javascript" requires="angular">
-        <combine:script path="/js/AngularAtmosphere.js" />
-        <combine:script path="/js/Humanized.js" />
+        <combine:js path="/js/AngularAtmosphere.js" />
+        <combine:js path="/js/Humanized.js" />
         ...
     </combine:resource>
     
