@@ -5,6 +5,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -165,6 +166,22 @@ public class ConfigurationItem implements ResourceParent {
 
     public boolean shouldBeCombined() {
         return !((CombinedConfigurationHolder.isDevMode() && isSupportsDevMode()) || !isCombine() || isRemote());
+    }
+
+    public long getLastChange(final ServletContext servletContext) {
+        Map<ResourceType, List<ManagedResource>> map = getRealPaths(servletContext);
+        Iterable<ManagedResource> realPaths = Iterables.concat(map.values());
+
+        long result = 0;
+        for (ManagedResource managedResource : realPaths) {
+            if (!managedResource.isTimestampSupported()) {
+                continue;
+            }
+
+            result = Math.max(result, managedResource.getTimestamp());
+        }
+
+        return result;
     }
 
 }
