@@ -19,8 +19,6 @@ public class CombinedResourceTag extends ConfigurationItemAwareTagSupport implem
 
         ConfigurationItemsCollection configurations = getConfigurationItems();
         configurations.add(this.configurationItem);
-        pageContext.getRequest().setAttribute(ConfigurationItemAwareTagSupport.REQUEST_CONFIGURATION_ITEMS_KEY,
-                configurations);
 
         cleanup();
 
