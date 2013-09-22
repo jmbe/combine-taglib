@@ -102,7 +102,7 @@
     </tag>
 
     <tag>
-        <name>inline-script</name>
+        <name>script</name>
         <tag-class>se.internetapplications.web.taglib.combined.tags.InlineScriptTag</tag-class>
         <body-content>scriptless</body-content>
         <description>Add inline JavaScript to queue, to be output after all other script tags.</description>
@@ -114,7 +114,7 @@
         </attribute>
     </tag>
     <tag>
-        <name>inline-style</name>
+        <name>style</name>
         <tag-class>se.internetapplications.web.taglib.combined.tags.InlineStyleTag</tag-class>
         <body-content>scriptless</body-content>
         <description>Add inline style to queue, to be output after all other css tags.</description>
