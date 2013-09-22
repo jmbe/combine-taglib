@@ -6,12 +6,20 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletContext;
 
 import se.internetapplications.web.taglib.combined.RequestPath;
+import se.internetapplications.web.taglib.combined.ResourceType;
+import se.internetapplications.web.taglib.combined.servlet.CombinedConfigurationHolder;
+import se.internetapplications.web.taglib.combined.tags.ManagedResource;
+import se.internetapplications.web.taglib.combined.tags.ServerPathToManagedResource;
 
 /**
  * Limitation: ConfigurationItem can contain only either remote or local resources, not both. If they contain both, then
@@ -126,6 +134,37 @@ public class ConfigurationItem implements ResourceParent {
         for (String require : requires) {
             addRequires(require);
         }
+    }
+
+    public List<RequestPath> getPaths(final ResourceType type) {
+        if (ResourceType.js.equals(type)) {
+            return getJs();
+        }
+
+        return getCss();
+    }
+
+    public boolean hasResources(final ResourceType type) {
+        return !getPaths(type).isEmpty();
+    }
+
+    public Map<ResourceType, List<ManagedResource>> getRealPaths(final ServletContext servletContext) {
+        Map<ResourceType, List<ManagedResource>> result = Maps.newHashMap();
+
+        ResourceType[] values = ResourceType.values();
+        for (ResourceType resourceType : values) {
+            List<ManagedResource> realPaths = FluentIterable.from(getPaths(resourceType))
+                    .transform(new ServerPathToManagedResource(servletContext)).toList();
+            if (!realPaths.isEmpty()) {
+                result.put(resourceType, realPaths);
+            }
+        }
+
+        return result;
+    }
+
+    public boolean shouldBeCombined() {
+        return !((CombinedConfigurationHolder.isDevMode() && isSupportsDevMode()) || !isCombine() || isRemote());
     }
 
 }

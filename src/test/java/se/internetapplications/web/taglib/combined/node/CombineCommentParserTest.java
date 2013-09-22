@@ -11,10 +11,10 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-public class JavaScriptParserTest {
+public class CombineCommentParserTest {
 
     private InputStream single;
-    private JavaScriptParser parser;
+    private CombineCommentParser parser;
     private InputStream multi;
     private InputStream other;
 
@@ -23,7 +23,7 @@ public class JavaScriptParserTest {
         this.single = this.getClass().getResourceAsStream("/singleline-dependencies.js");
         this.multi = this.getClass().getResourceAsStream("/multiline-dependencies.js");
         this.other = this.getClass().getResourceAsStream("/combine.json");
-        this.parser = new JavaScriptParser();
+        this.parser = new CombineCommentParser();
     }
 
     @Test

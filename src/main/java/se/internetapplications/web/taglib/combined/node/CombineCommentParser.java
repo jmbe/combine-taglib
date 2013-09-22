@@ -14,7 +14,7 @@ import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
 
-public class JavaScriptParser {
+public class CombineCommentParser {
 
     /* Maximum number of lines to read to find requires. */
     private static final int MAX_LINES = 20;

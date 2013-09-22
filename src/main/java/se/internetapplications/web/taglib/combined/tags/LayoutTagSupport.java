@@ -20,7 +20,6 @@ import se.internetapplications.web.taglib.combined.RequestPath;
 import se.internetapplications.web.taglib.combined.ResourceType;
 import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
 import se.internetapplications.web.taglib.combined.node.TreeBuilder;
-import se.internetapplications.web.taglib.combined.servlet.CombinedConfigurationHolder;
 
 public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport implements CombineResourceStrategy {
 
@@ -88,7 +87,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
                 continue;
             }
 
-            if ((CombinedConfigurationHolder.isDevMode() && ci.isSupportsDevMode()) || !ci.isCombine() || ci.isRemote()) {
+            if (!ci.shouldBeCombined()) {
                 /* Output resources as is */
                 for (RequestPath path : resources) {
                     writeOutputPath(path);
