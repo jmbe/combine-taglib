@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import se.internetapplications.web.taglib.combined.CombinedResourceRepository;
 import se.internetapplications.web.taglib.combined.ResourceType;
-import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
 import se.internetapplications.web.taglib.combined.node.CombineCommentParser;
+import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
 import se.internetapplications.web.taglib.combined.node.ResourceParent;
 
 public class CombinedResourceTag extends ConfigurationItemAwareTagSupport implements ResourceParent {
@@ -80,13 +80,17 @@ public class CombinedResourceTag extends ConfigurationItemAwareTagSupport implem
 
         if (hasChanges) {
             /* Rebuild cache */
-            log.info("Changes detected for {}. Rebuilding dependency cache...", ci.getName());
+            if (!ci.shouldBeCombined()) {
+                log.info("Reading dependencies for uncombined resource {}.", ci.getName());
+            } else {
+                log.info("Changes detected for {}. Rebuilding dependency cache...", ci.getName());
+            }
             LinkedHashSet<String> requires = Sets.newLinkedHashSet();
 
             for (Entry<ResourceType, List<ManagedResource>> entry : entrySet) {
 
                 for (ManagedResource mr : entry.getValue()) {
-                    log.info("Parsing {}", mr.getName());
+                    log.debug("Parsing {}", mr.getName());
                     try {
                         List<String> found = jsParser.findRequires(mr.getInput());
                         requires.addAll(found);
