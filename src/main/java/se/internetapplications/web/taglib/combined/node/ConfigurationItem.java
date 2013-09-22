@@ -121,7 +121,7 @@ public class ConfigurationItem implements ResourceParent {
         return Strings.nullToEmpty(name);
     }
 
-    public void addRequires(final List<String> requires) {
+    public void addRequires(final Iterable<String> requires) {
         for (String require : requires) {
             addRequires(require);
         }

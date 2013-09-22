@@ -4,22 +4,20 @@ import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-import java.util.List;
-
 public class DependencyCache {
 
-    private Cache<String, List<String>> cache;
+    private Cache<String, Iterable<String>> cache;
 
     public DependencyCache() {
         this.cache = CacheBuilder.newBuilder().build();
     }
 
-    public Optional<List<String>> get(final String key) {
-        List<String> nullable = cache.getIfPresent(key);
+    public Optional<Iterable<String>> get(final String key) {
+        Iterable<String> nullable = cache.getIfPresent(key);
         return Optional.of(nullable);
     }
 
-    public void put(final String key, final List<String> requies) {
+    public void put(final String key, final Iterable<String> requies) {
         cache.put(key, requies);
     }
 

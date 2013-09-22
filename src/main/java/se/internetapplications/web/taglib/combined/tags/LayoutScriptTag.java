@@ -3,8 +3,10 @@ package se.internetapplications.web.taglib.combined.tags;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Sets;
 
 import java.io.IOException;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.servlet.jsp.JspException;
@@ -88,19 +90,23 @@ public class LayoutScriptTag extends LayoutTagSupport {
             if (hasChanges) {
                 /* Rebuild cache */
                 log.info("Changes detected for {}. Rebuilding dependency cache...", ci.getName());
+
+                LinkedHashSet<String> requires = Sets.newLinkedHashSet();
+
                 for (ManagedResource mr : realPaths) {
                     log.info("Parsing {}", mr.getName());
                     try {
-                        List<String> requires = jsParser.findRequires(mr.getInput());
-                        cache.put(cacheKey, requires);
+                        List<String> found = jsParser.findRequires(mr.getInput());
+                        requires.addAll(found);
                     } catch (IOException e) {
                         log.error("Could not parse js", e);
                     }
                 }
+                cache.put(cacheKey, requires);
 
             }
 
-            Optional<List<String>> optional = cache.get(cacheKey);
+            Optional<Iterable<String>> optional = cache.get(cacheKey);
             if (optional.isPresent()) {
                 ci.addRequires(optional.get());
             }
