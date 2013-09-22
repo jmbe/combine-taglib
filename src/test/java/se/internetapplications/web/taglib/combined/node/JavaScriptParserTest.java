@@ -22,7 +22,7 @@ public class JavaScriptParserTest {
     public void setup() {
         this.single = this.getClass().getResourceAsStream("/singleline-dependencies.js");
         this.multi = this.getClass().getResourceAsStream("/multiline-dependencies.js");
-        this.other = this.getClass().getResourceAsStream("/combine.js");
+        this.other = this.getClass().getResourceAsStream("/combine.json");
         this.parser = new JavaScriptParser();
     }
 

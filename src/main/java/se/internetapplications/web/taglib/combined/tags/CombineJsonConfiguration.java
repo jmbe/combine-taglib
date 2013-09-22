@@ -14,7 +14,7 @@ import se.internetapplications.web.taglib.combined.node.TreeBuilder;
 
 public class CombineJsonConfiguration {
 
-    private static final String JSON_CONFIGURATION = "/combine.js";
+    private static final String JSON_CONFIGURATION = "/combine.json";
 
     /** Logger for this class. */
     private static final Logger log = LoggerFactory.getLogger(CombineJsonConfiguration.class);
@@ -41,7 +41,7 @@ public class CombineJsonConfiguration {
         ClassPathResource resource = new ClassPathResource(JSON_CONFIGURATION);
 
         if (!resource.exists()) {
-            log.info("Could not find /combine.js in classpath");
+            log.info("Could not find " + JSON_CONFIGURATION + " in classpath");
             this.configuration = Optional.absent();
             return this.configuration;
         }
@@ -59,7 +59,7 @@ public class CombineJsonConfiguration {
             return configuration;
         }
 
-        log.info("Refreshing combine.js, last modified {}", lastModified);
+        log.info("Refreshing " + JSON_CONFIGURATION + ", last modified {}", lastModified);
 
         try {
             this.lastRead = new Date().getTime();

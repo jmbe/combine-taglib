@@ -23,7 +23,7 @@ public class TreeBuilderTest {
 
     @Before
     public void setup() {
-        this.stream = this.getClass().getResourceAsStream("/combine.js");
+        this.stream = this.getClass().getResourceAsStream("/combine.json");
         this.illegal = this.getClass().getResourceAsStream("/illegal.js");
         this.builder = new TreeBuilder();
     }
