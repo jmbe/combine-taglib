@@ -1,5 +1,6 @@
 package se.internetapplications.web.taglib.combined.node;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -94,7 +95,8 @@ public class ConfigurationItem implements ResourceParent {
     }
 
     public void addRequires(final String requires) {
-        Iterable<String> split = Splitter.on(",").trimResults().omitEmptyStrings().split(Strings.nullToEmpty(requires));
+        Iterable<String> split = Splitter.on(CharMatcher.anyOf(" ,")).trimResults().omitEmptyStrings()
+                .split(Strings.nullToEmpty(requires));
         this.requires.addAll(FluentIterable.from(split).toList());
     }
 

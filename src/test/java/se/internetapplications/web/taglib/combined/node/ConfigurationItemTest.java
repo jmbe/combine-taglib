@@ -27,6 +27,14 @@ public class ConfigurationItemTest {
     }
 
     @Test
+    public void should_split_on_whitespace_and_comma() {
+        ConfigurationItem ci = new ConfigurationItem();
+
+        ci.setRequires(Arrays.asList("angular, jquery-ui extjs angular-ui"));
+        assertEquals(4, ci.getRequires().size());
+    }
+
+    @Test
     public void should_remove_duplicate_requires_and_keep_insertion_order() {
         ConfigurationItem ci = new ConfigurationItem();
         ci.addRequires("jquery, angular-ui,jquery");
