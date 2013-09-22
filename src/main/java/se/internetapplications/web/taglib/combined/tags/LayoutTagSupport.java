@@ -1,6 +1,5 @@
 package se.internetapplications.web.taglib.combined.tags;
 
-import com.google.common.base.Function;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.FluentIterable;
 
@@ -56,16 +55,8 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
     protected RequestPath addCombinedResources(final String name, final ResourceType type,
             final List<RequestPath> sources) {
 
-        Function<RequestPath, ManagedResource> serverPathManaged = new Function<RequestPath, ManagedResource>() {
-            public ManagedResource apply(final RequestPath element) {
-                if (element.isRemote()) {
-                    return new ManagedResource(element.getPath(), null, null);
-                }
-                return new ManagedResource(element.getPath(), pageContext.getServletContext().getRealPath(
-                        element.getPath()), pageContext.getServletContext().getResourceAsStream(element.getPath()));
-            }
-        };
-        List<ManagedResource> realPaths = FluentIterable.from(sources).transform(serverPathManaged).toList();
+        List<ManagedResource> realPaths = FluentIterable.from(sources)
+                .transform(new ServerPathToManagedResource(pageContext.getServletContext())).toList();
 
         return repository.addCombinedResource(name, type, realPaths, this);
     }
