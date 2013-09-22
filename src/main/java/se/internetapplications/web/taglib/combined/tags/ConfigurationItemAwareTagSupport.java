@@ -29,7 +29,12 @@ public abstract class ConfigurationItemAwareTagSupport extends BodyTagSupport {
             log.debug("Creating new list");
 
             Optional<ConfigurationItemsCollection> parent = json.readConfiguration();
-            return new ConfigurationItemsCollection(parent.get());
+            if (parent.isPresent()) {
+                /* Cannot call get on absent, so use only if present. */
+                return new ConfigurationItemsCollection(parent.get());
+            } else {
+                return new ConfigurationItemsCollection();
+            }
         }
 
         return collection;
