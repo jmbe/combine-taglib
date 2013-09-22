@@ -5,7 +5,9 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import se.internetapplications.web.taglib.combined.RequestPath;
@@ -21,13 +23,13 @@ public class ConfigurationItem implements ResourceParent {
     private boolean library = false;
     private boolean combine = true;
 
-    private List<String> requires = Lists.newArrayList();
+    private LinkedHashSet<String> requires = Sets.newLinkedHashSet();
     private List<RequestPath> js = Lists.newArrayList();
     private List<RequestPath> css = Lists.newArrayList();
     private boolean supportsDevMode;
 
     public List<String> getRequires() {
-        return requires;
+        return Lists.newArrayList(requires);
     }
 
     public void setRequires(final List<String> requires) {

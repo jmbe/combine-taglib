@@ -1,5 +1,6 @@
 package se.internetapplications.web.taglib.combined.node;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
@@ -23,6 +24,15 @@ public class ConfigurationItemTest {
 
         ci.setRequires(Arrays.asList("angular, jquery-ui"));
         assertEquals(2, ci.getRequires().size());
+    }
+
+    @Test
+    public void should_remove_duplicate_requires_and_keep_insertion_order() {
+        ConfigurationItem ci = new ConfigurationItem();
+        ci.addRequires("jquery, angular-ui,jquery");
+
+        assertEquals("Should remove duplicates", 2, ci.getRequires().size());
+        assertThat("Should keep insertion order", ci.getRequires(), is(Arrays.asList("jquery", "angular-ui")));
     }
 
 }
