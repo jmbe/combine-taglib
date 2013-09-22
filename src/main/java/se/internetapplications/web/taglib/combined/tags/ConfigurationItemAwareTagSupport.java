@@ -31,10 +31,12 @@ public abstract class ConfigurationItemAwareTagSupport extends BodyTagSupport {
             Optional<ConfigurationItemsCollection> parent = json.readConfiguration();
             if (parent.isPresent()) {
                 /* Cannot call get on absent, so use only if present. */
-                return new ConfigurationItemsCollection(parent.get());
+                collection = new ConfigurationItemsCollection(parent.get());
             } else {
-                return new ConfigurationItemsCollection();
+                collection = new ConfigurationItemsCollection();
             }
+
+            pageContext.getRequest().setAttribute(REQUEST_CONFIGURATION_ITEMS_KEY, collection);
         }
 
         return collection;
