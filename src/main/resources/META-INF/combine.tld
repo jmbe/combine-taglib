@@ -101,4 +101,29 @@
         <description>Output queued Javascript resources. Typically added just before closing /body tag.</description>
     </tag>
 
+    <tag>
+        <name>inline-script</name>
+        <tag-class>se.internetapplications.web.taglib.combined.tags.InlineScriptTag</tag-class>
+        <body-content>scriptless</body-content>
+        <description>Add inline JavaScript to queue, to be output after all other script tags.</description>
+        <attribute>
+            <name>requires</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Comma-separated list of resource names which this resource depends on.</description>
+        </attribute>
+    </tag>
+    <tag>
+        <name>inline-style</name>
+        <tag-class>se.internetapplications.web.taglib.combined.tags.InlineStyleTag</tag-class>
+        <body-content>scriptless</body-content>
+        <description>Add inline style to queue, to be output after all other css tags.</description>
+        <attribute>
+            <name>requires</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Comma-separated list of resource names which this resource depends on.</description>
+        </attribute>
+    </tag>
+
 </taglib>

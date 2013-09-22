@@ -4,6 +4,8 @@ import com.google.common.base.Strings;
 
 import java.util.List;
 
+import javax.servlet.jsp.JspException;
+
 import se.internetapplications.web.taglib.combined.CombinedResource;
 import se.internetapplications.web.taglib.combined.CssCombinedResource;
 import se.internetapplications.web.taglib.combined.RequestPath;
@@ -44,6 +46,20 @@ public class LayoutCssTag extends LayoutTagSupport {
     @Override
     protected ResourceType getType() {
         return ResourceType.css;
+    }
+
+    @Override
+    protected void outputInlineResources(final ConfigurationItemsCollection configurationItems) throws JspException {
+        List<String> inlineStyles = configurationItems.getInlineStyles();
+
+        if (inlineStyles.isEmpty()) {
+            return;
+        }
+
+        for (String inline : inlineStyles) {
+            String output = String.format("<style>%s</style>", inline);
+            println(output);
+        }
     }
 
 }

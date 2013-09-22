@@ -2,6 +2,8 @@ package se.internetapplications.web.taglib.combined.tags;
 
 import java.util.List;
 
+import javax.servlet.jsp.JspException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,20 @@ public class LayoutScriptTag extends LayoutTagSupport {
     @Override
     protected ResourceType getType() {
         return ResourceType.js;
+    }
+
+    @Override
+    protected void outputInlineResources(final ConfigurationItemsCollection cic) throws JspException {
+        List<String> inlineScripts = cic.getInlineScripts();
+        if (inlineScripts.isEmpty()) {
+            return;
+        }
+
+        for (String inline : inlineScripts) {
+            String output = String.format("<script type=\"text/javascript\" charset=\"UTF-8\">%s</script>", inline);
+            println(output);
+        }
+
     }
 
 }

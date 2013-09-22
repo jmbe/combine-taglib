@@ -38,8 +38,13 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
     }
 
     protected void writeOutputPath(final RequestPath path) throws JspException {
+        String output = format(path);
+        println(output);
+    }
+
+    protected void println(final String output) throws JspException {
         try {
-            pageContext.getOut().println(format(path));
+            pageContext.getOut().println(output);
         } catch (IOException e) {
             throw new JspException(e);
         }
@@ -71,12 +76,15 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
 
     public abstract List<RequestPath> getResources(final ConfigurationItem configuration);
 
+    protected abstract void outputInlineResources(ConfigurationItemsCollection configurationItems) throws JspException;
+
     @Override
     public int doEndTag() throws JspException {
 
         Stopwatch stopwatch = Stopwatch.createStarted();
 
-        List<ConfigurationItem> resolved = tb.resolve(getConfigurationItems());
+        ConfigurationItemsCollection configurationItems = getConfigurationItems();
+        List<ConfigurationItem> resolved = tb.resolve(configurationItems);
 
         for (ConfigurationItem ci : resolved) {
             List<RequestPath> resources = getResources(ci);
@@ -101,6 +109,8 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
             }
 
         }
+
+        outputInlineResources(configurationItems);
 
         log.info("Handled {} resources in {} ms.", resolved.size(), stopwatch.elapsed(TimeUnit.MILLISECONDS));
 

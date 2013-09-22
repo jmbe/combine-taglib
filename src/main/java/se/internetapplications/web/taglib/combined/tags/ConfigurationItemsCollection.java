@@ -3,11 +3,13 @@ package se.internetapplications.web.taglib.combined.tags;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
@@ -19,6 +21,8 @@ public class ConfigurationItemsCollection implements Iterable<ConfigurationItem>
      */
     private Map<String, ConfigurationItem> nameToItem = Maps.newLinkedHashMap();
     private Optional<ConfigurationItemsCollection> parent = Optional.absent();
+    private List<String> inlineScripts = Lists.newArrayList();
+    private List<String> inlineStyles = Lists.newArrayList();
 
     public ConfigurationItemsCollection() {
     }
@@ -64,6 +68,22 @@ public class ConfigurationItemsCollection implements Iterable<ConfigurationItem>
     @VisibleForTesting
     public int size() {
         return (parent.isPresent() ? parent.get().size() : 0) + nameToItem.size();
+    }
+
+    public void addInlineScript(final String js) {
+        inlineScripts.add(js);
+    }
+
+    public List<String> getInlineScripts() {
+        return inlineScripts;
+    }
+
+    public void addInlineStyle(final String contents) {
+        inlineStyles.add(contents);
+    }
+
+    public List<String> getInlineStyles() {
+        return inlineStyles;
     }
 
 }
