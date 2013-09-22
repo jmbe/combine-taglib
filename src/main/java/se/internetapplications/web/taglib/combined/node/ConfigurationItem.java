@@ -68,8 +68,9 @@ public class ConfigurationItem implements ResourceParent {
     }
 
     public boolean isRemote() {
-        Optional<RequestPath> optional = FluentIterable.from(js).firstMatch(RequestPath.isRemote);
-        return optional.isPresent() || FluentIterable.from(css).firstMatch(RequestPath.isRemote).isPresent();
+        Optional<RequestPath> remoteJs = FluentIterable.from(js).firstMatch(RequestPath.isRemote);
+        Optional<RequestPath> remoteCss = FluentIterable.from(css).firstMatch(RequestPath.isRemote);
+        return remoteJs.isPresent() || remoteCss.isPresent();
     }
 
     public void setReloadable(final boolean reloadable) {
