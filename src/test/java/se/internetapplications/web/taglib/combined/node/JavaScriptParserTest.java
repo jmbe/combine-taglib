@@ -16,11 +16,13 @@ public class JavaScriptParserTest {
     private InputStream single;
     private JavaScriptParser parser;
     private InputStream multi;
+    private InputStream other;
 
     @Before
     public void setup() {
         this.single = this.getClass().getResourceAsStream("/singleline-dependencies.js");
         this.multi = this.getClass().getResourceAsStream("/multiline-dependencies.js");
+        this.other = this.getClass().getResourceAsStream("/combine.js");
         this.parser = new JavaScriptParser();
     }
 
@@ -28,6 +30,7 @@ public class JavaScriptParserTest {
     public void test_resources_should_exist() {
         assertNotNull(single);
         assertNotNull(multi);
+        assertNotNull(other);
     }
 
     @Test
@@ -55,5 +58,11 @@ public class JavaScriptParserTest {
         List<String> requires = parser.findRequires(multi);
         assertEquals(3, requires.size());
         assertThat(requires, is(Arrays.asList("extjs", "angularjs", "jquery")));
+    }
+
+    @Test
+    public void should_return_empty_list_if_no_requires() throws IOException {
+        List<String> requires = parser.findRequires(other);
+        assertEquals(0, requires.size());
     }
 }
