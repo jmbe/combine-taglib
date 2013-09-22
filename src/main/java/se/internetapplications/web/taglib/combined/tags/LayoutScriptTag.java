@@ -87,7 +87,7 @@ public class LayoutScriptTag extends LayoutTagSupport {
 
             if (hasChanges) {
                 /* Rebuild cache */
-                log.info("Changes detected for {}. Rebuilding dependency cache.", ci.getName());
+                log.info("Changes detected for {}. Rebuilding dependency cache...", ci.getName());
                 for (ManagedResource mr : realPaths) {
                     log.info("Parsing {}", mr.getName());
                     try {
