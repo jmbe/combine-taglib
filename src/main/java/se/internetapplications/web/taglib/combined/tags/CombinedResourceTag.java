@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,6 @@ import javax.servlet.jsp.JspException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.internetapplications.web.taglib.combined.CombinedResourceRepository;
 import se.internetapplications.web.taglib.combined.ResourceType;
 import se.internetapplications.web.taglib.combined.node.CombineCommentParser;
 import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
@@ -26,29 +26,27 @@ public class CombinedResourceTag extends ConfigurationItemAwareTagSupport implem
     /** Logger for this class. */
     private static final Logger log = LoggerFactory.getLogger(CombinedResourceTag.class);
 
-    private ConfigurationItem configurationItem = new ConfigurationItem();
-    private CombinedResourceRepository repository;
+    private ConfigurationItem ci = new ConfigurationItem();
 
     private CombineCommentParser jsParser;
 
     private DependencyCache cache;
 
     public CombinedResourceTag() {
-        this.repository = CombinedResourceRepository.get();
         this.jsParser = new CombineCommentParser();
         this.cache = DependencyCache.get();
     }
 
     /* Note: setters will be called BEFORE doStartTag, so cleanup must be done after tag is complete. */
     private void cleanup() {
-        this.configurationItem = new ConfigurationItem();
+        this.ci = new ConfigurationItem();
     }
 
     @Override
     public int doEndTag() throws JspException {
 
         ConfigurationItemsCollection configurations = getConfigurationItems();
-        configurations.add(this.configurationItem);
+        configurations.add(this.ci);
 
         readDependenciesFromResources();
 
@@ -58,24 +56,22 @@ public class CombinedResourceTag extends ConfigurationItemAwareTagSupport implem
     }
 
     private void readDependenciesFromResources() {
-        if (this.configurationItem.isRemote()) {
+        if (ci.isRemote()) {
             return;
         }
-
-        ConfigurationItem ci = configurationItem;
 
         String cacheKey = ci.getName();
 
         boolean hasChanges = false;
 
-        Map<ResourceType, List<ManagedResource>> realPaths = ci.getRealPaths(pageContext.getServletContext());
-
-        Set<Entry<ResourceType, List<ManagedResource>>> entrySet = realPaths.entrySet();
-        for (Entry<ResourceType, List<ManagedResource>> entry : entrySet) {
-            if (hasChanges) {
-                continue;
+        Optional<DependencyCacheEntry> optional = cache.get(cacheKey);
+        if (optional.isPresent()) {
+            DependencyCacheEntry cached = optional.get();
+            if (cached.requiresRefresh(ci, pageContext.getServletContext())) {
+                hasChanges = true;
             }
-            hasChanges = repository.hasChanges(ci.getName(), entry.getKey(), entry.getValue());
+        } else {
+            hasChanges = true;
         }
 
         if (hasChanges) {
@@ -85,6 +81,11 @@ public class CombinedResourceTag extends ConfigurationItemAwareTagSupport implem
             } else {
                 log.info("Changes detected for {}. Rebuilding dependency cache...", ci.getName());
             }
+
+            long lastread = new Date().getTime();
+            Map<ResourceType, List<ManagedResource>> realPaths = ci.getRealPaths(pageContext.getServletContext());
+            Set<Entry<ResourceType, List<ManagedResource>>> entrySet = realPaths.entrySet();
+
             LinkedHashSet<String> requires = Sets.newLinkedHashSet();
 
             for (Entry<ResourceType, List<ManagedResource>> entry : entrySet) {
@@ -100,47 +101,47 @@ public class CombinedResourceTag extends ConfigurationItemAwareTagSupport implem
                 }
             }
 
-            cache.put(cacheKey, requires);
+            cache.put(cacheKey, new DependencyCacheEntry(lastread, requires, ci));
 
         }
 
-        Optional<Iterable<String>> optional = cache.get(cacheKey);
+        optional = cache.get(cacheKey);
         if (optional.isPresent()) {
-            ci.addRequires(optional.get());
+            ci.addRequires(optional.get().getRequires());
         }
 
     }
 
     public void addJavascript(final String js) {
-        this.configurationItem.addJavascript(js);
+        this.ci.addJavascript(js);
     }
 
     public void addCss(final String css) {
-        this.configurationItem.addCss(css);
+        this.ci.addCss(css);
     }
 
     public void setName(final String name) {
-        this.configurationItem.setName(name);
+        this.ci.setName(name);
     }
 
     public void setReloadable(final boolean reloadable) {
-        this.configurationItem.setReloadable(reloadable);
+        this.ci.setReloadable(reloadable);
     }
 
     public void setRequires(final String requires) {
-        this.configurationItem.addRequires(requires);
+        this.ci.addRequires(requires);
     }
 
     public void setLibrary(final boolean library) {
-        this.configurationItem.setLibrary(library);
+        this.ci.setLibrary(library);
     }
 
     public void setCombine(final boolean combine) {
-        this.configurationItem.setCombine(combine);
+        this.ci.setCombine(combine);
     }
 
     public void setSupportsDevMode(final boolean supportsDevMode) {
-        this.configurationItem.setSupportsDevMode(supportsDevMode);
+        this.ci.setSupportsDevMode(supportsDevMode);
     }
 
 }

@@ -6,19 +6,19 @@ import com.google.common.cache.CacheBuilder;
 
 public class DependencyCache {
 
-    private Cache<String, Iterable<String>> cache;
+    private Cache<String, DependencyCacheEntry> cache;
 
     public DependencyCache() {
         this.cache = CacheBuilder.newBuilder().build();
     }
 
-    public Optional<Iterable<String>> get(final String key) {
-        Iterable<String> nullable = cache.getIfPresent(key);
+    public Optional<DependencyCacheEntry> get(final String key) {
+        DependencyCacheEntry nullable = cache.getIfPresent(key);
         return Optional.fromNullable(nullable);
     }
 
-    public void put(final String key, final Iterable<String> requies) {
-        cache.put(key, requies);
+    public void put(final String key, final DependencyCacheEntry entry) {
+        cache.put(key, entry);
     }
 
     public static DependencyCache get() {
