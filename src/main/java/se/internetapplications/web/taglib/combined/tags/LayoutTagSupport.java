@@ -27,7 +27,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
     /** Logger for this class. */
     private static final Logger log = LoggerFactory.getLogger(LayoutTagSupport.class);
 
-    private CombinedResourceRepository repository;
+    protected CombinedResourceRepository repository;
 
     private TreeBuilder tb;
 
@@ -69,12 +69,17 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
 
     protected abstract void outputInlineResources(ConfigurationItemsCollection configurationItems) throws JspException;
 
+    protected abstract void beforeResolve(ConfigurationItemsCollection configurationItems);
+
     @Override
     public int doEndTag() throws JspException {
 
         Stopwatch stopwatch = Stopwatch.createStarted();
 
         ConfigurationItemsCollection configurationItems = getConfigurationItems();
+
+        beforeResolve(configurationItems);
+
         List<ConfigurationItem> resolved = tb.resolve(configurationItems);
 
         for (ConfigurationItem ci : resolved) {

@@ -62,4 +62,9 @@ public class LayoutCssTag extends LayoutTagSupport {
         }
     }
 
+    @Override
+    protected void beforeResolve(final ConfigurationItemsCollection configurationItems) {
+        /* nothing to do */
+    }
+
 }

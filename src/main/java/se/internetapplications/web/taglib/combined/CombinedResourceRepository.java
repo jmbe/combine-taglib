@@ -40,7 +40,7 @@ public class CombinedResourceRepository {
         return resourcePaths.containsKey(createResourcePathKey(name, type));
     }
 
-    static String createResourcePathKey(final String name, final ResourceType type) {
+    public String createResourcePathKey(final String name, final ResourceType type) {
         return String.format("/%s/%s", name, type);
     }
 
@@ -50,6 +50,11 @@ public class CombinedResourceRepository {
 
     public CombinedResource getCombinedResource(final RequestPath requestUri) {
         return combinedResourcePaths.get(requestUri);
+    }
+
+    public boolean hasChanges(final String name, final ResourceType type, final List<ManagedResource> resources) {
+        CombinedResource resource = getCombinedResourceByKey(name, type);
+        return resource == null || resource.hasChangedFile(resources);
     }
 
     public RequestPath addCombinedResource(final String name, final ResourceType type,
