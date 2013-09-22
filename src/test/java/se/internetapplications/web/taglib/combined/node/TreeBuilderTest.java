@@ -15,7 +15,7 @@ import org.junit.Test;
 import se.internetapplications.web.taglib.combined.RequestPath;
 import se.internetapplications.web.taglib.combined.tags.ConfigurationItemsCollection;
 
-public class TreeBuilderTest extends TreeBuilder {
+public class TreeBuilderTest {
 
     private InputStream stream;
     private TreeBuilder builder;
