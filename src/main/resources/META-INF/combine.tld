@@ -126,4 +126,17 @@
         </attribute>
     </tag>
 
+    <tag>
+        <name>requires</name>
+        <tag-class>se.internetapplications.web.taglib.combined.tags.RequiresTag</tag-class>
+        <body-content>empty</body-content>
+        <description>Name required resources on this page.</description>
+        <attribute>
+            <name>requires</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Comma-separated list of resource names which should be included.</description>
+        </attribute>
+    </tag>
+
 </taglib>
