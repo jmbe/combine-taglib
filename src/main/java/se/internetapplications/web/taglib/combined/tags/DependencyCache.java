@@ -14,7 +14,7 @@ public class DependencyCache {
 
     public Optional<Iterable<String>> get(final String key) {
         Iterable<String> nullable = cache.getIfPresent(key);
-        return Optional.of(nullable);
+        return Optional.fromNullable(nullable);
     }
 
     public void put(final String key, final Iterable<String> requies) {
