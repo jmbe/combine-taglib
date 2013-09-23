@@ -1,7 +1,9 @@
 package se.internetapplications.web.taglib.combined.node;
 
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import java.util.List;
@@ -20,6 +22,7 @@ public class ResourceNode {
      */
     private boolean virtual;
     private ConfigurationItem item;
+    private List<ResourceNode> optionals;
 
     /**
      * Is an actual node, i.e. not a virtual node.
@@ -27,6 +30,12 @@ public class ResourceNode {
     private static final Predicate<ResourceNode> isActual = new Predicate<ResourceNode>() {
         public boolean apply(final ResourceNode input) {
             return !input.isVirtual();
+        }
+    };
+
+    private static final Function<ResourceNode, String> toName = new Function<ResourceNode, String>() {
+        public String apply(final ResourceNode input) {
+            return input.getName();
         }
     };
 
@@ -40,6 +49,7 @@ public class ResourceNode {
 
     public ResourceNode(final String name, final ConfigurationItem item) {
         this.edges = Lists.newArrayList();
+        this.optionals = Lists.newArrayList();
         this.name = name;
         this.item = item;
 
@@ -50,6 +60,13 @@ public class ResourceNode {
             this.edges.add(edge);
         }
 
+        return this;
+    }
+
+    public ResourceNode addOptionalEdges(final ResourceNode... optional) {
+        for (ResourceNode resourceNode : optional) {
+            this.optionals.add(resourceNode);
+        }
         return this;
     }
 
@@ -82,7 +99,12 @@ public class ResourceNode {
 
     @Override
     public String toString() {
-        return name;
+
+        ImmutableList<String> edgeNames = FluentIterable.from(edges).transform(toName).toList();
+        ImmutableList<String> optionalNames = FluentIterable.from(optionals).transform(toName).toList();
+
+        String format = String.format("%s  R%s O%s", name, edgeNames, optionalNames);
+        return format;
     }
 
     public ResourceNode setVirtual(final boolean virtual) {
@@ -100,5 +122,14 @@ public class ResourceNode {
 
     public ConfigurationItem getItem() {
         return item;
+    }
+
+    public List<ResourceNode> getOptionals() {
+        return optionals;
+    }
+
+    public void promoteToRequired(final ResourceNode optional) {
+        optionals.remove(optional);
+        edges.add(optional);
     }
 }

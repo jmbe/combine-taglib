@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -20,11 +21,15 @@ public class TreeBuilderTest {
     private InputStream stream;
     private TreeBuilder builder;
     private InputStream illegal;
+    private InputStream optional;
+    private InputStream optionalRequired;
 
     @Before
     public void setup() {
         this.stream = this.getClass().getResourceAsStream("/combine.json");
         this.illegal = this.getClass().getResourceAsStream("/illegal.js");
+        this.optional = this.getClass().getResourceAsStream("/optional.json");
+        this.optionalRequired = this.getClass().getResourceAsStream("/optional-required.json");
         this.builder = new TreeBuilder();
     }
 
@@ -32,6 +37,8 @@ public class TreeBuilderTest {
     public void test_resources_should_exist() {
         assertNotNull(stream);
         assertNotNull(illegal);
+        assertNotNull(optional);
+        assertNotNull(optionalRequired);
     }
 
     @Test
@@ -73,5 +80,21 @@ public class TreeBuilderTest {
         } catch (IllegalStateException e) {
             assertEquals("Could not find dependency: news requires 'MISSING-DEPENDENCY'", e.getMessage());
         }
+    }
+
+    @Test
+    public void parse_with_optional_not_required() throws IOException {
+        ConfigurationItemsCollection items = builder.parse(optional);
+        List<ConfigurationItem> resolved = builder.resolve(items);
+
+        assertEquals("[angular, news]", resolved.toString());
+    }
+
+    @Test
+    public void parse_when_optional_required() throws IOException {
+        ConfigurationItemsCollection items = builder.parse(optionalRequired);
+        List<ConfigurationItem> resolved = builder.resolve(items);
+
+        assertEquals("[jquery, angular, news]", resolved.toString());
     }
 }

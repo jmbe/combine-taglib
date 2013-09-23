@@ -1,0 +1,19 @@
+[ {
+    name : "news",
+    /* List is in "wrong" order to see if dependency graph fixes it. */
+    requires : [ "angular", "jquery" ],
+    js : [ "news.js" ]
+},
+
+{
+    name : "jquery",
+    library : "true",
+    js : "jquery.js"
+},
+
+{
+    name : "angular",
+    library : "true",
+    optional : "jquery",
+    js : "angular.js"
+} ];

@@ -1,0 +1,19 @@
+[ {
+    name : "news",
+    requires : [ "angular" ],
+    js : [ "news.js" ]
+},
+
+{
+    name : "jquery",
+    library : "true",
+    js : "jquery.js"
+},
+
+{
+    name : "angular",
+    library : "true",
+    /* jquery is optional, but not included anywhere so it should not be loaded. */
+    optional : "jquery",
+    js : "angular.js"
+} ];

@@ -34,6 +34,7 @@ public class ConfigurationItem implements ResourceParent {
     private boolean combine = true;
 
     private LinkedHashSet<String> requires = Sets.newLinkedHashSet();
+    private LinkedHashSet<String> optional = Sets.newLinkedHashSet();
     private List<RequestPath> js = Lists.newArrayList();
     private List<RequestPath> css = Lists.newArrayList();
     private boolean supportsDevMode;
@@ -182,6 +183,29 @@ public class ConfigurationItem implements ResourceParent {
         }
 
         return result;
+    }
+
+    public List<String> getOptional() {
+        return Lists.newArrayList(optional);
+    }
+
+    public void setOptional(final List<String> optionals) {
+        for (String optional : optionals) {
+            addOptional(optional);
+        }
+    }
+
+    /**
+     * Add optional dependency. An optional dependency would not normally be included, but if some other resource
+     * depends on it, then this resource will use it (i.e. include it before this resource).
+     * 
+     * For example: angular optionally requires jquery. Angular will use jquery if included, but jquery is not required.
+     * However if jquery is included, then it must be loaded before angular.
+     */
+    public void addOptional(final String optional) {
+        Iterable<String> split = Splitter.on(CharMatcher.anyOf(" ,")).trimResults().omitEmptyStrings()
+                .split(Strings.nullToEmpty(optional));
+        this.optional.addAll(FluentIterable.from(split).toList());
     }
 
 }
