@@ -109,8 +109,8 @@ public class CombineJsonConfiguration {
 
         try {
             return Optional.of(Resources.getResource(Resources.class, JSON_CONFIGURATION));
-        } catch (IllegalArgumentException e2) {
-            return null;
+        } catch (IllegalArgumentException e) {
+            return Optional.absent();
         }
     }
 }
