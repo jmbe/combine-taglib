@@ -23,7 +23,6 @@ public abstract class ConfigurationItemAwareTagSupport extends BodyTagSupport {
     public ConfigurationItemsCollection getConfigurationItems() {
         ConfigurationItemsCollection collection = (ConfigurationItemsCollection) pageContext.getRequest().getAttribute(
                 REQUEST_CONFIGURATION_ITEMS_KEY);
-        log.debug("Configuration items: {}", collection);
 
         if (collection == null) {
             log.debug("Creating new list");
