@@ -1,13 +1,16 @@
 package se.internetapplications.web.taglib.combined.tags;
 
 import com.google.common.base.Optional;
+import com.google.common.io.Resources;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 
 import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
 import se.internetapplications.web.taglib.combined.node.TreeBuilder;
@@ -38,9 +41,9 @@ public class CombineJsonConfiguration {
             return configuration;
         }
 
-        ClassPathResource resource = new ClassPathResource(JSON_CONFIGURATION);
+        Optional<URL> url = getConfigurationUrl();
 
-        if (!resource.exists()) {
+        if (!url.isPresent()) {
             log.info("Could not find " + JSON_CONFIGURATION + " in classpath");
             this.configuration = Optional.absent();
             return this.configuration;
@@ -48,9 +51,9 @@ public class CombineJsonConfiguration {
 
         long lastModified = 0;
         try {
-            lastModified = resource.lastModified();
-        } catch (IOException e) {
-            /* expected */
+            lastModified = getLastModified(url.get());
+        } catch (IllegalArgumentException e) {
+            /* expected for war files */
             reloadable = false;
         }
 
@@ -63,7 +66,7 @@ public class CombineJsonConfiguration {
 
         try {
             this.lastRead = new Date().getTime();
-            this.configuration = Optional.of(tb.parse(resource.getInputStream()));
+            this.configuration = Optional.of(tb.parse(url.get().openStream()));
 
             /* Items read from file are by default library items. */
             if (configuration.isPresent()) {
@@ -77,5 +80,37 @@ public class CombineJsonConfiguration {
         }
 
         return this.configuration;
+    }
+
+    /**
+     * @throws IllegalArgumentException
+     *             if url does not support timestamp
+     */
+    private long getLastModified(final URL url) throws IllegalArgumentException {
+        try {
+            File file = new File(url.toURI());
+            if (!file.exists()) {
+                throw new IllegalArgumentException("Could not find file " + file);
+            }
+
+            return file.lastModified();
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(e);
+        }
+
+    }
+
+    public Optional<URL> getConfigurationUrl() {
+        try {
+            return Optional.of(Resources.getResource(JSON_CONFIGURATION));
+        } catch (IllegalArgumentException e) {
+            /* fall-through to next */
+        }
+
+        try {
+            return Optional.of(Resources.getResource(Resources.class, JSON_CONFIGURATION));
+        } catch (IllegalArgumentException e2) {
+            return null;
+        }
     }
 }
