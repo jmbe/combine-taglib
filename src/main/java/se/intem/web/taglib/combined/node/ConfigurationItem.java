@@ -18,7 +18,7 @@ import javax.servlet.ServletContext;
 
 import se.intem.web.taglib.combined.RequestPath;
 import se.intem.web.taglib.combined.ResourceType;
-import se.internetapplications.web.taglib.combined.servlet.CombinedConfigurationHolder;
+import se.intem.web.taglib.combined.servlet.CombinedConfigurationHolder;
 import se.internetapplications.web.taglib.combined.tags.ManagedResource;
 import se.internetapplications.web.taglib.combined.tags.ServerPathToManagedResource;
 

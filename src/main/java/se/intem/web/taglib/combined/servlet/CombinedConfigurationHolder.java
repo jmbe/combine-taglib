@@ -1,4 +1,4 @@
-package se.internetapplications.web.taglib.combined.servlet;
+package se.intem.web.taglib.combined.servlet;
 
 public class CombinedConfigurationHolder {
 
