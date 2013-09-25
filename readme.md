@@ -82,18 +82,18 @@ Add taglib to jsp (required)
 Combine javascript resources. Local files will be scanned for dependencies and added to dependency graph.
 
 
-    <combine:resource name="combined-javascript">
+    <combine:group name="combined-javascript">
         <combine:js path="/js/AngularAtmosphere.js" />
         <combine:js path="/js/Humanized.js" />
         ...
-    </combine:resource>
+    </combine:group>
     
 Combine css resources
 
-    <combine:resource name="combined-css" reloadable="true" requires="bootstrap">
+    <combine:group name="combined-css" reloadable="true" requires="bootstrap">
         <combine:css path="/css/tpa.css"/>
         ...
-    </combine:resource>
+    </combine:group>
 
 Add inline javascript. Inline javascript will be added last, after all other scripts.
 
