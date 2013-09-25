@@ -2,7 +2,7 @@ package se.internetapplications.web.taglib.combined.tags;
 
 import javax.servlet.jsp.JspException;
 
-import se.internetapplications.web.taglib.combined.node.ResourceParent;
+import se.intem.web.taglib.combined.node.ResourceParent;
 
 public class CssSourceTag extends SourceTagSupport {
 

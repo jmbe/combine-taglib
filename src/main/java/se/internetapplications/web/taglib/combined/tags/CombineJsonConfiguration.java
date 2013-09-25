@@ -12,8 +12,8 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
-import se.internetapplications.web.taglib.combined.node.TreeBuilder;
+import se.intem.web.taglib.combined.node.ConfigurationItem;
+import se.intem.web.taglib.combined.node.TreeBuilder;
 
 public class CombineJsonConfiguration {
 

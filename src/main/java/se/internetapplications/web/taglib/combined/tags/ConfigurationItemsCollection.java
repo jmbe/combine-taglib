@@ -12,7 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
+import se.intem.web.taglib.combined.node.ConfigurationItem;
 
 public class ConfigurationItemsCollection implements Iterable<ConfigurationItem>, Serializable {
 

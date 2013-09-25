@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import javax.servlet.jsp.JspException;
 
-import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
+import se.intem.web.taglib.combined.node.ConfigurationItem;
 
 public class RequiresTag extends ConfigurationItemAwareTagSupport {
 

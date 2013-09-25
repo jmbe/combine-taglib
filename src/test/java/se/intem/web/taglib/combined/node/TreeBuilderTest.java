@@ -1,4 +1,4 @@
-package se.internetapplications.web.taglib.combined.node;
+package se.intem.web.taglib.combined.node;
 
 import static org.junit.Assert.*;
 
@@ -14,6 +14,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import se.intem.web.taglib.combined.RequestPath;
+import se.intem.web.taglib.combined.node.ConfigurationItem;
+import se.intem.web.taglib.combined.node.ResourceNode;
+import se.intem.web.taglib.combined.node.TreeBuilder;
 import se.internetapplications.web.taglib.combined.tags.ConfigurationItemsCollection;
 
 public class TreeBuilderTest {

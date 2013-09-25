@@ -13,7 +13,7 @@ import javax.servlet.jsp.tagext.BodyContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
+import se.intem.web.taglib.combined.node.ConfigurationItem;
 
 public abstract class InlineTagSupport extends ConfigurationItemAwareTagSupport {
 

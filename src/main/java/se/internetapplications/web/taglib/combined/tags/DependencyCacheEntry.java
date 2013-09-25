@@ -2,7 +2,7 @@ package se.internetapplications.web.taglib.combined.tags;
 
 import javax.servlet.ServletContext;
 
-import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
+import se.intem.web.taglib.combined.node.ConfigurationItem;
 
 public class DependencyCacheEntry {
 

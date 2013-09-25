@@ -10,7 +10,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
+import se.intem.web.taglib.combined.node.ConfigurationItem;
 
 public class ConfigurationItemsCollectionTest {
 

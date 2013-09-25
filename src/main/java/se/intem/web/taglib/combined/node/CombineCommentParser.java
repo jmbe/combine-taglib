@@ -1,4 +1,4 @@
-package se.internetapplications.web.taglib.combined.node;
+package se.intem.web.taglib.combined.node;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;

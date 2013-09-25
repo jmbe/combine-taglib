@@ -1,4 +1,4 @@
-package se.internetapplications.web.taglib.combined.node;
+package se.intem.web.taglib.combined.node;
 
 public interface ResourceParent {
 
