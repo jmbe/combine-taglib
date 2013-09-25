@@ -80,12 +80,14 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
         beforeResolve(configurationItems);
 
         List<ConfigurationItem> resolved = tb.resolve(configurationItems);
-
+        int count = 0;
         for (ConfigurationItem ci : resolved) {
             List<RequestPath> resources = getResources(ci);
             if (resources.isEmpty()) {
                 continue;
             }
+
+            count++;
 
             if (!ci.shouldBeCombined()) {
                 /* Output resources as is */
@@ -95,7 +97,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
             } else {
 
                 if (ci.isReloadable() || !repository.containsResourcePath(ci.getName(), getType())) {
-                    log.info("Checking for changes in {}", ci.getName());
+                    log.debug("Checking for changes in {}", ci.getName());
                     addCombinedResources(ci.getName(), getType(), resources);
                 }
 
@@ -106,8 +108,8 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
         }
 
         outputInlineResources(configurationItems);
-
-        log.info("Handled {} resources in {} ms.", resolved.size(), stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        log.info(String.format("Handled %s %s resources in %s ms.", count, getType(),
+                stopwatch.elapsed(TimeUnit.MILLISECONDS)));
 
         return EVAL_PAGE;
     }

@@ -42,7 +42,7 @@ public abstract class InlineTagSupport extends ConfigurationItemAwareTagSupport 
             }
 
             /* Add dependencies even if content is empty */
-            log.info("Adding inline resource {}", configurationItem.getName());
+            log.debug("Adding inline resource {}", configurationItem.getName());
             getConfigurationItems().add(this.configurationItem);
 
         } catch (IOException e) {

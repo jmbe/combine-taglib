@@ -44,7 +44,7 @@ public class CombineJsonConfiguration {
         Optional<URL> url = getConfigurationUrl();
 
         if (!url.isPresent()) {
-            log.info("Could not find " + JSON_CONFIGURATION + " in classpath");
+            log.debug("Could not find " + JSON_CONFIGURATION + " in classpath");
             this.configuration = Optional.absent();
             return this.configuration;
         }
@@ -58,7 +58,7 @@ public class CombineJsonConfiguration {
         }
 
         if (lastModified < lastRead) {
-            log.info("No changes, re-using last " + JSON_CONFIGURATION);
+            log.debug("No changes, re-using last " + JSON_CONFIGURATION);
             return configuration;
         }
 
