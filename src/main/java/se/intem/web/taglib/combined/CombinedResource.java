@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import java.io.PrintWriter;
 import java.util.List;
 
-import se.internetapplications.web.taglib.combined.tags.ManagedResource;
+import se.intem.web.taglib.combined.tags.ManagedResource;
 
 public class CombinedResource {
 

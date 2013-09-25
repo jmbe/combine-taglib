@@ -1,10 +1,11 @@
-package se.internetapplications.web.taglib.combined.tags;
+package se.intem.web.taglib.combined.tags;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
 import se.intem.web.taglib.combined.RequestPath;
+import se.intem.web.taglib.combined.tags.LayoutCssTag;
 
 public class LayoutCssTagTest {
 

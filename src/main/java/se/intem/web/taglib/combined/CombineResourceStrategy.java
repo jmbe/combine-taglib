@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-import se.internetapplications.web.taglib.combined.tags.ManagedResource;
+import se.intem.web.taglib.combined.tags.ManagedResource;
 
 public interface CombineResourceStrategy {
 

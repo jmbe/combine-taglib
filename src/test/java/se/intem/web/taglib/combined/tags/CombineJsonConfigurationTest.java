@@ -1,4 +1,4 @@
-package se.internetapplications.web.taglib.combined.tags;
+package se.intem.web.taglib.combined.tags;
 
 import static org.junit.Assert.*;
 
@@ -6,6 +6,9 @@ import com.google.common.base.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import se.intem.web.taglib.combined.tags.CombineJsonConfiguration;
+import se.intem.web.taglib.combined.tags.ConfigurationItemsCollection;
 
 public class CombineJsonConfigurationTest {
 

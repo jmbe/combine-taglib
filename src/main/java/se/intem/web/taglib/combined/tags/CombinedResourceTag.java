@@ -1,4 +1,4 @@
-package se.internetapplications.web.taglib.combined.tags;
+package se.intem.web.taglib.combined.tags;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;

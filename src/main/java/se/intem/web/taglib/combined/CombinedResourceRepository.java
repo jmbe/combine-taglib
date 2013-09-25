@@ -15,7 +15,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.internetapplications.web.taglib.combined.tags.ManagedResource;
+import se.intem.web.taglib.combined.tags.ManagedResource;
 
 public class CombinedResourceRepository {
 

@@ -1,4 +1,4 @@
-package se.internetapplications.web.taglib.combined.tags;
+package se.intem.web.taglib.combined.tags;
 
 import javax.servlet.jsp.JspException;
 

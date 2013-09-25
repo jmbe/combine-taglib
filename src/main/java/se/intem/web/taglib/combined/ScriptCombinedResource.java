@@ -2,7 +2,7 @@ package se.intem.web.taglib.combined;
 
 import java.util.List;
 
-import se.internetapplications.web.taglib.combined.tags.ManagedResource;
+import se.intem.web.taglib.combined.tags.ManagedResource;
 
 public class ScriptCombinedResource extends CombinedResource {
 

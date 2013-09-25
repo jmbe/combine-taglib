@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import se.internetapplications.web.taglib.combined.tags.ConfigurationItemsCollection;
+import se.intem.web.taglib.combined.tags.ConfigurationItemsCollection;
 
 public class TreeBuilder {
 

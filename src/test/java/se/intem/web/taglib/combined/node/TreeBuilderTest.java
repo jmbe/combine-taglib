@@ -17,7 +17,7 @@ import se.intem.web.taglib.combined.RequestPath;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 import se.intem.web.taglib.combined.node.ResourceNode;
 import se.intem.web.taglib.combined.node.TreeBuilder;
-import se.internetapplications.web.taglib.combined.tags.ConfigurationItemsCollection;
+import se.intem.web.taglib.combined.tags.ConfigurationItemsCollection;
 
 public class TreeBuilderTest {
 
