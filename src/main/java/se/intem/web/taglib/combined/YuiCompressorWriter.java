@@ -1,4 +1,4 @@
-package se.internetapplications.web.taglib.combined;
+package se.intem.web.taglib.combined;
 
 import java.io.IOException;
 import java.io.PipedReader;

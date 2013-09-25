@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import se.internetapplications.web.taglib.combined.RequestPath;
+import se.intem.web.taglib.combined.RequestPath;
 
 public class LayoutCssTagTest {
 

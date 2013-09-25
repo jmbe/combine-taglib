@@ -16,7 +16,7 @@ import javax.servlet.jsp.JspException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.internetapplications.web.taglib.combined.ResourceType;
+import se.intem.web.taglib.combined.ResourceType;
 import se.internetapplications.web.taglib.combined.node.CombineCommentParser;
 import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
 import se.internetapplications.web.taglib.combined.node.ResourceParent;

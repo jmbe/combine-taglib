@@ -7,10 +7,10 @@ import javax.servlet.jsp.JspException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.internetapplications.web.taglib.combined.CombinedResource;
-import se.internetapplications.web.taglib.combined.RequestPath;
-import se.internetapplications.web.taglib.combined.ResourceType;
-import se.internetapplications.web.taglib.combined.ScriptCombinedResource;
+import se.intem.web.taglib.combined.CombinedResource;
+import se.intem.web.taglib.combined.RequestPath;
+import se.intem.web.taglib.combined.ResourceType;
+import se.intem.web.taglib.combined.ScriptCombinedResource;
 import se.internetapplications.web.taglib.combined.node.ConfigurationItem;
 
 public class LayoutScriptTag extends LayoutTagSupport {

@@ -13,7 +13,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.internetapplications.web.taglib.combined.RequestPath;
+import se.intem.web.taglib.combined.RequestPath;
 import se.internetapplications.web.taglib.combined.tags.ConfigurationItemsCollection;
 
 public class TreeBuilderTest {

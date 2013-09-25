@@ -5,6 +5,9 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import se.intem.web.taglib.combined.CombinedResourceRepository;
+import se.intem.web.taglib.combined.ResourceType;
+
 public class CombinedResourceRepositoryTest {
 
     private CombinedResourceRepository repository;

@@ -1,4 +1,4 @@
-package se.internetapplications.web.taglib.combined;
+package se.intem.web.taglib.combined;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;

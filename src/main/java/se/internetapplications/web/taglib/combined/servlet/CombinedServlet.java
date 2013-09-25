@@ -12,9 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.internetapplications.web.taglib.combined.CombinedResource;
-import se.internetapplications.web.taglib.combined.CombinedResourceRepository;
-import se.internetapplications.web.taglib.combined.RequestPath;
+import se.intem.web.taglib.combined.CombinedResource;
+import se.intem.web.taglib.combined.CombinedResourceRepository;
+import se.intem.web.taglib.combined.RequestPath;
 
 public class CombinedServlet extends HttpServlet {
 

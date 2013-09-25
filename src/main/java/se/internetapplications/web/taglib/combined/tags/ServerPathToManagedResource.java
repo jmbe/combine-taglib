@@ -4,7 +4,7 @@ import com.google.common.base.Function;
 
 import javax.servlet.ServletContext;
 
-import se.internetapplications.web.taglib.combined.RequestPath;
+import se.intem.web.taglib.combined.RequestPath;
 
 public class ServerPathToManagedResource implements Function<RequestPath, ManagedResource> {
 
