@@ -21,10 +21,10 @@ import se.intem.web.taglib.combined.node.CombineCommentParser;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 import se.intem.web.taglib.combined.node.ResourceParent;
 
-public class CombinedResourceTag extends ConfigurationItemAwareTagSupport implements ResourceParent {
+public class GroupTag extends ConfigurationItemAwareTagSupport implements ResourceParent {
 
     /** Logger for this class. */
-    private static final Logger log = LoggerFactory.getLogger(CombinedResourceTag.class);
+    private static final Logger log = LoggerFactory.getLogger(GroupTag.class);
 
     private ConfigurationItem ci = new ConfigurationItem();
 
@@ -32,7 +32,7 @@ public class CombinedResourceTag extends ConfigurationItemAwareTagSupport implem
 
     private DependencyCache cache;
 
-    public CombinedResourceTag() {
+    public GroupTag() {
         this.jsParser = new CombineCommentParser();
         this.cache = DependencyCache.get();
     }
