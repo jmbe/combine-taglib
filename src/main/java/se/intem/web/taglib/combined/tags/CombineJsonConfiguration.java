@@ -9,9 +9,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
 
+import javax.servlet.ServletContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import se.intem.web.taglib.combined.RequestPath;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 import se.intem.web.taglib.combined.node.TreeBuilder;
 
@@ -30,29 +33,39 @@ public class CombineJsonConfiguration {
 
     private Optional<ConfigurationItemsCollection> configuration = Optional.absent();
 
+    private Optional<ServletContext> servletContext = Optional.absent();
+
     public CombineJsonConfiguration() {
         this.tb = new TreeBuilder();
         this.lastRead = 0;
     }
 
+    public CombineJsonConfiguration(final ServletContext servletContext) {
+        this();
+        this.servletContext = Optional.fromNullable(servletContext);
+    }
+
     public Optional<ConfigurationItemsCollection> readConfiguration() {
         if (!reloadable && configuration.isPresent()) {
-            log.info("Not reloadable, re-using last configuration");
+            log.debug("Not reloadable, re-using last configuration");
             return configuration;
         }
 
-        Optional<URL> url = getConfigurationUrl();
+        Optional<ManagedResource> optional = findWebInfConfiguration().or(findClasspathConfiguration());
 
-        if (!url.isPresent()) {
-            log.debug("Could not find " + JSON_CONFIGURATION + " in classpath");
+        if (!optional.isPresent()) {
+            log.info("Could not find " + JSON_CONFIGURATION + " in either classpath or WEB-INF");
             this.configuration = Optional.absent();
             return this.configuration;
         }
 
+        ManagedResource managedResource = optional.get();
+        log.debug("Using configuration {}", managedResource);
+
         long lastModified = 0;
-        try {
-            lastModified = getLastModified(url.get());
-        } catch (IllegalArgumentException e) {
+        if (managedResource.isTimestampSupported()) {
+            lastModified = managedResource.lastModified();
+        } else {
             /* expected for war files */
             reloadable = false;
         }
@@ -66,7 +79,7 @@ public class CombineJsonConfiguration {
 
         try {
             this.lastRead = new Date().getTime();
-            this.configuration = Optional.of(tb.parse(url.get().openStream()));
+            this.configuration = Optional.of(tb.parse(managedResource.getInput()));
 
             /* Items read from file are by default library items. */
             if (configuration.isPresent()) {
@@ -82,25 +95,51 @@ public class CombineJsonConfiguration {
         return this.configuration;
     }
 
-    /**
-     * @throws IllegalArgumentException
-     *             if url does not support timestamp
-     */
-    private long getLastModified(final URL url) throws IllegalArgumentException {
-        try {
-            File file = new File(url.toURI());
-            if (!file.exists()) {
-                throw new IllegalArgumentException("Could not find file " + file);
-            }
-
-            return file.lastModified();
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException(e);
+    private Optional<ManagedResource> findWebInfConfiguration() {
+        if (!servletContext.isPresent()) {
+            return Optional.absent();
         }
+
+        ManagedResource webinf = new ServerPathToManagedResource(servletContext.get()).apply(new RequestPath("/WEB-INF"
+                + JSON_CONFIGURATION));
+        if (webinf.exists()) {
+            return Optional.of(webinf);
+        }
+
+        return Optional.absent();
 
     }
 
-    public Optional<URL> getConfigurationUrl() {
+    /**
+     * Try to find configuration file in classpath.
+     */
+    private Optional<ManagedResource> findClasspathConfiguration() {
+        Optional<URL> url = getClassPathConfigurationUrl();
+
+        if (!url.isPresent()) {
+            return Optional.absent();
+        }
+
+        try {
+
+            try {
+                File file = new File(url.get().toURI());
+                if (!file.exists()) {
+                    throw new IllegalArgumentException("Could not find file " + file);
+                }
+
+                return Optional.of(new ManagedResource(JSON_CONFIGURATION, file.getPath(), url.get().openStream()));
+
+            } catch (URISyntaxException e) {
+                return Optional.of(new ManagedResource(JSON_CONFIGURATION, null, url.get().openStream()));
+            }
+        } catch (IOException e) {
+            log.error("Could not open url " + url, e);
+            return Optional.absent();
+        }
+    }
+
+    private Optional<URL> getClassPathConfigurationUrl() {
         try {
             return Optional.of(Resources.getResource(JSON_CONFIGURATION));
         } catch (IllegalArgumentException e) {

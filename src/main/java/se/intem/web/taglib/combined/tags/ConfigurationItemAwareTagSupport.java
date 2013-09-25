@@ -2,6 +2,7 @@ package se.intem.web.taglib.combined.tags;
 
 import com.google.common.base.Optional;
 
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.slf4j.Logger;
@@ -16,8 +17,14 @@ public abstract class ConfigurationItemAwareTagSupport extends BodyTagSupport {
     /** Logger for this class. */
     private static final Logger log = LoggerFactory.getLogger(ConfigurationItemAwareTagSupport.class);
 
-    public ConfigurationItemAwareTagSupport() {
-        this.json = new CombineJsonConfiguration();
+    @Override
+    public void setPageContext(final PageContext pageContext) {
+        super.setPageContext(pageContext);
+
+        /* Lazily create config */
+        if (this.json == null) {
+            this.json = new CombineJsonConfiguration(pageContext.getServletContext());
+        }
     }
 
     public ConfigurationItemsCollection getConfigurationItems() {

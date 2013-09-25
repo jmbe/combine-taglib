@@ -1,5 +1,6 @@
 package se.intem.web.taglib.combined.tags;
 
+import com.google.common.base.Objects;
 import com.google.common.io.InputSupplier;
 
 import java.io.File;
@@ -67,6 +68,16 @@ public class ManagedResource {
     public long lastModified() {
         File file = new File(realPath);
         return file.lastModified();
+    }
+
+    public boolean exists() {
+        return this.input != null;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this).add("name", name).add("realPath", realPath)
+                .add("input", exists() ? "provided" : "missing").toString();
     }
 
 }
