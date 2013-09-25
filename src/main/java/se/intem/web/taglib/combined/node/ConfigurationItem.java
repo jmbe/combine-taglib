@@ -179,7 +179,7 @@ public class ConfigurationItem implements ResourceParent {
                 continue;
             }
 
-            result = Math.max(result, managedResource.getTimestamp());
+            result = Math.max(result, managedResource.lastModified());
         }
 
         return result;

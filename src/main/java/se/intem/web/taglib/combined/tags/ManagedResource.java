@@ -64,7 +64,7 @@ public class ManagedResource {
         return this.name.equals(other.name);
     }
 
-    public long getTimestamp() {
+    public long lastModified() {
         File file = new File(realPath);
         return file.lastModified();
     }

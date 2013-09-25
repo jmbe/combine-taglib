@@ -56,7 +56,7 @@ public class CombinedResource {
 
             if (realPath.isTimestampSupported()) {
 
-                if (timestamp < realPath.getTimestamp()) {
+                if (timestamp < realPath.lastModified()) {
                     return true;
                 }
             }
