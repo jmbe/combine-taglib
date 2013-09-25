@@ -1,6 +1,7 @@
 package se.intem.web.taglib.combined.tags;
 
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 
 import javax.servlet.ServletContext;
 
@@ -11,6 +12,7 @@ public class ServerPathToManagedResource implements Function<RequestPath, Manage
     private ServletContext servletContext;
 
     public ServerPathToManagedResource(final ServletContext servletContext) {
+        Preconditions.checkNotNull(servletContext);
         this.servletContext = servletContext;
     }
 
