@@ -84,6 +84,10 @@ public class ResourceNode {
     private void resolve(final List<ResourceNode> resolved, final List<ResourceNode> unresolved) {
         unresolved.add(this);
         for (ResourceNode node : edges) {
+            if (this.equals(node)) {
+                continue;
+            }
+
             if (!resolved.contains(node)) {
                 if (unresolved.contains(node)) {
                     throw new IllegalStateException(String.format("Circular dependency detected: %s -> %s", this.name,
