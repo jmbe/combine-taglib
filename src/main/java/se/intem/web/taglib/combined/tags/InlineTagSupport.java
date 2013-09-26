@@ -50,7 +50,7 @@ public abstract class InlineTagSupport extends ConfigurationItemAwareTagSupport 
         }
 
         cleanup();
-        return EVAL_PAGE;
+        return SKIP_BODY;
     }
 
     /* Note: setters will be called BEFORE doStartTag, so cleanup must be done after tag is complete. */
