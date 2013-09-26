@@ -7,8 +7,6 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import se.intem.web.taglib.combined.node.ConfigurationItem;
-
 public class ConfigurationItemTest {
 
     @Test
@@ -43,6 +41,13 @@ public class ConfigurationItemTest {
 
         assertEquals("Should remove duplicates", 2, ci.getRequires().size());
         assertThat("Should keep insertion order", ci.getRequires(), is(Arrays.asList("jquery", "angular-ui")));
+    }
+
+    @Test
+    public void configuration_item_without_resources_is_empty() {
+        ConfigurationItem ci = new ConfigurationItem();
+        ci.addRequires("requires does not count as empty");
+        assertTrue(ci.isEmpty());
     }
 
 }

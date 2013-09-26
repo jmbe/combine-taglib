@@ -150,6 +150,20 @@ public class ConfigurationItem implements ResourceParent {
         return !getPaths(type).isEmpty();
     }
 
+    /**
+     * An empty group contains no members but it may still have dependencies. Typically a requires tag.
+     */
+    public boolean isEmpty() {
+        ResourceType[] values = ResourceType.values();
+        for (ResourceType type : values) {
+            if (hasResources(type)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public Map<ResourceType, List<ManagedResource>> getRealPaths(final ServletContext servletContext) {
         Map<ResourceType, List<ManagedResource>> result = Maps.newHashMap();
 
