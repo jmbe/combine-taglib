@@ -180,7 +180,16 @@ public class ConfigurationItem implements ResourceParent {
     }
 
     public boolean shouldBeCombined() {
-        return !((CombinedConfigurationHolder.isDevMode() && isSupportsDevMode()) || !isCombine() || isRemote());
+        if (isRemote()) {
+            return false;
+        }
+
+        if (!isCombine()) {
+            return false;
+        }
+
+        boolean outputAsIs = CombinedConfigurationHolder.isDevMode() && isSupportsDevMode();
+        return !outputAsIs;
     }
 
     public long getLastChange(final ServletContext servletContext) {
