@@ -1,5 +1,6 @@
 package se.intem.web.taglib.combined.tags;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.google.common.base.Optional;
 import com.google.common.io.Resources;
 
@@ -77,8 +78,8 @@ public class CombineJsonConfiguration {
 
         log.info("Refreshing " + JSON_CONFIGURATION + ", last modified {} > {}", lastModified, lastRead);
 
+        long lastRead = new Date().getTime();
         try {
-            this.lastRead = new Date().getTime();
             this.configuration = Optional.of(tb.parse(managedResource.getInput()));
 
             /* Items read from file are by default library items. */
@@ -88,6 +89,10 @@ public class CombineJsonConfiguration {
                 }
             }
 
+            /* Update timestamp only if file was successfully read. */
+            this.lastRead = lastRead;
+        } catch (JsonParseException e) {
+            throw new RuntimeException("Syntax error in " + JSON_CONFIGURATION, e);
         } catch (IOException e) {
             log.error("Could not parse " + JSON_CONFIGURATION, e);
         }
