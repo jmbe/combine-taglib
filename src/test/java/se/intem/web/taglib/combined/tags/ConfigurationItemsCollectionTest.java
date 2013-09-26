@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import se.intem.web.taglib.combined.node.ConfigurationItem;
-import se.intem.web.taglib.combined.tags.ConfigurationItemsCollection;
 
 public class ConfigurationItemsCollectionTest {
 
@@ -47,6 +46,15 @@ public class ConfigurationItemsCollectionTest {
         List<ConfigurationItem> expected = Lists.newArrayList(c, a, b);
 
         assertThat(actual, equalTo(expected));
+    }
+
+    @Test
+    public void should_remove_extra_style_when_adding_inline_style() {
+        String contents = "<style>body{}</style>";
+
+        items.addInlineStyle(contents);
+        String added = items.getInlineStyles().get(0);
+        assertEquals("body{}", added);
     }
 
 }
