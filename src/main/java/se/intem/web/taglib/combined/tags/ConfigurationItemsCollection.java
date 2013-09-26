@@ -79,7 +79,7 @@ public class ConfigurationItemsCollection implements Iterable<ConfigurationItem>
     }
 
     public void addInlineStyle(final String contents) {
-        inlineStyles.add(contents.replaceAll("</?style *(type=\"text/css\")?>", ""));
+        inlineStyles.add(contents.replaceAll("</?style[^>]*>", ""));
     }
 
     public List<String> getInlineStyles() {
