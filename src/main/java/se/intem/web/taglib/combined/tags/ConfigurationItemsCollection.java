@@ -71,7 +71,7 @@ public class ConfigurationItemsCollection implements Iterable<ConfigurationItem>
     }
 
     public void addInlineScript(final String js) {
-        inlineScripts.add(js);
+        inlineScripts.add(js.replaceAll("</?script[^>]*>", ""));
     }
 
     public List<String> getInlineScripts() {

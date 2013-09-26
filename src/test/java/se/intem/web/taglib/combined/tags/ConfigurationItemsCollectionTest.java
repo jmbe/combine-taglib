@@ -57,4 +57,13 @@ public class ConfigurationItemsCollectionTest {
         assertEquals("body{}", added);
     }
 
+    @Test
+    public void should_remove_extra_script_when_adding_inline_style() {
+        String contents = "<script type=\"text/javascript\">contents</script>";
+
+        items.addInlineScript(contents);
+        String added = items.getInlineScripts().get(0);
+        assertEquals("contents", added);
+    }
+
 }
