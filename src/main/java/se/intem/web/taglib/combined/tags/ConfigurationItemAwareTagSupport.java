@@ -23,7 +23,7 @@ public abstract class ConfigurationItemAwareTagSupport extends BodyTagSupport {
 
         /* Lazily create config */
         if (this.json == null) {
-            this.json = new CombineJsonConfiguration(pageContext.getServletContext());
+            this.json = CombineJsonConfiguration.get().withServletContext(pageContext.getServletContext());
         }
     }
 

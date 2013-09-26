@@ -35,14 +35,14 @@ public class CombineJsonConfiguration {
 
     private Optional<ServletContext> servletContext = Optional.absent();
 
-    public CombineJsonConfiguration() {
+    CombineJsonConfiguration() {
         this.tb = new TreeBuilder();
         this.lastRead = 0;
     }
 
-    public CombineJsonConfiguration(final ServletContext servletContext) {
-        this();
+    public CombineJsonConfiguration withServletContext(final ServletContext servletContext) {
         this.servletContext = Optional.fromNullable(servletContext);
+        return this;
     }
 
     public Optional<ConfigurationItemsCollection> readConfiguration() {
@@ -75,7 +75,7 @@ public class CombineJsonConfiguration {
             return configuration;
         }
 
-        log.info("Refreshing " + JSON_CONFIGURATION + ", last modified {}", lastModified);
+        log.info("Refreshing " + JSON_CONFIGURATION + ", last modified {} > {}", lastModified, lastRead);
 
         try {
             this.lastRead = new Date().getTime();
@@ -152,4 +152,16 @@ public class CombineJsonConfiguration {
             return Optional.absent();
         }
     }
+
+    public static CombineJsonConfiguration get() {
+        return InstanceHolder.instance;
+    }
+
+    /**
+     * http://en.wikipedia.org/wiki/Singleton_pattern#The_solution_of_Bill_Pugh
+     */
+    private static class InstanceHolder {
+        private static final CombineJsonConfiguration instance = new CombineJsonConfiguration();
+    }
+
 }
