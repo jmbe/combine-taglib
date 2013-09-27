@@ -5,38 +5,34 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.io.CharStreams;
 import com.google.common.io.LineProcessor;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 public class CombineCommentParser {
 
-    /* Maximum number of lines to read to find requires. */
-    private static final int MAX_LINES = 20;
-
     @VisibleForTesting
-    String findCombineComment(final InputStream stream) throws IOException {
+    List<String> findCombineComment(final InputStream stream) throws IOException {
 
-        LineProcessor<String> findCombineComment = new LineProcessor<String>() {
+        LineProcessor<List<String>> findCombineComment = new LineProcessor<List<String>>() {
 
-            private int lines = 0;
             private boolean foundStart = false;
             private boolean foundEnd = false;
             private boolean foundCommentStart = false;
 
-            List<String> result = Lists.newArrayList();
+            private List<String> comments = Lists.newArrayList();
+
+            private List<String> current = Lists.newArrayList();
 
             @Override
             public boolean processLine(String line) throws IOException {
                 line = Strings.nullToEmpty(line).trim();
-                if (!foundStart && lines++ > MAX_LINES) {
-                    return false;
-                }
 
                 boolean foundCommentEnd = line.contains("*/");
 
@@ -64,18 +60,25 @@ public class CombineCommentParser {
                     if (foundCommentEnd) {
                         foundEnd = true;
                         /* Remove comment end */
-                        result.add(line.substring(0, line.indexOf("*/")).trim());
+                        current.add(line.substring(0, line.indexOf("*/")).trim());
                     } else {
-                        result.add(line.trim());
+                        current.add(line.trim());
                     }
                 }
 
-                return !foundEnd;
+                if (foundEnd) {
+                    String trim = Joiner.on(" ").skipNulls().join(current).trim();
+                    comments.add(trim);
+                    current = Lists.newArrayList();
+                }
+
+                return true;
             }
 
             @Override
-            public String getResult() {
-                return Joiner.on(" ").skipNulls().join(result).trim();
+            public List<String> getResult() {
+                return comments;
+
             }
 
         };
@@ -86,16 +89,23 @@ public class CombineCommentParser {
     }
 
     public List<String> findRequires(final InputStream input) throws IOException {
+        LinkedHashSet<String> result = Sets.newLinkedHashSet();
+
         String start = "combine @requires";
 
-        String comment = findCombineComment(input);
+        List<String> comments = findCombineComment(input);
+        for (String comment : comments) {
+            if (!comment.startsWith(start)) {
+                continue;
+            }
 
-        if (!comment.startsWith(start)) {
-            return Collections.emptyList();
+            Iterable<String> split = Splitter.on(" ").omitEmptyStrings().split(comment.substring(start.length()));
+            for (String require : split) {
+                result.add(require);
+            }
         }
 
-        Iterable<String> split = Splitter.on(" ").omitEmptyStrings().split(comment.substring(start.length()));
-        return Lists.newArrayList(split);
+        return Lists.newArrayList(result);
 
     }
 }

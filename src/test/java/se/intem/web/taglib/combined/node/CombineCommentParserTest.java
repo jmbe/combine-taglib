@@ -11,45 +11,46 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.intem.web.taglib.combined.node.CombineCommentParser;
-
 public class CombineCommentParserTest {
 
-    private InputStream single;
+    private InputStream singleline;
     private CombineCommentParser parser;
-    private InputStream multi;
+    private InputStream multiline;
     private InputStream other;
+    private InputStream multiple;
 
     @Before
     public void setup() {
-        this.single = this.getClass().getResourceAsStream("/singleline-dependencies.js");
-        this.multi = this.getClass().getResourceAsStream("/multiline-dependencies.js");
+        this.singleline = this.getClass().getResourceAsStream("/singleline-dependencies.js");
+        this.multiline = this.getClass().getResourceAsStream("/multiline-dependencies.js");
+        this.multiple = this.getClass().getResourceAsStream("/multiple-dependencies.js");
         this.other = this.getClass().getResourceAsStream("/combine.json");
         this.parser = new CombineCommentParser();
     }
 
     @Test
     public void test_resources_should_exist() {
-        assertNotNull(single);
-        assertNotNull(multi);
+        assertNotNull(singleline);
+        assertNotNull(multiline);
+        assertNotNull(multiple);
         assertNotNull(other);
     }
 
     @Test
     public void should_find_single_combine_comment() throws IOException {
-        String requires = parser.findCombineComment(single);
+        String requires = parser.findCombineComment(singleline).get(0);
         assertEquals("combine @requires extjs angularjs", requires);
     }
 
     @Test
     public void should_find_multi_combine_comment() throws IOException {
-        String requires = parser.findCombineComment(multi);
+        String requires = parser.findCombineComment(multiline).get(0);
         assertEquals("combine @requires extjs angularjs jquery", requires);
     }
 
     @Test
     public void should_find_singleline_requires() throws IOException {
-        List<String> requires = parser.findRequires(single);
+        List<String> requires = parser.findRequires(singleline);
         assertEquals(2, requires.size());
         assertThat(requires, is(Arrays.asList("extjs", "angularjs")));
 
@@ -57,9 +58,16 @@ public class CombineCommentParserTest {
 
     @Test
     public void should_find_multiline_requires() throws IOException {
-        List<String> requires = parser.findRequires(multi);
+        List<String> requires = parser.findRequires(multiline);
         assertEquals(3, requires.size());
         assertThat(requires, is(Arrays.asList("extjs", "angularjs", "jquery")));
+    }
+
+    @Test
+    public void should_find_multiple_comments() throws IOException {
+        List<String> requires = parser.findRequires(multiple);
+        assertEquals(3, requires.size());
+        assertThat(requires, is(Arrays.asList("extjs", "jquery", "angularjs")));
     }
 
     @Test
