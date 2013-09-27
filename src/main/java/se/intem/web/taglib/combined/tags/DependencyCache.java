@@ -109,7 +109,7 @@ public class DependencyCache {
 
         optional = get(cacheKey);
         if (optional.isPresent()) {
-            ci.addRequires(optional.get().getRequires());
+            ci.replaceParsedRequires(optional.get().getRequires());
         }
 
     }

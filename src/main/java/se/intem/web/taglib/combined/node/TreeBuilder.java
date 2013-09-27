@@ -48,9 +48,8 @@ public class TreeBuilder {
         /* Pass 2: populate dependencies */
         for (ConfigurationItem item : items) {
             ResourceNode current = nodes.get(item.getName());
-            List<String> requires = item.getRequires();
 
-            for (String required : requires) {
+            for (String required : item.getRequires()) {
                 ResourceNode edge = nodes.get(required);
                 if (edge == null) {
                     throw new IllegalStateException(String.format("Could not find dependency: %s requires '%s'",
