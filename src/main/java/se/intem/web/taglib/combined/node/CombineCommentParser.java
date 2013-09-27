@@ -34,11 +34,11 @@ public class CombineCommentParser {
             public boolean processLine(String line) throws IOException {
                 line = Strings.nullToEmpty(line).trim();
 
-                boolean foundCommentEnd = line.contains("*/");
-
-                if (line.equals("*")) {
+                if (line.isEmpty() || line.equals("*")) {
                     return true;
                 }
+
+                boolean foundCommentEnd = line.contains("*/");
 
                 if (line.startsWith("/* combine")) {
                     foundStart = true;
