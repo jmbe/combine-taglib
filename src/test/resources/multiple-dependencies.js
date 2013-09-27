@@ -3,5 +3,7 @@
 /* combine @requires jquery */
 
 /*
- * combine @requires angularjs jquery
+ * combine @requires angularjs
+ * 
+ * jquery
  */
