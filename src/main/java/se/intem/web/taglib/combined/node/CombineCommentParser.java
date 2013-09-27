@@ -70,6 +70,10 @@ public class CombineCommentParser {
                     String trim = Joiner.on(" ").skipNulls().join(current).trim();
                     comments.add(trim);
                     current = Lists.newArrayList();
+                    /* Reset state */
+                    foundStart = false;
+                    foundEnd = false;
+                    foundCommentStart = false;
                 }
 
                 return true;
