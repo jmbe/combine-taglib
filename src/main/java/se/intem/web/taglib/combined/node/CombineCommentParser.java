@@ -18,15 +18,15 @@ import java.util.List;
 public class CombineCommentParser {
 
     @VisibleForTesting
-    List<String> findCombineComment(final InputStream stream) throws IOException {
+    ParseResult findCombineComment(final InputStream stream) throws IOException {
 
-        LineProcessor<List<String>> findCombineComment = new LineProcessor<List<String>>() {
+        LineProcessor<ParseResult> findCombineComment = new LineProcessor<ParseResult>() {
 
             private boolean foundStart = false;
             private boolean foundEnd = false;
             private boolean foundCommentStart = false;
 
-            private List<String> comments = Lists.newArrayList();
+            private ParseResult result = new ParseResult();
 
             private List<String> current = Lists.newArrayList();
 
@@ -67,8 +67,8 @@ public class CombineCommentParser {
                 }
 
                 if (foundEnd) {
-                    String trim = Joiner.on(" ").skipNulls().join(current).trim();
-                    comments.add(trim);
+                    String comment = Joiner.on(" ").skipNulls().join(current).trim();
+                    result.addComment(comment);
                     current = Lists.newArrayList();
                     /* Reset state */
                     foundStart = false;
@@ -80,8 +80,8 @@ public class CombineCommentParser {
             }
 
             @Override
-            public List<String> getResult() {
-                return comments;
+            public ParseResult getResult() {
+                return result;
 
             }
 
@@ -96,8 +96,9 @@ public class CombineCommentParser {
         LinkedHashSet<String> result = Sets.newLinkedHashSet();
 
         String start = "combine @requires";
+        ParseResult parseResult = findCombineComment(input);
 
-        List<String> comments = findCombineComment(input);
+        List<String> comments = parseResult.getComments();
         for (String comment : comments) {
             if (!comment.startsWith(start)) {
                 continue;

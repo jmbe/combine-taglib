@@ -38,13 +38,13 @@ public class CombineCommentParserTest {
 
     @Test
     public void should_find_single_combine_comment() throws IOException {
-        String requires = parser.findCombineComment(singleline).get(0);
+        String requires = parser.findCombineComment(singleline).getComments().get(0);
         assertEquals("combine @requires extjs angularjs", requires);
     }
 
     @Test
     public void should_find_multi_combine_comment() throws IOException {
-        String requires = parser.findCombineComment(multiline).get(0);
+        String requires = parser.findCombineComment(multiline).getComments().get(0);
         assertEquals("combine @requires extjs angularjs jquery", requires);
     }
 
