@@ -83,7 +83,7 @@ public class DependencyCache {
                 for (ManagedResource mr : entry.getValue()) {
                     log.debug("Parsing {}", mr.getName());
                     try {
-                        List<String> found = jsParser.findRequires(mr.getInput());
+                        List<String> found = jsParser.parse(mr.getInput()).getRequiresList();
                         requires.addAll(found);
                     } catch (IOException e) {
                         log.error("Could not parse js", e);

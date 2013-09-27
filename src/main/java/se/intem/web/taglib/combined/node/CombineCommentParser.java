@@ -2,17 +2,14 @@ package se.intem.web.taglib.combined.node;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.common.io.CharStreams;
 import com.google.common.io.LineProcessor;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 public class CombineCommentParser {
@@ -32,6 +29,8 @@ public class CombineCommentParser {
 
             @Override
             public boolean processLine(String line) throws IOException {
+                result.addContent(line);
+
                 line = Strings.nullToEmpty(line).trim();
 
                 if (line.isEmpty() || line.equals("*")) {
@@ -92,25 +91,7 @@ public class CombineCommentParser {
         return findCombineComment.getResult();
     }
 
-    public List<String> findRequires(final InputStream input) throws IOException {
-        LinkedHashSet<String> result = Sets.newLinkedHashSet();
-
-        String start = "combine @requires";
-        ParseResult parseResult = findCombineComment(input);
-
-        List<String> comments = parseResult.getComments();
-        for (String comment : comments) {
-            if (!comment.startsWith(start)) {
-                continue;
-            }
-
-            Iterable<String> split = Splitter.on(" ").omitEmptyStrings().split(comment.substring(start.length()));
-            for (String require : split) {
-                result.add(require);
-            }
-        }
-
-        return Lists.newArrayList(result);
-
+    public ParseResult parse(final InputStream input) throws IOException {
+        return findCombineComment(input);
     }
 }

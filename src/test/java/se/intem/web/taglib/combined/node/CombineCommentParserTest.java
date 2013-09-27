@@ -1,5 +1,6 @@
 package se.intem.web.taglib.combined.node;
 
+import static java.util.Arrays.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
@@ -38,19 +39,19 @@ public class CombineCommentParserTest {
 
     @Test
     public void should_find_single_combine_comment() throws IOException {
-        String requires = parser.findCombineComment(singleline).getComments().get(0);
-        assertEquals("combine @requires extjs angularjs", requires);
+        ParseResult parsed = parser.findCombineComment(singleline);
+        assertThat(parsed.getRequiresList(), is(Arrays.asList("extjs", "angularjs")));
     }
 
     @Test
     public void should_find_multi_combine_comment() throws IOException {
-        String requires = parser.findCombineComment(multiline).getComments().get(0);
-        assertEquals("combine @requires extjs angularjs jquery", requires);
+        List<String> requires = parser.findCombineComment(multiline).getRequiresList();
+        assertThat(requires, is(asList("extjs", "angularjs", "jquery")));
     }
 
     @Test
     public void should_find_singleline_requires() throws IOException {
-        List<String> requires = parser.findRequires(singleline);
+        List<String> requires = parser.parse(singleline).getRequiresList();
         assertEquals(2, requires.size());
         assertThat(requires, is(Arrays.asList("extjs", "angularjs")));
 
@@ -58,21 +59,22 @@ public class CombineCommentParserTest {
 
     @Test
     public void should_find_multiline_requires() throws IOException {
-        List<String> requires = parser.findRequires(multiline);
+        List<String> requires = parser.parse(multiline).getRequiresList();
         assertEquals(3, requires.size());
         assertThat(requires, is(Arrays.asList("extjs", "angularjs", "jquery")));
     }
 
     @Test
     public void should_find_multiple_comments() throws IOException {
-        List<String> requires = parser.findRequires(multiple);
+        ParseResult parsed = parser.parse(multiple);
+        List<String> requires = parsed.getRequiresList();
         assertEquals(3, requires.size());
         assertThat(requires, is(Arrays.asList("extjs", "jquery", "angularjs")));
     }
 
     @Test
     public void should_return_empty_list_if_no_requires() throws IOException {
-        List<String> requires = parser.findRequires(other);
+        List<String> requires = parser.parse(other).getRequiresList();
         assertEquals(0, requires.size());
     }
 }
