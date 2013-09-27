@@ -18,9 +18,12 @@ import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import se.intem.web.taglib.combined.CombinedResourceRepository;
 import se.intem.web.taglib.combined.ResourceType;
 import se.intem.web.taglib.combined.node.CombineCommentParser;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
+import se.intem.web.taglib.combined.node.ParseResult;
+import se.intem.web.taglib.combined.resources.CombinedBundle;
 
 public class DependencyCache {
 
@@ -84,15 +87,20 @@ public class DependencyCache {
 
             for (Entry<ResourceType, List<ManagedResource>> entry : entrySet) {
 
+                CombinedBundle bundle = new CombinedBundle(entry.getKey(), lastread);
+
                 for (ManagedResource mr : entry.getValue()) {
                     log.debug("Parsing {}", mr.getName());
                     try {
-                        List<String> found = jsParser.parse(mr.getInput()).getRequiresList();
+                        ParseResult parsed = jsParser.parse(mr.getInput());
+                        bundle.addContents(parsed.getContents());
+                        List<String> found = parsed.getRequiresList();
                         requires.addAll(found);
                     } catch (IOException e) {
                         log.error("Could not parse js", e);
                     }
                 }
+                CombinedResourceRepository.get().addCombinedResource(ci.getName(), bundle);
             }
 
             put(cacheKey, new DependencyCacheEntry(lastread, requires, ci));

@@ -7,10 +7,8 @@ import javax.servlet.jsp.JspException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.intem.web.taglib.combined.CombinedResource;
 import se.intem.web.taglib.combined.RequestPath;
 import se.intem.web.taglib.combined.ResourceType;
-import se.intem.web.taglib.combined.ScriptCombinedResource;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 
 public class LayoutScriptTag extends LayoutTagSupport {
@@ -25,11 +23,6 @@ public class LayoutScriptTag extends LayoutTagSupport {
     @Override
     protected String format(final RequestPath path) {
         return String.format("<script type=\"text/javascript\" charset=\"UTF-8\" src=\"%s\"></script>", path);
-    }
-
-    public CombinedResource stringToCombinedResource(final String contents, final long timestamp,
-            final String checksum, final List<ManagedResource> realPaths) {
-        return new ScriptCombinedResource(contents, timestamp, checksum, realPaths);
     }
 
     @Override

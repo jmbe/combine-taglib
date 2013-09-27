@@ -12,9 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.intem.web.taglib.combined.CombinedResource;
 import se.intem.web.taglib.combined.CombinedResourceRepository;
 import se.intem.web.taglib.combined.RequestPath;
+import se.intem.web.taglib.combined.resources.CombinedBundle;
 
 public class CombinedServlet extends HttpServlet {
 
@@ -40,10 +40,10 @@ public class CombinedServlet extends HttpServlet {
         log.debug("Handling {}", request.getRequestURI());
 
         RequestPath path = new RequestPath(request.getRequestURI());
-        CombinedResource resource = repository.getCombinedResource(path);
+        CombinedBundle resource = repository.getCombinedResource(path);
         response.setContentType(resource.getContentType() + CHARSET_UTF8);
         cacheResource(response, 365);
-        resource.writeMinifiedResource(response.getWriter());
+        resource.write(response.getWriter());
         response.getWriter().flush();
         response.getWriter().close();
     }
