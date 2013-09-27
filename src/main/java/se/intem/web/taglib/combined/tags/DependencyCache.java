@@ -51,10 +51,14 @@ public class DependencyCache {
         }
 
         String cacheKey = ci.getName();
+        Optional<DependencyCacheEntry> optional = get(cacheKey);
+
+        if (optional.isPresent() && !ci.isReloadable()) {
+            /* entry exists and is not reloadable - nothing to do */
+            return;
+        }
 
         boolean hasChanges = false;
-
-        Optional<DependencyCacheEntry> optional = get(cacheKey);
         if (optional.isPresent()) {
             DependencyCacheEntry cached = optional.get();
             if (cached.requiresRefresh(ci, servletContext)) {
