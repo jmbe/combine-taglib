@@ -11,8 +11,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CombineCommentParser {
+
+    private static final Pattern commentStart = Pattern.compile("^/\\*\\*?-?\\s*");
+    private static final Pattern continuationStart = Pattern.compile("^\\*\\s+");
 
     @VisibleForTesting
     ParseResult findCombineComment(final InputStream stream) throws IOException {
@@ -36,42 +41,41 @@ public class CombineCommentParser {
                 line = Strings.nullToEmpty(line).trim();
 
                 if (line.isEmpty() || line.equals("*")) {
+                    result.addContent(contentLine);
                     return true;
                 }
 
                 boolean foundCommentEnd = line.contains("*/");
 
-                if (line.startsWith("/* combine")) {
-                    foundStart = true;
+                Matcher startmatcher = commentStart.matcher(line);
+                String replaced = line;
+                if (startmatcher.find()) {
                     foundCommentStart = true;
-                    /* Remove comment start */
-                    line = line.substring(3);
-                } else if (line.startsWith("/*- combine")) {
-                    foundStart = true;
-                    foundCommentStart = true;
-                    /* Remove comment start */
-                    line = line.substring(4);
-                } else if (line.startsWith("/*") || line.startsWith("/*-")) {
-                    /* Some comment has started. Unknown if this comment contains combine. */
-                    foundCommentStart = true;
-                } else if (foundCommentStart && line.startsWith("* combine")) {
-                    foundStart = true;
-                    /* Remove comment start */
-                    line = line.substring(2);
+                    replaced = startmatcher.replaceFirst("");
+                } else if (foundCommentStart) {
+                    Matcher continuationMatcher = continuationStart.matcher(replaced);
+                    if (continuationMatcher.find()) {
+                        replaced = continuationMatcher.replaceFirst("");
+                    }
+                }
 
-                } else if (foundCommentStart && !line.startsWith("*/") && line.startsWith("*")) {
-                    line = line.substring(1);
+                if (foundCommentStart && !foundStart) {
+                    if (replaced.startsWith("combine")) {
+                        foundStart = true;
+                    }
                 }
 
                 if (foundStart) {
                     if (foundCommentEnd) {
                         foundEnd = true;
+
                         /* Remove comment end */
-                        int index = line.indexOf("*/");
-                        current.add(line.substring(0, index).trim());
-                        contentLine = line.substring(index + 2);
+                        int index = replaced.indexOf("*/");
+
+                        current.add(replaced.substring(0, index).trim());
+                        contentLine = replaced.substring(index + 2);
                     } else {
-                        current.add(line.trim());
+                        current.add(replaced.replaceFirst("[\\* /-]+$", ""));
                     }
                 }
 
