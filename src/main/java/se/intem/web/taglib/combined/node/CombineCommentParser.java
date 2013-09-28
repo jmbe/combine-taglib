@@ -21,6 +21,7 @@ public class CombineCommentParser {
 
             private boolean foundStart = false;
             private boolean foundEnd = false;
+            /* Found start of any comment, which may turn out to be desired comment. */
             private boolean foundCommentStart = false;
 
             private ParseResult result = new ParseResult();
@@ -29,7 +30,8 @@ public class CombineCommentParser {
 
             @Override
             public boolean processLine(String line) throws IOException {
-                result.addContent(line);
+
+                String contentLine = line;
 
                 line = Strings.nullToEmpty(line).trim();
 
@@ -51,7 +53,7 @@ public class CombineCommentParser {
                     /* Remove comment start */
                     line = line.substring(2);
 
-                } else if (foundCommentStart && !foundCommentEnd && line.startsWith("*")) {
+                } else if (foundCommentStart && !line.startsWith("*/") && line.startsWith("*")) {
                     line = line.substring(1);
                 }
 
@@ -63,6 +65,10 @@ public class CombineCommentParser {
                     } else {
                         current.add(line.trim());
                     }
+                }
+
+                if (!foundStart) {
+                    result.addContent(contentLine);
                 }
 
                 if (foundEnd) {
