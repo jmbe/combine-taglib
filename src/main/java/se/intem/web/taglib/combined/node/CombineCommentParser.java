@@ -61,13 +61,15 @@ public class CombineCommentParser {
                     if (foundCommentEnd) {
                         foundEnd = true;
                         /* Remove comment end */
-                        current.add(line.substring(0, line.indexOf("*/")).trim());
+                        int index = line.indexOf("*/");
+                        current.add(line.substring(0, index).trim());
+                        contentLine = line.substring(index + 2);
                     } else {
                         current.add(line.trim());
                     }
                 }
 
-                if (!foundStart) {
+                if (!foundStart || foundEnd) {
                     result.addContent(contentLine);
                 }
 

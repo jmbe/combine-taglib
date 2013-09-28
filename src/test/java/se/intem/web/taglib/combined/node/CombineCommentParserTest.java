@@ -44,6 +44,7 @@ public class CombineCommentParserTest {
     public void should_find_single_combine_comment() throws IOException {
         ParseResult parsed = parser.findCombineComment(singleline);
         assertThat(parsed.getRequiresList(), is(Arrays.asList("extjs", "angularjs")));
+        assertEquals("var code;", parsed.getContents().trim());
     }
 
     @Test
