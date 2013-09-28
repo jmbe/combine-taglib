@@ -6,7 +6,7 @@ Combine-taglib is a JSP taglib to concatenate and serve combined CSS and Javascr
  * Bundles changed resources on the fly
  * Reloads changed configuration on the fly
  * Creates cache-friendly links which will survive server restarts, redeploys or deploys to different servers. Links will change only if content changes.
- * Fully declare relationships between resources with attributes @requires, @provides and @optional
+ * Fully declare resource relationships with attributes @requires, @provides and @optional
  * Configure dependencies either directly in js file (recommended), as JSP tags or in json configuration file
  * Will transitively add any required dependencies and load them in the correct order. Declare dependencies on what you directly use and let the dependency graph figure out what is needed.
  * Declare dependencies as granular or coarsely as fits the way you work
@@ -52,11 +52,13 @@ Configure logging (sample for logback)
 ## Usage ##
 
 ### Create combine.json (optional) ###
-Define libraries in combine.json in root of classpath. A library will be loaded only if some other resource depends on it.
+Define *libraries* in a file named combine.json. Put it either in WEB-INF/ or in root of classpath. A *library* will be loaded only if some other resource depends on it.
 
-Name must be given. The css and js attributes can either have a single string or an array of strings. Add dependencies in requires attribute, either as comma or space separated string or as array of strings.
+ * Name must be given
+ * The css and js attributes can either have a single string or an array of strings.
+ * Add dependencies in requires attribute, either as comma or space separated string or as array of strings.
 
-Optional dependencies are included only if some other resource actually requires it, but if it is included then it will be loaded before resources that optionally depends on it. For example: Angular optionally requires jquery. Angular will use jquery if included, but jquery is not required. However if jquery is included, then it must be loaded before angular.
+*Optional* dependencies are included only if some other resource actually requires it, but if it is included then it will be loaded before resources that optionally depends on it. For example: Angular optionally requires jquery. Angular will use jquery if included, but jquery is not required. However if jquery is included, then it must be loaded before angular.
     
 
     [
@@ -147,6 +149,22 @@ Output queued resources (required)
         </body>
     </html>
 
+
+## Development mode
+Resources will be bundled and links will change based on content whether you run an unpacked (typically in an IDE) or 
+packed war file. If you would rather output the individual file links to support live reload tools, you can enable
+development mode.
+
+Add **supportsDevMode: true** to the bundle either in json configuration or while defining group as JSP tag.
+
+    {
+        name : "time-css",
+        requires : "bootstrap-css select2 bootstrap-datepicker",
+        supportsDevMode : true,
+        css : "/css/timereport.css"
+    }
+
+Start server with **-DcombineDevMode=true**.
 
 
 ## Current limitations
