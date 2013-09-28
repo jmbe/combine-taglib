@@ -46,6 +46,7 @@ public class CombineCommentParserTest {
         assertNotNull(multiline);
         assertNotNull(multiple);
         assertNotNull(multiplePerLine);
+        assertNotNull(nochanges);
         assertNotNull(bug1);
         assertNotNull(bug2);
         assertNotNull(other);
@@ -63,7 +64,7 @@ public class CombineCommentParserTest {
         ParseResult parsed = parser.findCombineComment(multiline);
         List<String> requires = parsed.getRequiresList();
         assertThat(requires, is(asList("extjs", "angularjs", "jquery")));
-        assertEquals("/* unrelated */\r\nvar code;", parsed.getContents().trim());
+        assertEquals("/* unrelated */" + System.lineSeparator() + "var code;", parsed.getContents().trim());
     }
 
     @Test

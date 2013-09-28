@@ -28,12 +28,15 @@ public class CombineCommentParser {
 
             private boolean foundStart = false;
             private boolean foundEnd = false;
+
             /* Found start of any comment, which may turn out to be desired comment. */
             private boolean foundCommentStart = false;
 
             private ParseResult result = new ParseResult();
 
             private List<String> current = Lists.newArrayList();
+
+            private List<String> currentComment = Lists.newArrayList();
 
             @Override
             public boolean processLine(String line) throws IOException {
@@ -42,7 +45,7 @@ public class CombineCommentParser {
 
                 line = Strings.nullToEmpty(line).trim();
 
-                if (line.isEmpty() || line.equals("*")) {
+                if (line.isEmpty()) {
                     result.addContent(contentLine);
                     return true;
                 }
@@ -64,6 +67,8 @@ public class CombineCommentParser {
                 if (foundCommentStart && !foundStart) {
                     if (replaced.startsWith("combine")) {
                         foundStart = true;
+                    } else {
+                        currentComment.add(contentLine);
                     }
                 }
 
@@ -83,7 +88,7 @@ public class CombineCommentParser {
                     }
                 }
 
-                boolean addContent = !foundStart || foundEnd;
+                boolean addContent = !foundCommentStart && (!foundStart || foundEnd);
 
                 if (foundEnd) {
                     String comment = Joiner.on(" ").skipNulls().join(current).trim();
@@ -92,6 +97,14 @@ public class CombineCommentParser {
                     /* Reset state */
                     foundStart = false;
                     foundEnd = false;
+                    foundCommentStart = false;
+                    currentComment = Lists.newArrayList();
+                } else if (foundCommentEnd) {
+                    for (String string : currentComment) {
+                        result.addContent(string);
+                    }
+                    currentComment = Lists.newArrayList();
+
                     foundCommentStart = false;
                 }
 

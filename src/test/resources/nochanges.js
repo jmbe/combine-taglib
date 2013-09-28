@@ -1,3 +1,8 @@
+/*
+ * Should keep these
+ *
+ * lines as is.
+ */
 function f() {
 
     /* Should not add extra newline after this comment */

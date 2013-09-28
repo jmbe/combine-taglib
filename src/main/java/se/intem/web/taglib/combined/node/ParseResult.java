@@ -48,7 +48,10 @@ public class ParseResult {
     }
 
     public void addContent(final String line) {
-        content.append(line + "\r\n");
+        if (content.length() > 0) {
+            content.append(System.lineSeparator());
+        }
+        content.append(line);
     }
 
     public String getContents() {
