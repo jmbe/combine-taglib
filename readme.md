@@ -1,7 +1,17 @@
 # Combine-taglib #
-A simple JSP taglib to concatenate and serve fingerprinted css or js resources, with support for dependency graphs.
+Combine-taglib is a JSP taglib to concatenate and serve combined CSS and Javascript resources, in the vein of [wro4j](http://alexo.github.io/wro4j/),
+[JAWR](https://jawr.java.net/) and [pack:tag](https://github.com/ajkovar/packtag).
 
-Supports dev mode for use with Tincr or similar tools.
+
+ * Bundles changed resources on the fly
+ * Reloads changed configuration on the fly
+ * Creates cache-friendly links which will survive server restarts, redeploys or deploys to different servers. Links will change only if content changes.
+ * Fully declare relationships between resources with attributes @requires, @provides and @optional
+ * Configure dependencies either directly in js file (recommended), as JSP tags or in json configuration file
+ * Will transitively add any required dependencies and load them in the correct order. Declare dependencies on what you directly use and let the dependency graph figure out what is needed.
+ * Declare dependencies as granular or coarsely as fits the way you work
+ * Supports development mode for use with live reload tools such as [Tincr](http://tin.cr/).
+
 
 ## Setup ##
 
@@ -10,7 +20,7 @@ Add maven dependency
     <dependency>
         <groupId>se.intem</groupId>
         <artifactId>combine-taglib</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>1.3.0-SNAPSHOT</version>
     </dependency>
 
 Add the following method and call it from onStartup(:ServletContext) in WebApplicationInitializer
@@ -138,3 +148,11 @@ Output queued resources (required)
     </html>
 
 
+
+## Current limitations
+
+ * Cannot combine remote and local resources in same resource group (workaround: define different groups)
+ * No support for media attribute for css (workaround: put media query in css file)
+ * No minification of files
+ * No support for transcompiling LESS or SASS files
+ 
