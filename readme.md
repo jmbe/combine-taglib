@@ -73,11 +73,11 @@ Optionally add a comment near the top of js or css files to pull in dependencies
     
     /* combine @requires atmosphere angular */
 
-Using @provides allows other files to pull in the given resource.
+Using @provides allows other files to pull in a given resource without knowing the name of the bundle it belongs to.
 
     /* combine @requires atmosphere angular @provides MessageMultiplexer */
     ...
-    // In another file:
+    // In another file (will pull in the bundle that MessageMultiplexer currently belongs to):
     /* combine @requires MessageMultiplexer */
 
 
