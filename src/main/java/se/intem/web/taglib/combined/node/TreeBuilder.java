@@ -5,6 +5,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
@@ -74,6 +75,7 @@ public class TreeBuilder {
         for (ConfigurationItem item : items) {
             ResourceNode current = nodes.get(item.getName());
 
+            /* Add required dependencies */
             for (String required : item.getRequires()) {
                 ResourceNode edge = nodes.get(required);
                 if (edge == null) {
@@ -88,7 +90,15 @@ public class TreeBuilder {
                 current.addEdges(edge);
             }
 
-            for (String optional : item.getOptional()) {
+            /* Add optional dependencies */
+            Iterable<String> optionals = item.getOptional();
+
+            Optional<DependencyCacheEntry> cached = dependencyCache.get(item.getName());
+            if (cached.isPresent()) {
+                optionals = Iterables.concat(optionals, cached.get().getOptionals());
+            }
+
+            for (String optional : optionals) {
                 ResourceNode edge = nodes.get(optional);
                 if (edge == null) {
                     throw new IllegalStateException(String.format(

@@ -93,6 +93,7 @@ public class DependencyCache {
 
             LinkedHashSet<String> requires = Sets.newLinkedHashSet();
             LinkedHashSet<String> provides = Sets.newLinkedHashSet();
+            LinkedHashSet<String> optionals = Sets.newLinkedHashSet();
 
             ResourceGroup group = new ResourceGroup();
 
@@ -111,6 +112,7 @@ public class DependencyCache {
 
                         Iterables.addAll(requires, parsed.getRequires());
                         Iterables.addAll(provides, parsed.getProvides());
+                        Iterables.addAll(optionals, parsed.getOptionals());
                     } catch (IOException e) {
                         log.error("Could not parse js", e);
                     }
@@ -119,7 +121,7 @@ public class DependencyCache {
             }
 
             repository.addResourceGroup(ci.getName(), group);
-            put(cacheKey, new DependencyCacheEntry(lastread, requires, provides, ci));
+            put(cacheKey, new DependencyCacheEntry(lastread, requires, provides, optionals, ci));
 
             log.info(String.format("Resource group %s (%s resources) rebuilt in %s ms.", ci.getName(), ci.getSize(),
                     stopwatch.elapsed(TimeUnit.MILLISECONDS)));

@@ -11,6 +11,8 @@ import com.google.common.collect.Sets;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import se.intem.web.taglib.combined.resources.TokenType;
+
 public class ParseResult {
 
     /**
@@ -20,6 +22,7 @@ public class ParseResult {
 
     private LinkedHashSet<String> requires = Sets.newLinkedHashSet();
     private LinkedHashSet<String> provides = Sets.newLinkedHashSet();
+    private LinkedHashSet<String> optionals = Sets.newLinkedHashSet();
 
     public void addComment(final String comment) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(comment));
@@ -31,17 +34,21 @@ public class ParseResult {
         /* Remove initial combine token */
         Iterable<String> tokens = Iterables.skip(split, 1);
 
-        boolean addingProvides = false;
+        TokenType tokenType = null;
 
         for (String token : tokens) {
             if ("@requires".equals(token)) {
-                addingProvides = false;
+                tokenType = TokenType.requires;
             } else if ("@provides".equals(token)) {
-                addingProvides = true;
-            } else if (addingProvides) {
+                tokenType = TokenType.provides;
+            } else if ("@optional".equals(token)) {
+                tokenType = TokenType.optional;
+            } else if (TokenType.provides.equals(tokenType)) {
                 provides.add(token);
-            } else {
+            } else if (TokenType.requires.equals(tokenType)) {
                 requires.add(token);
+            } else {
+                optionals.add(token);
             }
         }
 
@@ -64,6 +71,10 @@ public class ParseResult {
 
     public Iterable<String> getProvides() {
         return provides;
+    }
+
+    public Iterable<String> getOptionals() {
+        return optionals;
     }
 
     @VisibleForTesting
