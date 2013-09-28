@@ -67,7 +67,7 @@ public class CombineCommentParser {
                     }
                 }
 
-                boolean remaining = false;
+                boolean checkRemaining = false;
                 if (foundStart) {
                     if (foundCommentEnd) {
                         foundEnd = true;
@@ -77,7 +77,7 @@ public class CombineCommentParser {
 
                         current.add(replaced.substring(0, index).trim());
                         contentLine = replaced.substring(index + 2);
-                        remaining = true;
+                        checkRemaining = true;
                     } else {
                         current.add(replaced.replaceFirst("[\\* /-]+$", ""));
                     }
@@ -95,8 +95,10 @@ public class CombineCommentParser {
                     foundCommentStart = false;
                 }
 
-                if (remaining) {
-                    processLine(contentLine);
+                if (checkRemaining) {
+                    if (!contentLine.isEmpty()) {
+                        processLine(contentLine);
+                    }
                 } else if (addContent) {
                     result.addContent(contentLine);
                 }
