@@ -55,8 +55,8 @@ Configure logging (sample for logback)
 Define *libraries* in a file named combine.json. Put it either in WEB-INF/ or in root of classpath. A *library* will be loaded only if some other resource depends on it.
 
  * Name must be given
- * The css and js attributes can either have a single string or an array of strings.
- * Add dependencies in requires attribute, either as comma or space separated string or as an array of strings.
+ * The **css** and **js** attributes can either have a single string or an array of strings.
+ * Add dependencies in **requires** or **optional** attribute, either as comma or space separated string or as an array of strings.
 
 *Optional* dependencies are included only if some other resource actually requires it, but if it is included then it will be loaded before resources that optionally depends on it. For example: Angular optionally requires jquery. Angular will use jquery if included, but jquery is not required. However if jquery is included, then it must be loaded before angular.
     
