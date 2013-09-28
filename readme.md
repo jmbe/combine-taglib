@@ -33,6 +33,10 @@ Or add servlet to web.xml
     </servlet-mapping>
     
 
+Configure logging (sample for logback)
+
+    <!-- For development you might want to use INFO -->
+    <logger name="se.intem.web.taglib.combined" level="WARN" />
     
     
 ## Usage ##
