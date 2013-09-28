@@ -85,8 +85,9 @@ Define *libraries* in a file named combine.json. Put it either in WEB-INF/ or in
 
 
 ### Specify dependencies directly in resource files ###
-Optionally add a comment near the top of js or css files to pull in dependencies.
-    
+Optionally add a specially formatted comment to js or css files to declare relationships. You can have several of these 
+comments per file.
+
     /* combine @requires atmosphere angular */
 
 Using @provides allows other files to pull in a given resource without knowing the name of the bundle it belongs to.
