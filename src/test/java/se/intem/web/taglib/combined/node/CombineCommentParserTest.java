@@ -21,12 +21,14 @@ public class CombineCommentParserTest {
     private InputStream multiple;
     private InputStream bug1;
     private InputStream bug2;
+    private InputStream multiplePerLine;
 
     @Before
     public void setup() {
         this.singleline = this.getClass().getResourceAsStream("/singleline-dependencies.js");
         this.multiline = this.getClass().getResourceAsStream("/multiline-dependencies.js");
         this.multiple = this.getClass().getResourceAsStream("/multiple-dependencies.js");
+        this.multiplePerLine = this.getClass().getResourceAsStream("/multiple-dependencies-per-line.js");
         this.other = this.getClass().getResourceAsStream("/combine.json");
         this.bug1 = this.getClass().getResourceAsStream("/bug1.js");
         this.bug2 = this.getClass().getResourceAsStream("/bug2.js");
@@ -38,6 +40,7 @@ public class CombineCommentParserTest {
         assertNotNull(singleline);
         assertNotNull(multiline);
         assertNotNull(multiple);
+        assertNotNull(multiplePerLine);
         assertNotNull(bug1);
         assertNotNull(bug2);
         assertNotNull(other);
@@ -89,6 +92,13 @@ public class CombineCommentParserTest {
         ParseResult parsed = parser.parse(multiple);
         List<String> requires = parsed.getRequiresList();
         assertEquals(3, requires.size());
+        assertThat(requires, is(Arrays.asList("extjs", "jquery", "angularjs")));
+    }
+
+    @Test
+    public void should_find_multiple_comments_per_line() throws IOException {
+        ParseResult parsed = parser.parse(multiplePerLine);
+        List<String> requires = parsed.getRequiresList();
         assertThat(requires, is(Arrays.asList("extjs", "jquery", "angularjs")));
     }
 
