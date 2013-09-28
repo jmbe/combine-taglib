@@ -68,10 +68,18 @@ Optional dependencies are only included if some other resource actually requires
     ]
 
 
-### Specify dependencies ###
-Add a comment near the top of js or css files to pull in dependencies.
+### Specify dependencies directly in resource files ###
+Optionally add a comment near the top of js or css files to pull in dependencies.
     
     /* combine @requires atmosphere angular */
+
+Using @provides allows other files to pull in the given resource.
+
+    /* combine @requires atmosphere angular @provides MessageMultiplexer */
+    ...
+    // In another file:
+    /* combine @requires MessageMultiplexer */
+
 
 ### Use in JSP ###
 
