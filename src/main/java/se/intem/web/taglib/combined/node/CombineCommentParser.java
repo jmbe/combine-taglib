@@ -1,12 +1,14 @@
 package se.intem.web.taglib.combined.node;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.io.CharStreams;
 import com.google.common.io.LineProcessor;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -117,5 +119,9 @@ public class CombineCommentParser {
 
     public ParseResult parse(final InputStream input) throws IOException {
         return findCombineComment(input);
+    }
+
+    public ParseResult parse(final String string) throws IOException {
+        return findCombineComment(new ByteArrayInputStream(string.getBytes(Charsets.UTF_8)));
     }
 }

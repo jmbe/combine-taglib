@@ -107,4 +107,22 @@ public class CombineCommentParserTest {
         List<String> requires = parser.parse(other).getRequiresList();
         assertEquals(0, requires.size());
     }
+
+    @Test
+    public void should_find_multiple_requires_in_comment() throws IOException {
+        String string = "/* combine @requires extjs @requires angularjs */";
+        List<String> requires = parser.parse(string).getRequiresList();
+        assertThat(requires, is(Arrays.asList("extjs", "angularjs")));
+    }
+
+    @Test
+    public void should_find_multiple_requires_and_provides_in_comment() throws IOException {
+        String string = "/* combine @requires extjs angularjs @provides tool1 tool2 @requires jquery @provides tool3 */";
+        ParseResult result = parser.parse(string);
+        List<String> requires = result.getRequiresList();
+        assertThat(requires, is(Arrays.asList("extjs", "angularjs", "jquery")));
+
+        List<String> provides = result.getProvidesList();
+        assertThat(provides, is(Arrays.asList("tool1", "tool2", "tool3")));
+    }
 }
