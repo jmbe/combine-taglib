@@ -86,13 +86,17 @@ Define *libraries* in a file named combine.json. Put it either in WEB-INF/ or in
 
 ### Specify dependencies directly in resource files ###
 Optionally add a specially formatted comment to js or css files to declare relationships. You can have several of these 
-comments per file.
+comments per file, for example if you are declaring several components in the same file.
 
     /* combine @requires atmosphere angular */
 
 Using @provides allows other files to pull in a given resource without knowing the name of the bundle it belongs to.
 
-    /* combine @requires atmosphere angular @provides MessageMultiplexer */
+    /* 
+     * combine
+     * @requires atmosphere angular
+     * @provides MessageMultiplexer
+     */
     ...
     // In another file (will pull in the bundle that MessageMultiplexer currently belongs to):
     /* combine @requires MessageMultiplexer */
