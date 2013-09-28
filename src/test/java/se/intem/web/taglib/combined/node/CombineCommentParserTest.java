@@ -55,8 +55,10 @@ public class CombineCommentParserTest {
 
     @Test
     public void should_find_multi_combine_comment() throws IOException {
-        List<String> requires = parser.findCombineComment(multiline).getRequiresList();
+        ParseResult parsed = parser.findCombineComment(multiline);
+        List<String> requires = parsed.getRequiresList();
         assertThat(requires, is(asList("extjs", "angularjs", "jquery")));
+        assertEquals("/* unrelated */\r\nvar code;", parsed.getContents().trim());
     }
 
     @Test
