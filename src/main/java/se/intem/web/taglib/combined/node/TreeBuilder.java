@@ -57,8 +57,15 @@ public class TreeBuilder {
             Optional<DependencyCacheEntry> optional = dependencyCache.get(item.getName());
             if (optional.isPresent()) {
                 Iterable<String> provides = optional.get().getProvides();
-                for (String string : provides) {
-                    aliases.put(string, node);
+                for (String aliasName : provides) {
+                    ResourceNode currentAlias = aliases.get(aliasName);
+                    if (currentAlias == null) {
+                        aliases.put(aliasName, node);
+                    } else if (currentAlias != node) {
+                        throw new IllegalStateException(String.format(
+                                "Duplicate alias '%s' is a member of both '%s' and '%s'.", aliasName,
+                                currentAlias.getName(), node.getName()));
+                    }
                 }
             }
         }
