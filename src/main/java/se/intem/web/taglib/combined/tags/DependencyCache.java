@@ -1,6 +1,7 @@
 package se.intem.web.taglib.combined.tags;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Stopwatch;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Iterables;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContext;
 
@@ -75,11 +77,11 @@ public class DependencyCache {
         if (hasChanges) {
             /* Rebuild cache */
             if (!ci.shouldBeCombined()) {
-                log.info("Reading dependencies for uncombined resource {}.", ci.getName());
+                log.debug("Reading dependencies for uncombined resource {}.", ci.getName());
             } else {
-                log.info("Changes detected for {}. Rebuilding dependency cache...", ci.getName());
+                log.debug("Changes detected for {}. Rebuilding dependency cache...", ci.getName());
             }
-
+            Stopwatch stopwatch = Stopwatch.createStarted();
             long lastread = new Date().getTime();
             Map<ResourceType, List<ManagedResource>> realPaths = ci.getRealPaths(servletContext);
             Set<Entry<ResourceType, List<ManagedResource>>> entrySet = realPaths.entrySet();
@@ -108,6 +110,8 @@ public class DependencyCache {
 
             put(cacheKey, new DependencyCacheEntry(lastread, requires, provides, ci));
 
+            log.info(String.format("Resource group %s (%s resources) rebuilt in %s ms.", ci.getName(), ci.getSize(),
+                    stopwatch.elapsed(TimeUnit.MILLISECONDS)));
         }
 
         optional = get(cacheKey);

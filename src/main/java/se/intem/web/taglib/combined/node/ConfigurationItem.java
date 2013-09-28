@@ -257,4 +257,8 @@ public class ConfigurationItem implements ResourceParent {
     public boolean hasDependencies() {
         return !requires.isEmpty() || !parsedRequires.isEmpty();
     }
+
+    public int getSize() {
+        return js.size() + css.size();
+    }
 }
