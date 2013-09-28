@@ -3,6 +3,7 @@ package se.intem.web.taglib.combined.tags;
 import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
 import java.io.IOException;
@@ -84,6 +85,7 @@ public class DependencyCache {
             Set<Entry<ResourceType, List<ManagedResource>>> entrySet = realPaths.entrySet();
 
             LinkedHashSet<String> requires = Sets.newLinkedHashSet();
+            LinkedHashSet<String> provides = Sets.newLinkedHashSet();
 
             for (Entry<ResourceType, List<ManagedResource>> entry : entrySet) {
 
@@ -94,8 +96,9 @@ public class DependencyCache {
                     try {
                         ParseResult parsed = jsParser.parse(mr.getInput());
                         bundle.addContents(parsed.getContents());
-                        List<String> found = parsed.getRequiresList();
-                        requires.addAll(found);
+
+                        Iterables.addAll(requires, parsed.getRequires());
+                        Iterables.addAll(provides, parsed.getProvides());
                     } catch (IOException e) {
                         log.error("Could not parse js", e);
                     }
@@ -103,7 +106,7 @@ public class DependencyCache {
                 CombinedResourceRepository.get().addCombinedResource(ci.getName(), bundle);
             }
 
-            put(cacheKey, new DependencyCacheEntry(lastread, requires, ci));
+            put(cacheKey, new DependencyCacheEntry(lastread, requires, provides, ci));
 
         }
 

@@ -64,7 +64,7 @@ public class ParseResult {
     }
 
     @VisibleForTesting
-    public List<String> getRequiresList() {
+    List<String> getRequiresList() {
         return Lists.newArrayList(requires);
     }
 

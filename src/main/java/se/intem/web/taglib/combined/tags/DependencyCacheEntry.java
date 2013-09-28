@@ -8,13 +8,17 @@ public class DependencyCacheEntry {
 
     long lastread = 0;
 
-    Iterable<String> requires;
+    private Iterable<String> requires;
+
+    private Iterable<String> provides;
 
     private ConfigurationItem ci;
 
-    public DependencyCacheEntry(final long lastread, final Iterable<String> requires, final ConfigurationItem ci) {
+    public DependencyCacheEntry(final long lastread, final Iterable<String> requires, final Iterable<String> provides,
+            final ConfigurationItem ci) {
         this.lastread = lastread;
         this.requires = requires;
+        this.provides = provides;
         this.ci = ci;
     }
 
@@ -25,6 +29,10 @@ public class DependencyCacheEntry {
     public Iterable<String> getRequires() {
         return requires;
     };
+
+    public Iterable<String> getProvides() {
+        return provides;
+    }
 
     public boolean requiresRefresh(final ConfigurationItem updated, final ServletContext servletContext) {
 
