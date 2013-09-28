@@ -27,6 +27,8 @@ import se.intem.web.taglib.combined.node.CombineCommentParser;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 import se.intem.web.taglib.combined.node.ParseResult;
 import se.intem.web.taglib.combined.resources.CombinedBundle;
+import se.intem.web.taglib.combined.resources.ResourceGroup;
+import se.intem.web.taglib.combined.resources.ResourceName;
 
 public class DependencyCache {
 
@@ -37,9 +39,12 @@ public class DependencyCache {
 
     private CombineCommentParser jsParser;
 
+    private CombinedResourceRepository repository;
+
     public DependencyCache() {
         this.cache = CacheBuilder.newBuilder().build();
         this.jsParser = new CombineCommentParser();
+        this.repository = CombinedResourceRepository.get();
     }
 
     public Optional<DependencyCacheEntry> get(final String key) {
@@ -89,9 +94,14 @@ public class DependencyCache {
             LinkedHashSet<String> requires = Sets.newLinkedHashSet();
             LinkedHashSet<String> provides = Sets.newLinkedHashSet();
 
+            ResourceGroup group = new ResourceGroup();
+
+            int counter = 0;
             for (Entry<ResourceType, List<ManagedResource>> entry : entrySet) {
 
-                CombinedBundle bundle = new CombinedBundle(entry.getKey(), lastread);
+                ResourceName name = new ResourceName(ci.getName()).derive(counter++);
+                CombinedBundle bundle = new CombinedBundle(name, entry.getKey(), lastread);
+                group.addBundle(bundle);
 
                 for (ManagedResource mr : entry.getValue()) {
                     log.debug("Parsing {}", mr.getName());
@@ -105,9 +115,10 @@ public class DependencyCache {
                         log.error("Could not parse js", e);
                     }
                 }
-                CombinedResourceRepository.get().addCombinedResource(ci.getName(), bundle);
+                repository.addCombinedResource(bundle);
             }
 
+            repository.addResourceGroup(ci.getName(), group);
             put(cacheKey, new DependencyCacheEntry(lastread, requires, provides, ci));
 
             log.info(String.format("Resource group %s (%s resources) rebuilt in %s ms.", ci.getName(), ci.getSize(),

@@ -4,12 +4,14 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import se.intem.web.taglib.combined.resources.CombinedBundle;
+import se.intem.web.taglib.combined.resources.ResourceGroup;
 
 public class CombinedResourceRepository {
 
@@ -17,9 +19,10 @@ public class CombinedResourceRepository {
     private static final Logger log = LoggerFactory.getLogger(CombinedResourceRepository.class);
 
     /**
-     * key(path, name) -> requestPath
+     * Resource group name -> ResourceGroup
      */
-    private Map<String, RequestPath> resourcePaths;
+    private Map<String, ResourceGroup> resourcePaths;
+
     /**
      * requestPath -> CombinedResource
      */
@@ -35,22 +38,34 @@ public class CombinedResourceRepository {
         return String.format("/%s/%s", name, type);
     }
 
-    public Optional<RequestPath> getResourcePath(final String name, final ResourceType type) {
-        return Optional.fromNullable(resourcePaths.get(createResourcePathKey(name, type)));
+    public Iterable<RequestPath> getResourcePath(final String name, final ResourceType type) {
+
+        Optional<ResourceGroup> optional = Optional.fromNullable(resourcePaths.get(name));
+        if (optional.isPresent()) {
+            return optional.get().getRequestPaths(type);
+        }
+
+        return Collections.emptyList();
     }
 
+    /**
+     * Used by servlet to get bundle contents.
+     */
     public CombinedBundle getCombinedResource(final RequestPath requestUri) {
         return combinedResourcePaths.get(requestUri);
     }
 
-    public RequestPath addCombinedResource(final String name, final CombinedBundle bundle) {
-        RequestPath requestPath = createRequestPath(name, bundle.getType(), bundle.getChecksum());
+    public RequestPath addCombinedResource(final CombinedBundle bundle) {
+        RequestPath requestPath = createRequestPath(bundle.getName().getName(), bundle.getType(), bundle.getChecksum());
+        bundle.setRequestPath(requestPath);
 
         log.debug("Adding combined resource {}.", requestPath);
-
-        resourcePaths.put(createResourcePathKey(name, bundle.getType()), requestPath);
         combinedResourcePaths.put(requestPath, bundle);
         return requestPath;
+    }
+
+    public void addResourceGroup(final String name, final ResourceGroup group) {
+        resourcePaths.put(name, group);
     }
 
     /**

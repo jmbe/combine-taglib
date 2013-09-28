@@ -1,6 +1,5 @@
 package se.intem.web.taglib.combined.tags;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Stopwatch;
 
 import java.io.IOException;
@@ -79,11 +78,9 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
                     writeOutputPath(path);
                 }
             } else {
-                Optional<RequestPath> path = repository.getResourcePath(ci.getName(), getType());
-                if (path.isPresent()) {
-                    writeOutputPath(path.get());
-                } else {
-                    log.error("Could not find resource path for {}:{}", ci.getName(), getType());
+                Iterable<RequestPath> paths = repository.getResourcePath(ci.getName(), getType());
+                for (RequestPath path : paths) {
+                    writeOutputPath(path);
                 }
             }
 
