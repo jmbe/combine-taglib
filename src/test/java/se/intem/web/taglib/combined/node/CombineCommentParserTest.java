@@ -20,6 +20,7 @@ public class CombineCommentParserTest {
     private InputStream other;
     private InputStream multiple;
     private InputStream bug1;
+    private InputStream bug2;
 
     @Before
     public void setup() {
@@ -28,6 +29,7 @@ public class CombineCommentParserTest {
         this.multiple = this.getClass().getResourceAsStream("/multiple-dependencies.js");
         this.other = this.getClass().getResourceAsStream("/combine.json");
         this.bug1 = this.getClass().getResourceAsStream("/bug1.js");
+        this.bug2 = this.getClass().getResourceAsStream("/bug2.js");
         this.parser = new CombineCommentParser();
     }
 
@@ -37,6 +39,7 @@ public class CombineCommentParserTest {
         assertNotNull(multiline);
         assertNotNull(multiple);
         assertNotNull(bug1);
+        assertNotNull(bug2);
         assertNotNull(other);
     }
 
@@ -72,6 +75,12 @@ public class CombineCommentParserTest {
     public void should_parse_bug1() throws IOException {
         List<String> requires = parser.parse(bug1).getRequiresList();
         assertEquals(4, requires.size());
+        assertThat(requires, is(Arrays.asList("a", "b", "c", "d")));
+    }
+
+    @Test
+    public void should_parse_bug2() throws IOException {
+        List<String> requires = parser.parse(bug2).getRequiresList();
         assertThat(requires, is(Arrays.asList("a", "b", "c", "d")));
     }
 

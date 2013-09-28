@@ -43,9 +43,15 @@ public class CombineCommentParser {
 
                 if (line.startsWith("/* combine")) {
                     foundStart = true;
+                    foundCommentStart = true;
                     /* Remove comment start */
                     line = line.substring(3);
-                } else if (line.startsWith("/*")) {
+                } else if (line.startsWith("/*- combine")) {
+                    foundStart = true;
+                    foundCommentStart = true;
+                    /* Remove comment start */
+                    line = line.substring(4);
+                } else if (line.startsWith("/*") || line.startsWith("/*-")) {
                     /* Some comment has started. Unknown if this comment contains combine. */
                     foundCommentStart = true;
                 } else if (foundCommentStart && line.startsWith("* combine")) {
