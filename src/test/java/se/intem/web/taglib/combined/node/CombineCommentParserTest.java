@@ -4,8 +4,11 @@ import static java.util.Arrays.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import com.google.common.io.CharStreams;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,6 +25,7 @@ public class CombineCommentParserTest {
     private InputStream bug1;
     private InputStream bug2;
     private InputStream multiplePerLine;
+    private InputStream nochanges;
 
     @Before
     public void setup() {
@@ -29,6 +33,7 @@ public class CombineCommentParserTest {
         this.multiline = this.getClass().getResourceAsStream("/multiline-dependencies.js");
         this.multiple = this.getClass().getResourceAsStream("/multiple-dependencies.js");
         this.multiplePerLine = this.getClass().getResourceAsStream("/multiple-dependencies-per-line.js");
+        this.nochanges = this.getClass().getResourceAsStream("/nochanges.js");
         this.other = this.getClass().getResourceAsStream("/combine.json");
         this.bug1 = this.getClass().getResourceAsStream("/bug1.js");
         this.bug2 = this.getClass().getResourceAsStream("/bug2.js");
@@ -126,5 +131,13 @@ public class CombineCommentParserTest {
 
         List<String> provides = result.getProvidesList();
         assertThat(provides, is(Arrays.asList("tool1", "tool2", "tool3")));
+    }
+
+    @Test
+    public void should_not_change_js_structure() throws IOException {
+        String content = CharStreams.toString(new InputStreamReader(nochanges));
+
+        ParseResult parsed = parser.parse(content);
+        assertEquals(content, parsed.getContents());
     }
 }
