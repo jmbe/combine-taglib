@@ -20,7 +20,7 @@ Add maven dependency
     <dependency>
         <groupId>se.intem</groupId>
         <artifactId>combine-taglib</artifactId>
-        <version>1.3.0-SNAPSHOT</version>
+        <version>1.3.0</version>
     </dependency>
 
 Add the following method and call it from onStartup(:ServletContext) in WebApplicationInitializer
