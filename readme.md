@@ -1,5 +1,3 @@
-Latest docs are on [develop](/jmbe/combine-taglib/tree/develop) branch.
-
 # Combine-taglib #
 Combine-taglib is a JSP taglib to concatenate and serve combined CSS and Javascript resources, in the vein of [wro4j](http://alexo.github.io/wro4j/),
 [JAWR](https://jawr.java.net/) and [pack:tag](https://github.com/ajkovar/packtag).
