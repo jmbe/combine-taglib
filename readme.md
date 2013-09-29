@@ -1,7 +1,17 @@
 # Combine-taglib #
-A simple JSP taglib to concatenate and serve fingerprinted css or js resources, with support for dependency graphs.
+Combine-taglib is a JSP taglib to concatenate and serve combined CSS and Javascript resources, in the vein of [wro4j](http://alexo.github.io/wro4j/),
+[JAWR](https://jawr.java.net/) and [pack:tag](https://github.com/ajkovar/packtag).
 
-Supports dev mode for use with Tincr or similar tools.
+
+ * Bundles changed resources on the fly
+ * Reloads changed configuration on the fly
+ * Creates cache-friendly links which will survive server restarts, redeploys or deploys to different servers. Links will change only if content changes.
+ * Fully declare resource relationships with attributes @requires, @provides and @optional
+ * Configure dependencies either directly in js file (recommended), as JSP tags or in json configuration file
+ * Will transitively add any required dependencies and load them in the correct order. Declare dependencies on what you directly use and let the dependency graph figure out what is needed.
+ * Declare dependencies as granular or coarsely as fits the way you work
+ * Supports development mode for use with live reload tools such as [Tincr](http://tin.cr/).
+
 
 ## Setup ##
 
@@ -10,7 +20,7 @@ Add maven dependency
     <dependency>
         <groupId>se.intem</groupId>
         <artifactId>combine-taglib</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>1.3.0</version>
     </dependency>
 
 Add the following method and call it from onStartup(:ServletContext) in WebApplicationInitializer
@@ -33,16 +43,24 @@ Or add servlet to web.xml
     </servlet-mapping>
     
 
+Configure logging (sample for logback)
+
+    <!-- For development you might want to use INFO -->
+    <logger name="se.intem.web.taglib.combined" level="WARN" />
     
     
 ## Usage ##
 
 ### Create combine.json (optional) ###
-Define libraries in combine.json in root of classpath. A library will be loaded only if some other resource depends on it.
+Define *libraries* in a file named combine.json. Put it either in WEB-INF/ or in root of classpath. A *library* will be loaded only if some other resource depends on it.
 
-Name must be given. The css and js attributes can either have a single string or an array of strings. Add dependencies in requires attribute, either as comma or space separated string or as array of strings.
+Local files will be scanned for dependencies and added to dependency graph.
 
-Optional dependencies are only included if some other resource actually requires it, but if it is included then it will be loaded before resources that optionally depends on it. For example: Angular optionally requires jquery. Angular will use jquery if included, but jquery is not required. However if jquery is included, then it must be loaded before angular.
+ * Name must be given
+ * The **css** and **js** attributes can either have a single string or an array of strings.
+ * Add dependencies in **requires** or **optional** attribute, either as comma or space separated string or as an array of strings.
+
+*Optional* dependencies are included only if some other resource actually requires it, but if it is included then it will be loaded before resources that optionally depends on it. For example: Angular optionally requires jquery. Angular will use jquery if included, but jquery is not required. However if jquery is included, then it must be loaded before angular.
     
 
     [
@@ -68,50 +86,46 @@ Optional dependencies are only included if some other resource actually requires
     ]
 
 
-### Specify dependencies ###
-Add a comment near the top of js or css files to pull in dependencies.
-    
+### Specify dependencies directly in resource files ###
+Optionally add a specially formatted comment to js or css files to declare relationships. You can have several of these 
+comments per file, for example if you are declaring several components in the same file.
+
     /* combine @requires atmosphere angular */
+
+Using @provides allows other files to pull in a given resource without knowing the name of the bundle it belongs to.
+
+    /* 
+     * combine
+     * @requires atmosphere angular
+     * @provides MessageMultiplexer
+     */
+    ...
+    // In another file (will pull in the bundle that MessageMultiplexer currently belongs to):
+    /* combine @requires MessageMultiplexer */
+
 
 ### Use in JSP ###
 
-Add taglib to jsp (required)
+Add taglib to jsp
 
     <%@ taglib uri="http://combine.intem.se" prefix="combine" %>
     
-Combine javascript resources. Local files will be scanned for dependencies and added to dependency graph.
+Normally you would define resource groups in combine.json but if preferred you can define them directly in jsp. When you
+define the group in jsp it will always be included, so it does not need to be explicitly required (set attribute 
+library=true, to turn off automatic inclusion).
 
-
-    <combine:group name="combined-javascript">
+    <combine:group name="combined" requires="bootstrap">
         <combine:js path="/js/AngularAtmosphere.js" />
         <combine:js path="/js/Humanized.js" />
-        ...
-    </combine:group>
-    
-Combine css resources
-
-    <combine:group name="combined-css" reloadable="true" requires="bootstrap">
-        <combine:css path="/css/tpa.css"/>
+        <combine:css path="/css/tpa.css"/>        
         ...
     </combine:group>
 
-Add inline javascript. Inline javascript will be added last, after all other scripts.
+Require some libraries on a page
 
-    <combine:script requires="angular">
-        ...
-    </combine:script>
-    
-Add inline css style. Will be added after all other css links.
+    <combine:requires requires="bootstrap angular" />
 
-    <combine:style>
-       ...
-    </combine:style>
-
-Force pulling in some libraries on a page
-
-    <combine:requires requires="bootstrap,angular" />
-
-Output queued resources (required)
+Output queued resources
 
     <html>
         <body>
@@ -125,4 +139,59 @@ Output queued resources (required)
         </body>
     </html>
 
+#### Inline
 
+Add inline javascript. Inline javascript will be added last, after all other scripts.
+
+    <combine:script requires="angular">
+        ...
+    </combine:script>
+    
+To trigger proper display and formatting in IDE editors you can wrap a plain script tag:
+
+    <combine:script requires="angular">
+    <script>
+        ...
+    </script>
+    </combine:script>
+    
+Add inline css style. Will be added after all other css links.
+
+    <combine:style>
+       ...
+    </combine:style>
+
+To trigger proper display and formatting in IDE editors you can wrap a plain style tag:
+
+    <combine:style>
+    <style>
+       ...
+    </style>
+    </combine:style>
+
+## Development mode
+Resources will be bundled and links will change based on content whether you run an unpacked (typically in an IDE) or 
+a packed war file. If you would rather output the individual file links to support live reload tools, you can enable
+development mode.
+
+Start server with **-DcombineDevMode=true**.
+
+Add **supportsDevMode: true** to the bundle either in json configuration or while defining group as JSP tag.
+
+    {
+        name : "time-css",
+        requires : "bootstrap-css select2 bootstrap-datepicker",
+        supportsDevMode : true,
+        css : "/css/timereport.css"
+    }
+
+
+
+
+## Current limitations
+
+ * Cannot combine remote and local resources in same resource group (workaround: define different groups)
+ * No support for media attribute for css (workaround: put media query in css file)
+ * No minification of files
+ * No support for transcompiling LESS or SASS files
+ 

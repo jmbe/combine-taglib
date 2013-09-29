@@ -1,10 +1,8 @@
 package se.intem.web.taglib.combined.tags;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.FluentIterable;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -13,15 +11,13 @@ import javax.servlet.jsp.JspException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.intem.web.taglib.combined.CombineResourceStrategy;
 import se.intem.web.taglib.combined.CombinedResourceRepository;
-import se.intem.web.taglib.combined.ConcatCombineResourceStrategy;
 import se.intem.web.taglib.combined.RequestPath;
 import se.intem.web.taglib.combined.ResourceType;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 import se.intem.web.taglib.combined.node.TreeBuilder;
 
-public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport implements CombineResourceStrategy {
+public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport {
 
     /** Logger for this class. */
     private static final Logger log = LoggerFactory.getLogger(LayoutTagSupport.class);
@@ -50,19 +46,6 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
 
     /* Format path for output in jsp, e.g. as script or link tag. */
     protected abstract String format(RequestPath path);
-
-    protected RequestPath addCombinedResources(final String name, final ResourceType type,
-            final List<RequestPath> sources) {
-
-        List<ManagedResource> realPaths = FluentIterable.from(sources)
-                .transform(new ServerPathToManagedResource(pageContext.getServletContext())).toList();
-
-        return repository.addCombinedResource(name, type, realPaths, this);
-    }
-
-    public long combineFiles(final PrintWriter pw, final List<ManagedResource> realPaths) throws IOException {
-        return new ConcatCombineResourceStrategy().joinPaths(pw, realPaths);
-    }
 
     public abstract List<RequestPath> getResources(final ConfigurationItem configuration);
 
@@ -95,20 +78,16 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
                     writeOutputPath(path);
                 }
             } else {
-
-                if (ci.isReloadable() || !repository.containsResourcePath(ci.getName(), getType())) {
-                    log.debug("Checking for changes in {}", ci.getName());
-                    addCombinedResources(ci.getName(), getType(), resources);
+                Iterable<RequestPath> paths = repository.getResourcePath(ci.getName(), getType());
+                for (RequestPath path : paths) {
+                    writeOutputPath(path);
                 }
-
-                RequestPath path = repository.getResourcePath(ci.getName(), getType());
-                writeOutputPath(path);
             }
 
         }
 
         outputInlineResources(configurationItems);
-        log.info(String.format("Handled %s %s resources in %s ms.", count, getType(),
+        log.info(String.format("Handled %s %s bundles in %s ms.", count, getType(),
                 stopwatch.elapsed(TimeUnit.MILLISECONDS)));
 
         return EVAL_PAGE;

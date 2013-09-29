@@ -1,5 +1,6 @@
 package se.intem.web.taglib.combined.node;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
@@ -33,14 +34,22 @@ public class ConfigurationItem implements ResourceParent {
     private boolean library = false;
     private boolean combine = true;
 
+    /* Requires that were set on group */
     private LinkedHashSet<String> requires = Sets.newLinkedHashSet();
+    /* Requires that were parsed from contents needs to be tracked separately so that it can be replaced on changes. */
+    private LinkedHashSet<String> parsedRequires = Sets.newLinkedHashSet();
     private LinkedHashSet<String> optional = Sets.newLinkedHashSet();
     private List<RequestPath> js = Lists.newArrayList();
     private List<RequestPath> css = Lists.newArrayList();
     private boolean supportsDevMode;
 
-    public List<String> getRequires() {
-        return Lists.newArrayList(requires);
+    public Iterable<String> getRequires() {
+        return Iterables.concat(requires, parsedRequires);
+    }
+
+    @VisibleForTesting
+    List<String> getRequiresList() {
+        return FluentIterable.from(getRequires()).toList();
     }
 
     public void setRequires(final List<String> requires) {
@@ -150,6 +159,20 @@ public class ConfigurationItem implements ResourceParent {
         return !getPaths(type).isEmpty();
     }
 
+    /**
+     * An empty group contains no members but it may still have dependencies. Typically a requires tag.
+     */
+    public boolean isEmpty() {
+        ResourceType[] values = ResourceType.values();
+        for (ResourceType type : values) {
+            if (hasResources(type)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public Map<ResourceType, List<ManagedResource>> getRealPaths(final ServletContext servletContext) {
         Map<ResourceType, List<ManagedResource>> result = Maps.newHashMap();
 
@@ -166,7 +189,16 @@ public class ConfigurationItem implements ResourceParent {
     }
 
     public boolean shouldBeCombined() {
-        return !((CombinedConfigurationHolder.isDevMode() && isSupportsDevMode()) || !isCombine() || isRemote());
+        if (isRemote()) {
+            return false;
+        }
+
+        if (!isCombine()) {
+            return false;
+        }
+
+        boolean outputAsIs = CombinedConfigurationHolder.isDevMode() && isSupportsDevMode();
+        return !outputAsIs;
     }
 
     public long getLastChange(final ServletContext servletContext) {
@@ -208,4 +240,25 @@ public class ConfigurationItem implements ResourceParent {
         this.optional.addAll(FluentIterable.from(split).toList());
     }
 
+    public void replaceParsedRequires(final Iterable<String> requires) {
+        this.parsedRequires = Sets.newLinkedHashSet();
+        for (String string : requires) {
+            addParsedRequires(string);
+        }
+    }
+
+    private void addParsedRequires(final String string) {
+        Iterable<String> split = Splitter.on(CharMatcher.anyOf(" ,")).trimResults().omitEmptyStrings()
+                .split(Strings.nullToEmpty(string));
+        this.parsedRequires.addAll(FluentIterable.from(split).toList());
+
+    }
+
+    public boolean hasDependencies() {
+        return !requires.isEmpty() || !parsedRequires.isEmpty();
+    }
+
+    public int getSize() {
+        return js.size() + css.size();
+    }
 }

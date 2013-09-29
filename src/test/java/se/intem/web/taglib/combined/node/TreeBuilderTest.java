@@ -14,9 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import se.intem.web.taglib.combined.RequestPath;
-import se.intem.web.taglib.combined.node.ConfigurationItem;
-import se.intem.web.taglib.combined.node.ResourceNode;
-import se.intem.web.taglib.combined.node.TreeBuilder;
 import se.intem.web.taglib.combined.tags.ConfigurationItemsCollection;
 
 public class TreeBuilderTest {
@@ -52,7 +49,7 @@ public class TreeBuilderTest {
 
         ConfigurationItem item = config.iterator().next();
 
-        assertEquals(1, item.getRequires().size());
+        assertEquals(1, item.getRequiresList().size());
         RequestPath link = item.getCss().get(0);
         assertEquals("1.css", link.getPath());
         assertFalse(link.isRemote());

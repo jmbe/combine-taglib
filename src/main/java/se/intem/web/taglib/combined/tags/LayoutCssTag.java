@@ -6,8 +6,6 @@ import java.util.List;
 
 import javax.servlet.jsp.JspException;
 
-import se.intem.web.taglib.combined.CombinedResource;
-import se.intem.web.taglib.combined.CssCombinedResource;
 import se.intem.web.taglib.combined.RequestPath;
 import se.intem.web.taglib.combined.ResourceType;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
@@ -28,11 +26,6 @@ public class LayoutCssTag extends LayoutTagSupport {
         }
 
         return String.format("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\" %s/>", path, mediaAttribute);
-    }
-
-    public CombinedResource stringToCombinedResource(final String contents, final long timestamp,
-            final String checksum, final List<ManagedResource> realPaths) {
-        return new CssCombinedResource(contents, timestamp, checksum, realPaths);
     }
 
     public void setMedia(final String media) {

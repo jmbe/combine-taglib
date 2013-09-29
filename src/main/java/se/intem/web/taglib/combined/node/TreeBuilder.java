@@ -2,8 +2,10 @@ package se.intem.web.taglib.combined.node;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
@@ -15,13 +17,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import se.intem.web.taglib.combined.tags.ConfigurationItemsCollection;
+import se.intem.web.taglib.combined.tags.DependencyCache;
+import se.intem.web.taglib.combined.tags.DependencyCacheEntry;
 
 public class TreeBuilder {
 
     private CombineObjectMapper mapper;
+    private DependencyCache dependencyCache;
 
     public TreeBuilder() {
         this.mapper = new CombineObjectMapper();
+        this.dependencyCache = DependencyCache.get();
     }
 
     public ConfigurationItemsCollection parse(final InputStream stream) throws IOException {
@@ -40,26 +46,59 @@ public class TreeBuilder {
     public Map<String, ResourceNode> build(final ConfigurationItemsCollection items) {
         Map<String, ResourceNode> nodes = Maps.newHashMap();
 
+        /* Maps a @provides to the actual resource group containing that resource. */
+        Map<String, ResourceNode> aliases = Maps.newHashMap();
+
         /* Pass 1: Populate map */
         for (ConfigurationItem item : items) {
-            nodes.put(item.getName(), new ResourceNode(item.getName(), item));
+            ResourceNode node = new ResourceNode(item.getName(), item);
+            nodes.put(item.getName(), node);
+
+            /* Check if there are registered @provides for this node */
+            Optional<DependencyCacheEntry> optional = dependencyCache.get(item.getName());
+            if (optional.isPresent()) {
+                Iterable<String> provides = optional.get().getProvides();
+                for (String aliasName : provides) {
+                    ResourceNode currentAlias = aliases.get(aliasName);
+                    if (currentAlias == null) {
+                        aliases.put(aliasName, node);
+                    } else if (currentAlias != node) {
+                        throw new IllegalStateException(String.format(
+                                "Duplicate alias '%s' is a member of both '%s' and '%s'.", aliasName,
+                                currentAlias.getName(), node.getName()));
+                    }
+                }
+            }
         }
 
         /* Pass 2: populate dependencies */
         for (ConfigurationItem item : items) {
             ResourceNode current = nodes.get(item.getName());
-            List<String> requires = item.getRequires();
 
-            for (String required : requires) {
+            /* Add required dependencies */
+            for (String required : item.getRequires()) {
                 ResourceNode edge = nodes.get(required);
                 if (edge == null) {
-                    throw new IllegalStateException(String.format("Could not find dependency: %s requires '%s'",
-                            current.getName(), required));
+
+                    edge = aliases.get(required);
+
+                    if (edge == null) {
+                        throw new IllegalStateException(String.format("Could not find dependency: %s requires '%s'",
+                                current.getName(), required));
+                    }
                 }
                 current.addEdges(edge);
             }
 
-            for (String optional : item.getOptional()) {
+            /* Add optional dependencies */
+            Iterable<String> optionals = item.getOptional();
+
+            Optional<DependencyCacheEntry> cached = dependencyCache.get(item.getName());
+            if (cached.isPresent()) {
+                optionals = Iterables.concat(optionals, cached.get().getOptionals());
+            }
+
+            for (String optional : optionals) {
                 ResourceNode edge = nodes.get(optional);
                 if (edge == null) {
                     throw new IllegalStateException(String.format(

@@ -1,5 +1,6 @@
 package se.intem.web.taglib.combined.node;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
@@ -7,8 +8,6 @@ import java.util.Arrays;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
-
-import se.intem.web.taglib.combined.node.ResourceNode;
 
 public class ResourceNodeTest {
 
@@ -69,6 +68,20 @@ public class ResourceNodeTest {
         ResourceNode virtual1 = new ResourceNode().addEdges(virtual2, e).setVirtual(true);
 
         assertThat(virtual1.resolve(), Matchers.is(Arrays.asList(d, e)));
+    }
+
+    @Test
+    public void dependency_on_self_should_be_trivially_satisfied() {
+        e.addEdges(e);
+        assertThat(e.resolve(), is(Arrays.asList(e)));
+
+        a.addEdges(a);
+        b.addEdges(b);
+        c.addEdges(c);
+        d.addEdges(d);
+        e.addEdges(e);
+
+        assertThat(a.resolve(), is(Arrays.asList(d, e, c, b, a)));
     }
 
 }

@@ -3,7 +3,6 @@ package se.intem.web.taglib.combined;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -26,8 +25,7 @@ public class ConcatCombineResourceStrategy {
 
             try {
                 if (realPath.isTimestampSupported()) {
-                    File file = new File(realPath.getRealPath());
-                    timestamp = Math.max(timestamp, file.lastModified());
+                    timestamp = Math.max(timestamp, realPath.lastModified());
                 }
 
                 String contents = CharStreams.toString(CharStreams.newReaderSupplier(realPath.getInputSupplier(),

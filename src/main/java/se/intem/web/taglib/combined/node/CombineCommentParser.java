@@ -1,81 +1,128 @@
 package se.intem.web.taglib.combined.node;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.io.CharStreams;
 import com.google.common.io.LineProcessor;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CombineCommentParser {
 
-    /* Maximum number of lines to read to find requires. */
-    private static final int MAX_LINES = 20;
+    private static final Pattern commentStart = Pattern.compile("^/\\*\\*?-?\\s*");
+    private static final Pattern continuationStart = Pattern.compile("^\\*\\s+");
 
     @VisibleForTesting
-    String findCombineComment(final InputStream stream) throws IOException {
+    ParseResult findCombineComment(final InputStream stream) throws IOException {
 
-        LineProcessor<String> findCombineComment = new LineProcessor<String>() {
+        LineProcessor<ParseResult> findCombineComment = new LineProcessor<ParseResult>() {
 
-            private int lines = 0;
             private boolean foundStart = false;
             private boolean foundEnd = false;
+
+            /* Found start of any comment, which may turn out to be desired comment. */
             private boolean foundCommentStart = false;
 
-            List<String> result = Lists.newArrayList();
+            private ParseResult result = new ParseResult();
+
+            private List<String> current = Lists.newArrayList();
+
+            private List<String> currentComment = Lists.newArrayList();
 
             @Override
             public boolean processLine(String line) throws IOException {
+
+                String contentLine = line;
+
                 line = Strings.nullToEmpty(line).trim();
-                if (!foundStart && lines++ > MAX_LINES) {
-                    return false;
+
+                if (line.isEmpty()) {
+                    result.addContent(contentLine);
+                    return true;
                 }
 
                 boolean foundCommentEnd = line.contains("*/");
 
-                if (line.equals("*")) {
-                    return true;
-                }
-
-                if (line.startsWith("/* combine")) {
-                    foundStart = true;
-                    /* Remove comment start */
-                    line = line.substring(3);
-                } else if (line.startsWith("/*")) {
-                    /* Some comment has started. Unknown if this comment contains combine. */
+                Matcher startmatcher = commentStart.matcher(line);
+                String replaced = line;
+                if (startmatcher.find()) {
                     foundCommentStart = true;
-                } else if (foundCommentStart && line.startsWith("* combine")) {
-                    foundStart = true;
-                    /* Remove comment start */
-                    line = line.substring(2);
-
-                } else if (foundCommentStart && !foundCommentEnd && line.startsWith("*")) {
-                    line = line.substring(1);
-                }
-
-                if (foundStart) {
-                    if (foundCommentEnd) {
-                        foundEnd = true;
-                        /* Remove comment end */
-                        result.add(line.substring(0, line.indexOf("*/")).trim());
-                    } else {
-                        result.add(line.trim());
+                    replaced = startmatcher.replaceFirst("");
+                } else if (foundCommentStart) {
+                    Matcher continuationMatcher = continuationStart.matcher(replaced);
+                    if (continuationMatcher.find()) {
+                        replaced = continuationMatcher.replaceFirst("");
                     }
                 }
 
-                return !foundEnd;
+                if (foundCommentStart && !foundStart) {
+                    if (replaced.startsWith("combine")) {
+                        foundStart = true;
+                    } else {
+                        currentComment.add(contentLine);
+                    }
+                }
+
+                boolean checkRemaining = false;
+                if (foundStart) {
+                    if (foundCommentEnd) {
+                        foundEnd = true;
+
+                        /* Remove comment end */
+                        int index = replaced.indexOf("*/");
+
+                        current.add(replaced.substring(0, index).trim());
+                        contentLine = replaced.substring(index + 2);
+                        checkRemaining = true;
+                    } else {
+                        current.add(replaced.replaceFirst("[\\* /-]+$", ""));
+                    }
+                }
+
+                boolean addContent = !foundCommentStart && (!foundStart || foundEnd);
+
+                if (foundEnd) {
+                    String comment = Joiner.on(" ").skipNulls().join(current).trim();
+                    result.addComment(comment);
+                    current = Lists.newArrayList();
+                    /* Reset state */
+                    foundStart = false;
+                    foundEnd = false;
+                    foundCommentStart = false;
+                    currentComment = Lists.newArrayList();
+                } else if (foundCommentEnd) {
+                    for (String string : currentComment) {
+                        result.addContent(string);
+                    }
+                    currentComment = Lists.newArrayList();
+
+                    foundCommentStart = false;
+                }
+
+                if (checkRemaining) {
+                    if (!contentLine.isEmpty()) {
+                        processLine(contentLine);
+                    }
+                } else if (addContent) {
+                    result.addContent(contentLine);
+                }
+
+                return true;
             }
 
             @Override
-            public String getResult() {
-                return Joiner.on(" ").skipNulls().join(result).trim();
+            public ParseResult getResult() {
+                return result;
+
             }
 
         };
@@ -85,17 +132,11 @@ public class CombineCommentParser {
         return findCombineComment.getResult();
     }
 
-    public List<String> findRequires(final InputStream input) throws IOException {
-        String start = "combine @requires";
+    public ParseResult parse(final InputStream input) throws IOException {
+        return findCombineComment(input);
+    }
 
-        String comment = findCombineComment(input);
-
-        if (!comment.startsWith(start)) {
-            return Collections.emptyList();
-        }
-
-        Iterable<String> split = Splitter.on(" ").omitEmptyStrings().split(comment.substring(start.length()));
-        return Lists.newArrayList(split);
-
+    public ParseResult parse(final String string) throws IOException {
+        return findCombineComment(new ByteArrayInputStream(string.getBytes(Charsets.UTF_8)));
     }
 }
