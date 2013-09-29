@@ -54,6 +54,8 @@ Configure logging (sample for logback)
 ### Create combine.json (optional) ###
 Define *libraries* in a file named combine.json. Put it either in WEB-INF/ or in root of classpath. A *library* will be loaded only if some other resource depends on it.
 
+Local files will be scanned for dependencies and added to dependency graph.
+
  * Name must be given
  * The **css** and **js** attributes can either have a single string or an array of strings.
  * Add dependencies in **requires** or **optional** attribute, either as comma or space separated string or as an array of strings.
@@ -104,43 +106,26 @@ Using @provides allows other files to pull in a given resource without knowing t
 
 ### Use in JSP ###
 
-Add taglib to jsp (required)
+Add taglib to jsp
 
     <%@ taglib uri="http://combine.intem.se" prefix="combine" %>
     
-Combine javascript resources. Local files will be scanned for dependencies and added to dependency graph.
+Normally you would define resource groups in combine.json but if preferred you can define them directly in jsp. When you
+define the group in jsp it will always be included, so it does not need to be explicitly required (set attribute 
+library=true, to turn off automatic inclusion).
 
-
-    <combine:group name="combined-javascript">
+    <combine:group name="combined" requires="bootstrap">
         <combine:js path="/js/AngularAtmosphere.js" />
         <combine:js path="/js/Humanized.js" />
-        ...
-    </combine:group>
-    
-Combine css resources
-
-    <combine:group name="combined-css" reloadable="true" requires="bootstrap">
-        <combine:css path="/css/tpa.css"/>
+        <combine:css path="/css/tpa.css"/>        
         ...
     </combine:group>
 
-Add inline javascript. Inline javascript will be added last, after all other scripts.
+Require some libraries on a page
 
-    <combine:script requires="angular">
-        ...
-    </combine:script>
-    
-Add inline css style. Will be added after all other css links.
+    <combine:requires requires="bootstrap angular" />
 
-    <combine:style>
-       ...
-    </combine:style>
-
-Force pulling in some libraries on a page
-
-    <combine:requires requires="bootstrap,angular" />
-
-Output queued resources (required)
+Output queued resources
 
     <html>
         <body>
@@ -154,6 +139,35 @@ Output queued resources (required)
         </body>
     </html>
 
+#### Inline
+
+Add inline javascript. Inline javascript will be added last, after all other scripts.
+
+    <combine:script requires="angular">
+        ...
+    </combine:script>
+    
+To trigger proper display and formatting in IDE editors you can wrap a plain script tag:
+
+    <combine:script requires="angular">
+    <script>
+        ...
+    </script>
+    </combine:script>
+    
+Add inline css style. Will be added after all other css links.
+
+    <combine:style>
+       ...
+    </combine:style>
+
+To trigger proper display and formatting in IDE editors you can wrap a plain style tag:
+
+    <combine:style>
+    <style>
+       ...
+    </style>
+    </combine:style>
 
 ## Development mode
 Resources will be bundled and links will change based on content whether you run an unpacked (typically in an IDE) or 
