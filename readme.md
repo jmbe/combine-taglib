@@ -1,3 +1,5 @@
+Latest docs are on [develop]{/jmbe/combine-taglib/tree/develop} branch.
+
 # Combine-taglib #
 Combine-taglib is a JSP taglib to concatenate and serve combined CSS and Javascript resources, in the vein of [wro4j](http://alexo.github.io/wro4j/),
 [JAWR](https://jawr.java.net/) and [pack:tag](https://github.com/ajkovar/packtag).
@@ -110,20 +112,9 @@ Add taglib to jsp
 
     <%@ taglib uri="http://combine.intem.se" prefix="combine" %>
     
-Normally you would define resource groups in combine.json but if preferred you can define them directly in jsp. When you
-define the group in jsp it will always be included, so it does not need to be explicitly required (set attribute 
-library=true, to turn off automatic inclusion).
-
-    <combine:group name="combined" requires="bootstrap">
-        <combine:js path="/js/AngularAtmosphere.js" />
-        <combine:js path="/js/Humanized.js" />
-        <combine:css path="/css/tpa.css"/>        
-        ...
-    </combine:group>
-
 Require some libraries on a page
 
-    <combine:requires requires="bootstrap angular" />
+    <combine:requires requires="bootstrap angular site-start-page" />
 
 Output queued resources
 
@@ -138,6 +129,19 @@ Output queued resources
             <combine:layout-javascript />
         </body>
     </html>
+
+#### Defining groups in JSP
+
+Normally you would define resource groups in combine.json but if preferred you can define them directly in jsp. When you
+define the group in jsp it will always be included, so it does not need to be explicitly required (set attribute 
+library=true, to turn off automatic inclusion).
+
+    <combine:group name="combined" requires="bootstrap">
+        <combine:js path="/js/AngularAtmosphere.js" />
+        <combine:js path="/js/Humanized.js" />
+        <combine:css path="/css/tpa.css"/>        
+        ...
+    </combine:group>
 
 #### Inline
 
