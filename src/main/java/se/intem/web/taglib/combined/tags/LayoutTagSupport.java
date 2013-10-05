@@ -51,7 +51,10 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
 
     protected abstract void outputInlineResources(ConfigurationItemsCollection configurationItems) throws JspException;
 
-    protected abstract void beforeResolve(ConfigurationItemsCollection configurationItems);
+    /**
+     * @return true if processing should continue or false to abort
+     */
+    protected abstract boolean beforeResolve(ConfigurationItemsCollection configurationItems);
 
     @Override
     public int doEndTag() throws JspException {
@@ -60,7 +63,9 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
 
         ConfigurationItemsCollection configurationItems = getConfigurationItems();
 
-        beforeResolve(configurationItems);
+        if (!beforeResolve(configurationItems)) {
+            return EVAL_PAGE;
+        }
 
         List<ConfigurationItem> resolved = tb.resolve(configurationItems);
         int count = 0;

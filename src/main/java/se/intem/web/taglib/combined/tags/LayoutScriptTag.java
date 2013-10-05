@@ -16,6 +16,8 @@ public class LayoutScriptTag extends LayoutTagSupport {
     /** Logger for this class. */
     static final Logger log = LoggerFactory.getLogger(LayoutScriptTag.class);
 
+    public static final String SCRIPT_PASS_COMPLETE = "combine_script_pass_complete";
+
     public List<RequestPath> getResources(final ConfigurationItem configuration) {
         return configuration.getJs();
     }
@@ -45,6 +47,15 @@ public class LayoutScriptTag extends LayoutTagSupport {
     }
 
     @Override
-    protected void beforeResolve(final ConfigurationItemsCollection configurationItems) {
+    protected boolean beforeResolve(final ConfigurationItemsCollection configurationItems) {
+        Boolean complete = (Boolean) pageContext.getRequest().getAttribute(SCRIPT_PASS_COMPLETE);
+
+        if (Boolean.TRUE.equals(complete)) {
+            log.warn("Javascript has already been laid out for this request. Will not run again.");
+            return false;
+        }
+
+        pageContext.getRequest().setAttribute(SCRIPT_PASS_COMPLETE, Boolean.TRUE);
+        return true;
     }
 }
