@@ -23,8 +23,7 @@ public class GroupTag extends ConfigurationItemAwareTagSupport implements Resour
     @Override
     public int doEndTag() throws JspException {
 
-        ConfigurationItemsCollection configurations = getConfigurationItems();
-        configurations.add(this.ci);
+        addConfigurationItem(ci);
 
         cache.readDependenciesFromResources(pageContext.getServletContext(), ci);
 

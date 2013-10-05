@@ -60,4 +60,22 @@ public abstract class ConfigurationItemAwareTagSupport extends BodyTagSupport {
 
         return collection;
     }
+
+    protected void addConfigurationItem(final ConfigurationItem ci) {
+        if (hasLayoutBeenCalled()) {
+            throw new IllegalStateException(String.format(
+                    "Adding combine configuration %s, but layout has already been called. "
+                            + "All configuration must be completed before any layout tag is called.", ci.getName()));
+        }
+
+        getConfigurationItems().add(ci);
+    }
+
+    protected boolean hasLayoutBeenCalled() {
+
+        Boolean css = (Boolean) pageContext.getRequest().getAttribute(LayoutCssTag.CSS_PASS_COMPLETE);
+        Boolean script = (Boolean) pageContext.getRequest().getAttribute(LayoutScriptTag.SCRIPT_PASS_COMPLETE);
+
+        return Boolean.TRUE.equals(css) || Boolean.TRUE.equals(script);
+    }
 }

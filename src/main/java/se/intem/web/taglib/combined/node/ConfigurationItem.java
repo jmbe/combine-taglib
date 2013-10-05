@@ -255,7 +255,7 @@ public class ConfigurationItem implements ResourceParent {
     }
 
     public boolean hasDependencies() {
-        return !requires.isEmpty() || !parsedRequires.isEmpty();
+        return !requires.isEmpty() || !parsedRequires.isEmpty() || !optional.isEmpty();
     }
 
     public int getSize() {

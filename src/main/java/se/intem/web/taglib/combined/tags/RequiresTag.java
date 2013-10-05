@@ -14,8 +14,8 @@ public class RequiresTag extends ConfigurationItemAwareTagSupport {
     public int doEndTag() throws JspException {
 
         if (configurationItem.hasDependencies()) {
-            configurationItem.setName(UUID.randomUUID().toString());
-            getConfigurationItems().add(configurationItem);
+            configurationItem.setName("requires-" + UUID.randomUUID().toString());
+            addConfigurationItem(configurationItem);
         }
 
         cleanup();
