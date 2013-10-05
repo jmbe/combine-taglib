@@ -23,7 +23,13 @@
             <name>requires</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
-            <description>Comma-separated list of resource names which this resource depends on.</description>
+            <description>Space-separated list of resource names which this resource depends on.</description>
+        </attribute>
+        <attribute>
+            <name>optional</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Space-separated list of resource names which this resource optionally might use.</description>
         </attribute>
         <attribute>
             <name>library</name>

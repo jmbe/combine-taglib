@@ -53,6 +53,10 @@ public class GroupTag extends ConfigurationItemAwareTagSupport implements Resour
         this.ci.addRequires(requires);
     }
 
+    public void setOptional(final String optional) {
+        this.ci.addOptional(optional);
+    }
+
     public void setLibrary(final boolean library) {
         this.ci.setLibrary(library);
     }
