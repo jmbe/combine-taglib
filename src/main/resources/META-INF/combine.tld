@@ -116,7 +116,19 @@
             <name>requires</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
-            <description>Comma-separated list of resource names which this resource depends on.</description>
+            <description>space-separated list of resource names which this resource depends on.</description>
+        </attribute>
+    </tag>
+    <tag>
+        <name>script-early</name>
+        <tag-class>se.intem.web.taglib.combined.tags.InlineScriptEarlyTag</tag-class>
+        <body-content>scriptless</body-content>
+        <description>Add inline JavaScript to queue, to be output before regular script tags.</description>
+        <attribute>
+            <name>requires</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Space-separated list of resource names which this resource depends on.</description>
         </attribute>
     </tag>
     <tag>
@@ -124,6 +136,18 @@
         <tag-class>se.intem.web.taglib.combined.tags.InlineStyleTag</tag-class>
         <body-content>scriptless</body-content>
         <description>Add inline style to queue, to be output after all other css tags.</description>
+        <attribute>
+            <name>requires</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Comma-separated list of resource names which this resource depends on.</description>
+        </attribute>
+    </tag>
+    <tag>
+        <name>style-early</name>
+        <tag-class>se.intem.web.taglib.combined.tags.InlineStyleEarlyTag</tag-class>
+        <body-content>scriptless</body-content>
+        <description>Add inline style to queue, to be output before other css tags.</description>
         <attribute>
             <name>requires</name>
             <required>false</required>

@@ -39,11 +39,24 @@ public class LayoutScriptTag extends LayoutTagSupport {
             return;
         }
 
+        addInline(inlineScripts);
+
+    }
+
+    private void addInline(final List<String> inlineScripts) throws JspException {
         for (String inline : inlineScripts) {
             String output = String.format("<script type=\"text/javascript\" charset=\"UTF-8\">%s</script>", inline);
             println(output);
         }
+    }
 
+    @Override
+    protected void outputInlineResourcesBefore(final ConfigurationItemsCollection cic) throws JspException {
+        List<String> scripts = cic.getInlineScriptEarlies();
+        if (scripts.isEmpty()) {
+            return;
+        }
+        addInline(scripts);
     }
 
     @Override

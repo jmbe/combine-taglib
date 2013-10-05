@@ -57,10 +57,24 @@ public class LayoutCssTag extends LayoutTagSupport {
             return;
         }
 
+        addInline(inlineStyles);
+    }
+
+    public void addInline(final List<String> inlineStyles) throws JspException {
         for (String inline : inlineStyles) {
             String output = String.format("<style>%s</style>", inline);
             println(output);
         }
+    }
+
+    @Override
+    protected void outputInlineResourcesBefore(final ConfigurationItemsCollection cic) throws JspException {
+        List<String> styles = cic.getInlineStyleEarlies();
+        if (styles.isEmpty()) {
+            return;
+        }
+
+        addInline(styles);
     }
 
     @Override
