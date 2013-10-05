@@ -12,7 +12,7 @@
     <tag>
         <name>group</name>
         <tag-class>se.intem.web.taglib.combined.tags.GroupTag</tag-class>
-        <body-content>JSP</body-content>
+        <body-content>scriptless</body-content>
         <attribute>
             <name>name</name>
             <required>true</required>
