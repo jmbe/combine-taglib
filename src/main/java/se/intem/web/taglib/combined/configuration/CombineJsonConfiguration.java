@@ -105,8 +105,8 @@ public class CombineJsonConfiguration {
             return Optional.absent();
         }
 
-        ManagedResource webinf = new ServerPathToManagedResource(servletContext.get()).apply(new RequestPath("/WEB-INF"
-                + JSON_CONFIGURATION));
+        ManagedResource webinf = new ServerPathToManagedResource(servletContext.get(), false).apply(new RequestPath(
+                "/WEB-INF" + JSON_CONFIGURATION));
         if (webinf.exists()) {
             return Optional.of(webinf);
         }

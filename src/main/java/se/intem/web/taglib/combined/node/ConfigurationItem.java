@@ -179,7 +179,7 @@ public class ConfigurationItem implements ResourceParent {
         ResourceType[] values = ResourceType.values();
         for (ResourceType resourceType : values) {
             List<ManagedResource> realPaths = FluentIterable.from(getPaths(resourceType))
-                    .transform(new ServerPathToManagedResource(servletContext)).toList();
+                    .transform(new ServerPathToManagedResource(servletContext, true)).toList();
             if (!realPaths.isEmpty()) {
                 result.put(resourceType, realPaths);
             }
