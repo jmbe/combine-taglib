@@ -1,4 +1,4 @@
-package se.intem.web.taglib.combined.tags;
+package se.intem.web.taglib.combined.configuration;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
@@ -22,7 +22,9 @@ public class ConfigurationItemsCollection implements Iterable<ConfigurationItem>
     private Map<String, ConfigurationItem> nameToItem = Maps.newLinkedHashMap();
     private Optional<ConfigurationItemsCollection> parent = Optional.absent();
     private List<String> inlineScripts = Lists.newArrayList();
+    private List<String> inlineScriptEarlies = Lists.newArrayList();
     private List<String> inlineStyles = Lists.newArrayList();
+    private List<String> inlineStyleEarlies = Lists.newArrayList();
 
     public ConfigurationItemsCollection() {
     }
@@ -78,6 +80,14 @@ public class ConfigurationItemsCollection implements Iterable<ConfigurationItem>
         return inlineScripts;
     }
 
+    public void addInlineScriptEarly(final String js) {
+        inlineScriptEarlies.add(js.replaceAll("</?script[^>]*>", ""));
+    }
+
+    public List<String> getInlineScriptEarlies() {
+        return inlineScriptEarlies;
+    }
+
     public void addInlineStyle(final String contents) {
         inlineStyles.add(contents.replaceAll("</?style[^>]*>", ""));
     }
@@ -86,4 +96,11 @@ public class ConfigurationItemsCollection implements Iterable<ConfigurationItem>
         return inlineStyles;
     }
 
+    public void addInlineStyleEarly(final String contents) {
+        inlineStyleEarlies.add(contents.replaceAll("</?style[^>]*>", ""));
+    }
+
+    public List<String> getInlineStyleEarlies() {
+        return inlineStyleEarlies;
+    }
 }

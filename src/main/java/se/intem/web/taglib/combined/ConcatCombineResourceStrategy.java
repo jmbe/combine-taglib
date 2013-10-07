@@ -10,7 +10,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.intem.web.taglib.combined.tags.ManagedResource;
+import se.intem.web.taglib.combined.configuration.ManagedResource;
 
 public class ConcatCombineResourceStrategy {
 

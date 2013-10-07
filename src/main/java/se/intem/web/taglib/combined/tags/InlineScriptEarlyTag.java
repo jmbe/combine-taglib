@@ -1,6 +1,6 @@
 package se.intem.web.taglib.combined.tags;
 
-public class InlineScriptTag extends InlineTagSupport {
+public class InlineScriptEarlyTag extends InlineTagSupport {
 
     @Override
     protected void addContents(final String contents) {
@@ -10,7 +10,7 @@ public class InlineScriptTag extends InlineTagSupport {
                     + "All configuration must be completed before any layout tag is called.");
         }
 
-        getConfigurationItems().addInlineScript(contents);
+        getConfigurationItems().addInlineScriptEarly(contents);
     }
 
 }

@@ -6,13 +6,22 @@ import java.util.List;
 
 import javax.servlet.jsp.JspException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import se.intem.web.taglib.combined.RequestPath;
 import se.intem.web.taglib.combined.ResourceType;
+import se.intem.web.taglib.combined.configuration.ConfigurationItemsCollection;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 
 public class LayoutCssTag extends LayoutTagSupport {
 
+    /** Logger for this class. */
+    private static final Logger log = LoggerFactory.getLogger(LayoutCssTag.class);
+
     private String media = null; // TODO support media
+
+    public static final String CSS_PASS_COMPLETE = "combine_css_pass_complete";
 
     public List<RequestPath> getResources(final ConfigurationItem configuration) {
         return configuration.getCss();
@@ -49,6 +58,10 @@ public class LayoutCssTag extends LayoutTagSupport {
             return;
         }
 
+        addInline(inlineStyles);
+    }
+
+    public void addInline(final List<String> inlineStyles) throws JspException {
         for (String inline : inlineStyles) {
             String output = String.format("<style>%s</style>", inline);
             println(output);
@@ -56,8 +69,26 @@ public class LayoutCssTag extends LayoutTagSupport {
     }
 
     @Override
-    protected void beforeResolve(final ConfigurationItemsCollection configurationItems) {
-        /* nothing to do */
+    protected void outputInlineResourcesBefore(final ConfigurationItemsCollection cic) throws JspException {
+        List<String> styles = cic.getInlineStyleEarlies();
+        if (styles.isEmpty()) {
+            return;
+        }
+
+        addInline(styles);
+    }
+
+    @Override
+    protected boolean beforeResolve(final ConfigurationItemsCollection configurationItems) {
+        Boolean complete = (Boolean) pageContext.getRequest().getAttribute(CSS_PASS_COMPLETE);
+
+        if (Boolean.TRUE.equals(complete)) {
+            log.warn("CSS has already been laid out for this request. Will not run again.");
+            return false;
+        }
+
+        pageContext.getRequest().setAttribute(CSS_PASS_COMPLETE, Boolean.TRUE);
+        return true;
     }
 
 }

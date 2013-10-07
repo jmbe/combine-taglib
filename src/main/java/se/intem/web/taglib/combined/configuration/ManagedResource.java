@@ -1,4 +1,4 @@
-package se.intem.web.taglib.combined.tags;
+package se.intem.web.taglib.combined.configuration;
 
 import com.google.common.base.Objects;
 import com.google.common.io.InputSupplier;

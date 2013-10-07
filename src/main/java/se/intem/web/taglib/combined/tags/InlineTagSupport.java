@@ -30,7 +30,7 @@ public abstract class InlineTagSupport extends ConfigurationItemAwareTagSupport 
         try {
             String contents = CharStreams.toString(b.getReader());
 
-            configurationItem.setName(UUID.randomUUID().toString());
+            configurationItem.setName("inline-" + UUID.randomUUID().toString());
 
             if (!Strings.nullToEmpty(contents).trim().isEmpty()) {
 
@@ -41,9 +41,11 @@ public abstract class InlineTagSupport extends ConfigurationItemAwareTagSupport 
                 addContents(contents);
             }
 
-            /* Add dependencies even if content is empty */
-            log.debug("Adding inline resource {}", configurationItem.getName());
-            getConfigurationItems().add(this.configurationItem);
+            if (configurationItem.hasDependencies()) {
+                /* Add dependencies even if content is empty */
+                log.debug("Adding inline resource {}", configurationItem.getName());
+                addConfigurationItem(configurationItem);
+            }
 
         } catch (IOException e) {
             log.error("Failed to read inline content", e);

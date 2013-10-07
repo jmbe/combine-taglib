@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import se.intem.web.taglib.combined.RequestPath;
-import se.intem.web.taglib.combined.tags.ConfigurationItemsCollection;
+import se.intem.web.taglib.combined.configuration.ConfigurationItemsCollection;
 
 public class TreeBuilderTest {
 

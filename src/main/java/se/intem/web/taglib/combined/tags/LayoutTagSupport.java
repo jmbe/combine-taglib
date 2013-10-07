@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import se.intem.web.taglib.combined.CombinedResourceRepository;
 import se.intem.web.taglib.combined.RequestPath;
 import se.intem.web.taglib.combined.ResourceType;
+import se.intem.web.taglib.combined.configuration.ConfigurationItemsCollection;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 import se.intem.web.taglib.combined.node.TreeBuilder;
 
@@ -49,9 +50,21 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
 
     public abstract List<RequestPath> getResources(final ConfigurationItem configuration);
 
+    /**
+     * Output inline resources after all other resources have loaded.
+     */
     protected abstract void outputInlineResources(ConfigurationItemsCollection configurationItems) throws JspException;
 
-    protected abstract void beforeResolve(ConfigurationItemsCollection configurationItems);
+    /**
+     * Output inline resources before resource groups (such as configuration data or translations).
+     */
+    protected abstract void outputInlineResourcesBefore(ConfigurationItemsCollection configurationItems)
+            throws JspException;
+
+    /**
+     * @return true if processing should continue or false to abort
+     */
+    protected abstract boolean beforeResolve(ConfigurationItemsCollection configurationItems);
 
     @Override
     public int doEndTag() throws JspException {
@@ -60,9 +73,14 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
 
         ConfigurationItemsCollection configurationItems = getConfigurationItems();
 
-        beforeResolve(configurationItems);
+        if (!beforeResolve(configurationItems)) {
+            return EVAL_PAGE;
+        }
 
         List<ConfigurationItem> resolved = tb.resolve(configurationItems);
+
+        outputInlineResourcesBefore(configurationItems);
+
         int count = 0;
         for (ConfigurationItem ci : resolved) {
             List<RequestPath> resources = getResources(ci);

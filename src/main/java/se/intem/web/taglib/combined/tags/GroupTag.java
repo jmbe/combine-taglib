@@ -2,6 +2,7 @@ package se.intem.web.taglib.combined.tags;
 
 import javax.servlet.jsp.JspException;
 
+import se.intem.web.taglib.combined.configuration.DependencyCache;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 import se.intem.web.taglib.combined.node.ResourceParent;
 
@@ -23,8 +24,7 @@ public class GroupTag extends ConfigurationItemAwareTagSupport implements Resour
     @Override
     public int doEndTag() throws JspException {
 
-        ConfigurationItemsCollection configurations = getConfigurationItems();
-        configurations.add(this.ci);
+        addConfigurationItem(ci);
 
         cache.readDependenciesFromResources(pageContext.getServletContext(), ci);
 
@@ -51,6 +51,10 @@ public class GroupTag extends ConfigurationItemAwareTagSupport implements Resour
 
     public void setRequires(final String requires) {
         this.ci.addRequires(requires);
+    }
+
+    public void setOptional(final String optional) {
+        this.ci.addOptional(optional);
     }
 
     public void setLibrary(final boolean library) {

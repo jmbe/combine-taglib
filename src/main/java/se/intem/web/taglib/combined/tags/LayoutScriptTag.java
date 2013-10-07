@@ -9,12 +9,15 @@ import org.slf4j.LoggerFactory;
 
 import se.intem.web.taglib.combined.RequestPath;
 import se.intem.web.taglib.combined.ResourceType;
+import se.intem.web.taglib.combined.configuration.ConfigurationItemsCollection;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 
 public class LayoutScriptTag extends LayoutTagSupport {
 
     /** Logger for this class. */
     static final Logger log = LoggerFactory.getLogger(LayoutScriptTag.class);
+
+    public static final String SCRIPT_PASS_COMPLETE = "combine_script_pass_complete";
 
     public List<RequestPath> getResources(final ConfigurationItem configuration) {
         return configuration.getJs();
@@ -37,14 +40,36 @@ public class LayoutScriptTag extends LayoutTagSupport {
             return;
         }
 
+        addInline(inlineScripts);
+
+    }
+
+    private void addInline(final List<String> inlineScripts) throws JspException {
         for (String inline : inlineScripts) {
             String output = String.format("<script type=\"text/javascript\" charset=\"UTF-8\">%s</script>", inline);
             println(output);
         }
-
     }
 
     @Override
-    protected void beforeResolve(final ConfigurationItemsCollection configurationItems) {
+    protected void outputInlineResourcesBefore(final ConfigurationItemsCollection cic) throws JspException {
+        List<String> scripts = cic.getInlineScriptEarlies();
+        if (scripts.isEmpty()) {
+            return;
+        }
+        addInline(scripts);
+    }
+
+    @Override
+    protected boolean beforeResolve(final ConfigurationItemsCollection configurationItems) {
+        Boolean complete = (Boolean) pageContext.getRequest().getAttribute(SCRIPT_PASS_COMPLETE);
+
+        if (Boolean.TRUE.equals(complete)) {
+            log.warn("Javascript has already been laid out for this request. Will not run again.");
+            return false;
+        }
+
+        pageContext.getRequest().setAttribute(SCRIPT_PASS_COMPLETE, Boolean.TRUE);
+        return true;
     }
 }
