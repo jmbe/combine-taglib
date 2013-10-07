@@ -8,6 +8,9 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import se.intem.web.taglib.combined.configuration.CombineJsonConfiguration;
+import se.intem.web.taglib.combined.configuration.ConfigurationItemsCollection;
+import se.intem.web.taglib.combined.configuration.DependencyCache;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 
 public abstract class ConfigurationItemAwareTagSupport extends BodyTagSupport {

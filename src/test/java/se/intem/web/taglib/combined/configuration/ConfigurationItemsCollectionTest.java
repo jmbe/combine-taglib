@@ -1,4 +1,4 @@
-package se.intem.web.taglib.combined.tags;
+package se.intem.web.taglib.combined.configuration;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import se.intem.web.taglib.combined.configuration.ConfigurationItemsCollection;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 
 public class ConfigurationItemsCollectionTest {

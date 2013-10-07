@@ -1,4 +1,4 @@
-package se.intem.web.taglib.combined.tags;
+package se.intem.web.taglib.combined.configuration;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;

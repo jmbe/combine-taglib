@@ -2,6 +2,7 @@ package se.intem.web.taglib.combined.tags;
 
 import javax.servlet.jsp.JspException;
 
+import se.intem.web.taglib.combined.configuration.DependencyCache;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 import se.intem.web.taglib.combined.node.ResourceParent;
 

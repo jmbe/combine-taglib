@@ -19,9 +19,9 @@ import javax.servlet.ServletContext;
 
 import se.intem.web.taglib.combined.RequestPath;
 import se.intem.web.taglib.combined.ResourceType;
+import se.intem.web.taglib.combined.configuration.ManagedResource;
+import se.intem.web.taglib.combined.configuration.ServerPathToManagedResource;
 import se.intem.web.taglib.combined.servlet.CombinedConfigurationHolder;
-import se.intem.web.taglib.combined.tags.ManagedResource;
-import se.intem.web.taglib.combined.tags.ServerPathToManagedResource;
 
 /**
  * Limitation: ConfigurationItem can contain only either remote or local resources, not both. If they contain both, then

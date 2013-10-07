@@ -1,4 +1,4 @@
-package se.intem.web.taglib.combined.tags;
+package se.intem.web.taglib.combined.configuration;
 
 import javax.servlet.ServletContext;
 

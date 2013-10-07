@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import se.intem.web.taglib.combined.tags.ConfigurationItemsCollection;
-import se.intem.web.taglib.combined.tags.DependencyCache;
-import se.intem.web.taglib.combined.tags.DependencyCacheEntry;
+import se.intem.web.taglib.combined.configuration.ConfigurationItemsCollection;
+import se.intem.web.taglib.combined.configuration.DependencyCache;
+import se.intem.web.taglib.combined.configuration.DependencyCacheEntry;
 
 public class TreeBuilder {
 
