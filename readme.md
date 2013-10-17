@@ -11,6 +11,8 @@ Combine-taglib is a JSP taglib to concatenate and serve combined CSS and Javascr
  * Will transitively add any required dependencies and load them in the correct order. Declare dependencies on what you directly use and let the dependency graph figure out what is needed.
  * Declare dependencies as granular or coarsely as fits the way you work
  * Supports development mode for use with live reload tools such as [Tincr](http://tin.cr/).
+ * Supports IE conditionals.
+ * Compatible with dynamic stylesheet libraries such as [YUI Stylesheet](http://yuilibrary.com/yui/docs/stylesheet/)
 
 
 ## Setup ##
@@ -188,7 +190,24 @@ Add **supportsDevMode: true** to the bundle either in json configuration or whil
     }
 
 
+## IE Conditionals
+Use **conditional** to control which IE versions some bundles will be loaded in.
 
+    {
+        name : "ie8-support",
+        conditional : "lte IE 8",
+        css : "/css/ie8.css"
+    }
+
+## Dynamic stylesheet
+
+Set the attribute **supportsDynamicCss** for bundles which you would like to edit at runtime using Javascript. This will add an id the combined stylesheet so that you can easily access it using e.g. [YUI Stylesheet](http://yuilibrary.com/yui/docs/stylesheet/). 
+
+    {
+        name : "dynamic",
+        supportsDynamicCss: true,
+        css : [ ... ]
+    }
 
 ## Current limitations
 
