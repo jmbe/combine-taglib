@@ -45,7 +45,7 @@ public class TreeBuilderTest {
     public void parse_configuration_items() throws JsonParseException, JsonMappingException, IOException {
         ConfigurationItemsCollection config = builder.parse(stream);
 
-        assertEquals(2, config.size());
+        assertEquals(3, config.size());
 
         ConfigurationItem item = config.iterator().next();
 
@@ -59,7 +59,7 @@ public class TreeBuilderTest {
     public void build_graph() throws JsonParseException, JsonMappingException, IOException {
         Map<String, ResourceNode> config = builder.build(stream);
 
-        assertEquals(2, config.size());
+        assertEquals(3, config.size());
 
         ResourceNode angular = config.get("angular");
         assertNotNull(angular);
