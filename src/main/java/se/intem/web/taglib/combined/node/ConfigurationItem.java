@@ -43,6 +43,11 @@ public class ConfigurationItem implements ResourceParent {
     private List<RequestPath> css = Lists.newArrayList();
     private boolean supportsDevMode;
 
+    /**
+     * IE conditional comment, without if, such as "IE lt 10"
+     */
+    private String conditional;
+
     public Iterable<String> getRequires() {
         return Iterables.concat(requires, parsedRequires);
     }
@@ -260,5 +265,17 @@ public class ConfigurationItem implements ResourceParent {
 
     public int getSize() {
         return js.size() + css.size();
+    }
+
+    public String getConditional() {
+        return conditional;
+    }
+
+    public void setConditional(final String conditional) {
+        this.conditional = Strings.nullToEmpty(conditional).replace("if ", "");
+    }
+
+    public boolean hasConditional() {
+        return !Strings.nullToEmpty(this.conditional).trim().isEmpty();
     }
 }

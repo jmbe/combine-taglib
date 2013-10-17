@@ -90,6 +90,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
 
             count++;
 
+            writeConditionalStart(ci);
             if (!ci.shouldBeCombined()) {
                 /* Output resources as is */
                 for (RequestPath path : resources) {
@@ -101,6 +102,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
                     writeOutputPath(path);
                 }
             }
+            writeConditionalEnd(ci);
 
         }
 
@@ -109,6 +111,21 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
                 stopwatch.elapsed(TimeUnit.MILLISECONDS)));
 
         return EVAL_PAGE;
+    }
+
+    private void writeConditionalStart(final ConfigurationItem ci) throws JspException {
+        if (!ci.hasConditional()) {
+            return;
+        }
+
+        println(String.format("<!--[if %s]>", ci.getConditional()));
+    }
+
+    private void writeConditionalEnd(final ConfigurationItem ci) throws JspException {
+        if (!ci.hasConditional()) {
+            return;
+        }
+        println("<![endif]-->");
     }
 
     protected abstract ResourceType getType();
