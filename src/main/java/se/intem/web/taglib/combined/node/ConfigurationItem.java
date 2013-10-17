@@ -44,6 +44,11 @@ public class ConfigurationItem implements ResourceParent {
     private boolean supportsDevMode;
 
     /**
+     * True to generate an id to be used with dynamic css libraries such as YUI Stylesheet.
+     */
+    private boolean supportsDynamicCss;
+
+    /**
      * IE conditional comment, without if, such as "IE lt 10"
      */
     private String conditional;
@@ -277,5 +282,13 @@ public class ConfigurationItem implements ResourceParent {
 
     public boolean hasConditional() {
         return !Strings.nullToEmpty(this.conditional).trim().isEmpty();
+    }
+
+    public boolean isSupportsDynamicCss() {
+        return supportsDynamicCss;
+    }
+
+    public void setSupportsDynamicCss(final boolean supportsDynamicCss) {
+        this.supportsDynamicCss = supportsDynamicCss;
     }
 }

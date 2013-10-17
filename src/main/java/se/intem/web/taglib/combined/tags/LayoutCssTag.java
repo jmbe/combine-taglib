@@ -28,13 +28,19 @@ public class LayoutCssTag extends LayoutTagSupport {
     }
 
     @Override
-    protected String format(final RequestPath path) {
+    protected String format(final RequestPath path, final String elementId) {
         String mediaAttribute = "";
         if (!Strings.isNullOrEmpty(media)) {
             mediaAttribute = "media=\"" + media + "\" ";
         }
 
-        return String.format("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\" %s/>", path, mediaAttribute);
+        String idAttribute = "";
+        if (!Strings.isNullOrEmpty(elementId)) {
+            idAttribute = "id=\"" + elementId + "\" ";
+        }
+
+        return String.format("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\" %s%s/>", path, mediaAttribute,
+                idAttribute);
     }
 
     public void setMedia(final String media) {

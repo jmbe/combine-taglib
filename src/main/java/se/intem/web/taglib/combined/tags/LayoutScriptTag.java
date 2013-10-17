@@ -24,7 +24,7 @@ public class LayoutScriptTag extends LayoutTagSupport {
     }
 
     @Override
-    protected String format(final RequestPath path) {
+    protected String format(final RequestPath path, final String elementId) {
         return String.format("<script type=\"text/javascript\" charset=\"UTF-8\" src=\"%s\"></script>", path);
     }
 

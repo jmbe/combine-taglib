@@ -32,8 +32,8 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
         this.tb = new TreeBuilder();
     }
 
-    protected void writeOutputPath(final RequestPath path) throws JspException {
-        String output = format(path);
+    protected void writeOutputPath(final RequestPath path, final String elementId) throws JspException {
+        String output = format(path, elementId);
         println(output);
     }
 
@@ -46,7 +46,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
     }
 
     /* Format path for output in jsp, e.g. as script or link tag. */
-    protected abstract String format(RequestPath path);
+    protected abstract String format(RequestPath path, String elementId);
 
     public abstract List<RequestPath> getResources(final ConfigurationItem configuration);
 
@@ -81,25 +81,25 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
 
         outputInlineResourcesBefore(configurationItems);
 
-        int count = 0;
+        int total = 0;
         for (ConfigurationItem ci : resolved) {
             List<RequestPath> resources = getResources(ci);
             if (resources.isEmpty()) {
                 continue;
             }
 
-            count++;
+            total++;
 
             writeConditionalStart(ci);
             if (!ci.shouldBeCombined()) {
                 /* Output resources as is */
                 for (RequestPath path : resources) {
-                    writeOutputPath(path);
+                    writeOutputPath(path, null);
                 }
             } else {
                 Iterable<RequestPath> paths = repository.getResourcePath(ci.getName(), getType());
                 for (RequestPath path : paths) {
-                    writeOutputPath(path);
+                    writeOutputPath(path, generateElementId(ci));
                 }
             }
             writeConditionalEnd(ci);
@@ -107,10 +107,22 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
         }
 
         outputInlineResources(configurationItems);
-        log.info(String.format("Handled %s %s bundles in %s ms.", count, getType(),
+        log.info(String.format("Handled %s %s bundles in %s ms.", total, getType(),
                 stopwatch.elapsed(TimeUnit.MILLISECONDS)));
 
         return EVAL_PAGE;
+    }
+
+    public String generateElementId(final ConfigurationItem ci) {
+        if (!ci.isSupportsDynamicCss()) {
+            return null;
+        }
+
+        if (ResourceType.js.equals(getType())) {
+            return null;
+        }
+
+        return ci.getName() + "-" + getType();
     }
 
     private void writeConditionalStart(final ConfigurationItem ci) throws JspException {
