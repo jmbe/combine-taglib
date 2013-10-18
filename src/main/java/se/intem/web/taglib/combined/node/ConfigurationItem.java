@@ -21,13 +21,14 @@ import se.intem.web.taglib.combined.RequestPath;
 import se.intem.web.taglib.combined.ResourceType;
 import se.intem.web.taglib.combined.configuration.ManagedResource;
 import se.intem.web.taglib.combined.configuration.ServerPathToManagedResource;
+import se.intem.web.taglib.combined.configuration.SupportsConditional;
 import se.intem.web.taglib.combined.servlet.CombinedConfigurationHolder;
 
 /**
  * Limitation: ConfigurationItem can contain only either remote or local resources, not both. If they contain both, then
  * no combining will be made on any resources.
  */
-public class ConfigurationItem implements ResourceParent {
+public class ConfigurationItem implements ResourceParent, SupportsConditional {
 
     private String name;
     private boolean reloadable = true;

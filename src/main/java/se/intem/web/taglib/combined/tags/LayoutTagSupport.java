@@ -15,6 +15,7 @@ import se.intem.web.taglib.combined.CombinedResourceRepository;
 import se.intem.web.taglib.combined.RequestPath;
 import se.intem.web.taglib.combined.ResourceType;
 import se.intem.web.taglib.combined.configuration.ConfigurationItemsCollection;
+import se.intem.web.taglib.combined.configuration.SupportsConditional;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 import se.intem.web.taglib.combined.node.TreeBuilder;
 
@@ -125,7 +126,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
         return ci.getName() + "-" + getType();
     }
 
-    private void writeConditionalStart(final ConfigurationItem ci) throws JspException {
+    protected void writeConditionalStart(final SupportsConditional ci) throws JspException {
         if (!ci.hasConditional()) {
             return;
         }
@@ -133,7 +134,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
         println(String.format("<!--[if %s]>", ci.getConditional()));
     }
 
-    private void writeConditionalEnd(final ConfigurationItem ci) throws JspException {
+    protected void writeConditionalEnd(final SupportsConditional ci) throws JspException {
         if (!ci.hasConditional()) {
             return;
         }

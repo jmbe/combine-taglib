@@ -21,10 +21,10 @@ public class ConfigurationItemsCollection implements Iterable<ConfigurationItem>
      */
     private Map<String, ConfigurationItem> nameToItem = Maps.newLinkedHashMap();
     private Optional<ConfigurationItemsCollection> parent = Optional.absent();
-    private List<String> inlineScripts = Lists.newArrayList();
-    private List<String> inlineScriptEarlies = Lists.newArrayList();
-    private List<String> inlineStyles = Lists.newArrayList();
-    private List<String> inlineStyleEarlies = Lists.newArrayList();
+    private List<InlineContent> inlineScripts = Lists.newArrayList();
+    private List<InlineContent> inlineScriptEarlies = Lists.newArrayList();
+    private List<InlineContent> inlineStyles = Lists.newArrayList();
+    private List<InlineContent> inlineStyleEarlies = Lists.newArrayList();
 
     public ConfigurationItemsCollection() {
     }
@@ -72,35 +72,35 @@ public class ConfigurationItemsCollection implements Iterable<ConfigurationItem>
         return (parent.isPresent() ? parent.get().size() : 0) + nameToItem.size();
     }
 
-    public void addInlineScript(final String js) {
-        inlineScripts.add(js.replaceAll("</?script[^>]*>", ""));
+    public void addInlineScript(final InlineContent js) {
+        inlineScripts.add(js);
     }
 
-    public List<String> getInlineScripts() {
+    public List<InlineContent> getInlineScripts() {
         return inlineScripts;
     }
 
-    public void addInlineScriptEarly(final String js) {
-        inlineScriptEarlies.add(js.replaceAll("</?script[^>]*>", ""));
+    public void addInlineScriptEarly(final InlineContent js) {
+        inlineScriptEarlies.add(js);
     }
 
-    public List<String> getInlineScriptEarlies() {
+    public List<InlineContent> getInlineScriptEarlies() {
         return inlineScriptEarlies;
     }
 
-    public void addInlineStyle(final String contents) {
-        inlineStyles.add(contents.replaceAll("</?style[^>]*>", ""));
+    public void addInlineStyle(final InlineContent contents) {
+        inlineStyles.add(contents);
     }
 
-    public List<String> getInlineStyles() {
+    public List<InlineContent> getInlineStyles() {
         return inlineStyles;
     }
 
-    public void addInlineStyleEarly(final String contents) {
-        inlineStyleEarlies.add(contents.replaceAll("</?style[^>]*>", ""));
+    public void addInlineStyleEarly(final InlineContent contents) {
+        inlineStyleEarlies.add(contents);
     }
 
-    public List<String> getInlineStyleEarlies() {
+    public List<InlineContent> getInlineStyleEarlies() {
         return inlineStyleEarlies;
     }
 }

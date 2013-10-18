@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import se.intem.web.taglib.combined.RequestPath;
 import se.intem.web.taglib.combined.ResourceType;
 import se.intem.web.taglib.combined.configuration.ConfigurationItemsCollection;
+import se.intem.web.taglib.combined.configuration.InlineContent;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 
 public class LayoutScriptTag extends LayoutTagSupport {
@@ -35,7 +36,7 @@ public class LayoutScriptTag extends LayoutTagSupport {
 
     @Override
     protected void outputInlineResources(final ConfigurationItemsCollection cic) throws JspException {
-        List<String> inlineScripts = cic.getInlineScripts();
+        List<InlineContent> inlineScripts = cic.getInlineScripts();
         if (inlineScripts.isEmpty()) {
             return;
         }
@@ -44,16 +45,21 @@ public class LayoutScriptTag extends LayoutTagSupport {
 
     }
 
-    private void addInline(final List<String> inlineScripts) throws JspException {
-        for (String inline : inlineScripts) {
-            String output = String.format("<script type=\"text/javascript\" charset=\"UTF-8\">%s</script>", inline);
+    private void addInline(final List<InlineContent> inlineScripts) throws JspException {
+        for (InlineContent inline : inlineScripts) {
+            writeConditionalStart(inline);
+
+            String output = String.format("<script type=\"text/javascript\" charset=\"UTF-8\">%s</script>",
+                    inline.getContents());
             println(output);
+
+            writeConditionalEnd(inline);
         }
     }
 
     @Override
     protected void outputInlineResourcesBefore(final ConfigurationItemsCollection cic) throws JspException {
-        List<String> scripts = cic.getInlineScriptEarlies();
+        List<InlineContent> scripts = cic.getInlineScriptEarlies();
         if (scripts.isEmpty()) {
             return;
         }
