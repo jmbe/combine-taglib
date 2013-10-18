@@ -27,6 +27,7 @@ import se.intem.web.taglib.combined.node.CombineCommentParser;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 import se.intem.web.taglib.combined.node.ParseResult;
 import se.intem.web.taglib.combined.resources.CombinedBundle;
+import se.intem.web.taglib.combined.resources.RemoteBundle;
 import se.intem.web.taglib.combined.resources.ResourceGroup;
 import se.intem.web.taglib.combined.resources.ResourceName;
 
@@ -57,7 +58,7 @@ public class DependencyCache {
     }
 
     public void readDependenciesFromResources(final ServletContext servletContext, final ConfigurationItem ci) {
-        if (ci.isRemote() || ci.isEmpty()) {
+        if (ci.isAllRemote() || ci.isEmpty()) {
             return;
         }
 
@@ -100,11 +101,20 @@ public class DependencyCache {
             int counter = 0;
             for (Entry<ResourceType, List<ManagedResource>> entry : entrySet) {
 
+                RemoteBundle remoteBundle = new RemoteBundle(entry.getKey());
+                group.addBundle(remoteBundle);
+
                 ResourceName name = new ResourceName(ci.getName()).derive(counter++);
                 CombinedBundle bundle = new CombinedBundle(name, entry.getKey(), lastread);
                 group.addBundle(bundle);
 
                 for (ManagedResource mr : entry.getValue()) {
+
+                    if (mr.isRemote()) {
+                        remoteBundle.addPath(mr.getRequestPath());
+                        continue;
+                    }
+
                     log.debug("Parsing {}", mr.getName());
                     try {
                         ParseResult parsed = jsParser.parse(mr.getInput());

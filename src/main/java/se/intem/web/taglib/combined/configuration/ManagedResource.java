@@ -89,4 +89,8 @@ public class ManagedResource {
                 .add("input", exists() ? "provided" : "missing").toString();
     }
 
+    public boolean isRemote() {
+        return requestPath.isRemote();
+    }
+
 }

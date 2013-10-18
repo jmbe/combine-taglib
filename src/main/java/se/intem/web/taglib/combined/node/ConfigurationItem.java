@@ -3,6 +3,7 @@ package se.intem.web.taglib.combined.node;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Optional;
+import com.google.common.base.Predicates;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
@@ -94,13 +95,19 @@ public class ConfigurationItem implements ResourceParent, SupportsConditional {
     }
 
     public boolean isReloadable() {
-        return reloadable && !isRemote();
+        return reloadable && !isAllRemote();
     }
 
     public boolean isRemote() {
         Optional<RequestPath> remoteJs = FluentIterable.from(js).firstMatch(RequestPath.isRemote);
         Optional<RequestPath> remoteCss = FluentIterable.from(css).firstMatch(RequestPath.isRemote);
         return remoteJs.isPresent() || remoteCss.isPresent();
+    }
+
+    public boolean isAllRemote() {
+        Optional<RequestPath> localJs = FluentIterable.from(js).firstMatch(Predicates.not(RequestPath.isRemote));
+        Optional<RequestPath> localCss = FluentIterable.from(css).firstMatch(Predicates.not(RequestPath.isRemote));
+        return !localJs.isPresent() && !localCss.isPresent();
     }
 
     public void setReloadable(final boolean reloadable) {
@@ -208,7 +215,7 @@ public class ConfigurationItem implements ResourceParent, SupportsConditional {
     }
 
     public boolean shouldBeCombined() {
-        if (isRemote()) {
+        if (isAllRemote()) {
             return false;
         }
 
