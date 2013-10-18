@@ -211,7 +211,6 @@ Set the attribute **supportsDynamicCss** for bundles which you would like to edi
 
 ## Current limitations
 
- * Cannot combine remote and local resources in same resource group (workaround: define different groups)
  * No support for media attribute for css (workaround: put media query in css file)
  * No minification of files
  * No support for transcompiling LESS or SASS files

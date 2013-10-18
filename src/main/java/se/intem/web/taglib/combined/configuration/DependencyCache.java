@@ -101,24 +101,42 @@ public class DependencyCache {
             int counter = 0;
             for (Entry<ResourceType, List<ManagedResource>> entry : entrySet) {
 
-                RemoteBundle remoteBundle = new RemoteBundle(entry.getKey());
-                group.addBundle(remoteBundle);
-
-                ResourceName name = new ResourceName(ci.getName()).derive(counter++);
-                CombinedBundle bundle = new CombinedBundle(name, entry.getKey(), lastread);
-                group.addBundle(bundle);
+                RemoteBundle currentRemote = null;
+                CombinedBundle currentLocal = null;
 
                 for (ManagedResource mr : entry.getValue()) {
 
                     if (mr.isRemote()) {
-                        remoteBundle.addPath(mr.getRequestPath());
+                        /* Finish previous local */
+                        if (currentLocal != null) {
+                            repository.addCombinedResource(currentLocal);
+                            currentLocal = null;
+                        }
+
+                        /* Start new remote if necessary */
+                        if (currentRemote == null) {
+                            currentRemote = new RemoteBundle(entry.getKey());
+                            group.addBundle(currentRemote);
+                        }
+
+                        currentRemote.addPath(mr.getRequestPath());
                         continue;
+                    }
+
+                    /* Finish previous remote */
+                    currentRemote = null;
+
+                    /* Start new local if necessary */
+                    if (currentLocal == null) {
+                        ResourceName name = new ResourceName(ci.getName()).derive(counter++);
+                        currentLocal = new CombinedBundle(name, entry.getKey(), lastread);
+                        group.addBundle(currentLocal);
                     }
 
                     log.debug("Parsing {}", mr.getName());
                     try {
                         ParseResult parsed = jsParser.parse(mr.getInput());
-                        bundle.addContents(parsed.getContents());
+                        currentLocal.addContents(parsed.getContents());
 
                         Iterables.addAll(requires, parsed.getRequires());
                         Iterables.addAll(provides, parsed.getProvides());
@@ -127,7 +145,11 @@ public class DependencyCache {
                         log.error("Could not parse js", e);
                     }
                 }
-                repository.addCombinedResource(bundle);
+
+                /* Finish any still open local bundle */
+                if (currentLocal != null) {
+                    repository.addCombinedResource(currentLocal);
+                }
             }
 
             repository.addResourceGroup(ci.getName(), group);
