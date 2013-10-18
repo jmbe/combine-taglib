@@ -20,19 +20,19 @@ public class ServerPathToManagedResource implements Function<RequestPath, Manage
         this.required = required;
     }
 
-    public ManagedResource apply(final RequestPath element) {
-        if (element.isRemote()) {
-            return new ManagedResource(element.getPath(), null, null);
+    public ManagedResource apply(final RequestPath requestPath) {
+        if (requestPath.isRemote()) {
+            return new ManagedResource(requestPath.getPath(), requestPath, null, null);
         }
 
-        String realPath = servletContext.getRealPath(element.getPath());
-        InputStream input = servletContext.getResourceAsStream(element.getPath());
+        String realPath = servletContext.getRealPath(requestPath.getPath());
+        InputStream input = servletContext.getResourceAsStream(requestPath.getPath());
 
         if (required && input == null) {
-            throw new RuntimeException("Could not find local file '" + element.getPath() + "'. Check spelling or path.");
+            throw new RuntimeException("Could not find local file '" + requestPath.getPath() + "'. Check spelling or path.");
         }
 
-        return new ManagedResource(element.getPath(), realPath, input);
+        return new ManagedResource(requestPath.getPath(), requestPath, realPath, input);
     }
 
 }
