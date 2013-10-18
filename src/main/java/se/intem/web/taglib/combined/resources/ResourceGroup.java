@@ -17,7 +17,7 @@ public class ResourceGroup implements Iterable<RequestPathBundle> {
     private List<RequestPathBundle> css = Lists.newArrayList();
 
     private static final Function<RequestPathBundle, Iterable<RequestPath>> bundleToPaths = new Function<RequestPathBundle, Iterable<RequestPath>>() {
-        public java.lang.Iterable<RequestPath> apply(final RequestPathBundle input) {
+        public Iterable<RequestPath> apply(final RequestPathBundle input) {
             return input.getPaths();
         };
     };
