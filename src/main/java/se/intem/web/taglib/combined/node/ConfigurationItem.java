@@ -116,11 +116,19 @@ public class ConfigurationItem implements ResourceParent {
 
     @Override
     public void addJavascript(final String js) {
+        if (js.toLowerCase().endsWith(".css")) {
+            throw new IllegalArgumentException("Adding '" + js + "' as javascript looks incorrect.");
+        }
+
         this.js.add(new RequestPath(js));
     }
 
     @Override
     public void addCss(final String css) {
+        if (css.toLowerCase().endsWith(".js")) {
+            throw new IllegalArgumentException("Adding '" + css + "' as css looks incorrect.");
+        }
+
         this.css.add(new RequestPath(css));
     }
 
