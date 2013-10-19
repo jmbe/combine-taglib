@@ -1,5 +1,6 @@
 package se.intem.web.taglib.combined.node;
 
+import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -27,8 +28,23 @@ public class CombineCommentLineProcessor implements LineProcessor<ParseResult> {
 
     private List<String> currentComment = Lists.newArrayList();
 
+    /**
+     * Pre-processors for each line in file.
+     */
+    private List<Function<String, String>> transforms;
+
+    public CombineCommentLineProcessor(final List<Function<String, String>> transforms) {
+        this.transforms = transforms;
+    }
+
     @Override
     public boolean processLine(String line) throws IOException {
+
+        if (this.transforms != null) {
+            for (Function<String, String> fn : this.transforms) {
+                line = fn.apply(line);
+            }
+        }
 
         String contentLine = line;
 

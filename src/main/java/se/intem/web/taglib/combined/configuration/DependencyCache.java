@@ -1,10 +1,12 @@
 package se.intem.web.taglib.combined.configuration;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Stopwatch;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import java.io.IOException;
@@ -135,7 +137,9 @@ public class DependencyCache {
 
                     log.debug("Parsing {}", mr.getName());
                     try {
-                        ParseResult parsed = commentParser.parse(mr.getInput());
+                        ParseResult parsed = commentParser.parse(mr.getInput(),
+                                createLinePreprocessors(entry.getKey(), mr));
+
                         currentLocal.addContents(parsed.getContents());
 
                         Iterables.addAll(requires, parsed.getRequires());
@@ -164,6 +168,17 @@ public class DependencyCache {
             ci.replaceParsedRequires(optional.get().getRequires());
         }
 
+    }
+
+    private List<Function<String, String>> createLinePreprocessors(final ResourceType type, final ManagedResource mr) {
+        if (ResourceType.js.equals(type)) {
+            /* nothing to do for js */
+            return null;
+        }
+
+        List<Function<String, String>> result = Lists.newArrayList();
+        result.add(new AbsolutizeCssUrlFunction(mr.getRequestPath()));
+        return result;
     }
 
     public static DependencyCache get() {
