@@ -38,13 +38,13 @@ public class DependencyCache {
 
     private Cache<String, DependencyCacheEntry> cache;
 
-    private CombineCommentParser jsParser;
+    private CombineCommentParser commentParser;
 
     private CombinedResourceRepository repository;
 
     public DependencyCache() {
         this.cache = CacheBuilder.newBuilder().build();
-        this.jsParser = new CombineCommentParser();
+        this.commentParser = new CombineCommentParser();
         this.repository = CombinedResourceRepository.get();
     }
 
@@ -135,7 +135,7 @@ public class DependencyCache {
 
                     log.debug("Parsing {}", mr.getName());
                     try {
-                        ParseResult parsed = jsParser.parse(mr.getInput());
+                        ParseResult parsed = commentParser.parse(mr.getInput());
                         currentLocal.addContents(parsed.getContents());
 
                         Iterables.addAll(requires, parsed.getRequires());
