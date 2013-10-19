@@ -34,4 +34,10 @@ public class AbsolutizeCssUrlFunctionTest {
         assertEquals("image-background: url('/keep/image.png')", apply);
     }
 
+    @Test
+    public void dont_change_data_urls() {
+        String apply = fn.apply("image-background: url('data:abcde')");
+        assertEquals("image-background: url('data:abcde')", apply);
+    }
+
 }

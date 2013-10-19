@@ -25,7 +25,7 @@ public class AbsolutizeCssUrlFunction implements Function<String, String> {
 
             RequestPath url = new RequestPath(filename);
 
-            if (!url.isRemote() && !url.isAbsolute()) {
+            if (url.isRelative()) {
                 return matcher.replaceFirst(String.format("url('%s')", css.dirname() + "/" + filename));
             }
 

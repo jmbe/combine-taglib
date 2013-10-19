@@ -58,8 +58,12 @@ public class RequestPath {
         return "";
     }
 
-    public boolean isAbsolute() {
+    private boolean isAbsolute() {
         return path.startsWith("/");
+    }
+
+    public boolean isRelative() {
+        return !isRemote() && !isAbsolute() && !path.startsWith("data:");
     }
 
 }
