@@ -54,14 +54,14 @@ public class CombineCommentParserTest {
 
     @Test
     public void should_find_single_combine_comment() throws IOException {
-        ParseResult parsed = parser.findCombineComment(singleline);
+        ParseResult parsed = parser.parse(singleline);
         assertThat(parsed.getRequiresList(), is(Arrays.asList("extjs", "angularjs")));
         assertEquals("var code;", parsed.getContents().trim());
     }
 
     @Test
     public void should_find_multi_combine_comment() throws IOException {
-        ParseResult parsed = parser.findCombineComment(multiline);
+        ParseResult parsed = parser.parse(multiline);
         List<String> requires = parsed.getRequiresList();
         assertThat(requires, is(asList("extjs", "angularjs", "jquery")));
         assertEquals("/* unrelated */" + System.lineSeparator() + "var code;", parsed.getContents().trim());
