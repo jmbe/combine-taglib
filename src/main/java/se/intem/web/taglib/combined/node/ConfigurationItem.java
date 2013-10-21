@@ -3,6 +3,7 @@ package se.intem.web.taglib.combined.node;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Optional;
+import com.google.common.base.Predicates;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
@@ -21,13 +22,14 @@ import se.intem.web.taglib.combined.RequestPath;
 import se.intem.web.taglib.combined.ResourceType;
 import se.intem.web.taglib.combined.configuration.ManagedResource;
 import se.intem.web.taglib.combined.configuration.ServerPathToManagedResource;
+import se.intem.web.taglib.combined.configuration.SupportsConditional;
 import se.intem.web.taglib.combined.servlet.CombinedConfigurationHolder;
 
 /**
  * Limitation: ConfigurationItem can contain only either remote or local resources, not both. If they contain both, then
  * no combining will be made on any resources.
  */
-public class ConfigurationItem implements ResourceParent {
+public class ConfigurationItem implements ResourceParent, SupportsConditional {
 
     private String name;
     private boolean reloadable = true;
@@ -42,6 +44,16 @@ public class ConfigurationItem implements ResourceParent {
     private List<RequestPath> js = Lists.newArrayList();
     private List<RequestPath> css = Lists.newArrayList();
     private boolean supportsDevMode;
+
+    /**
+     * True to generate an id to be used with dynamic css libraries such as YUI Stylesheet.
+     */
+    private boolean supportsDynamicCss;
+
+    /**
+     * IE conditional comment, without if, such as "IE lt 10"
+     */
+    private String conditional;
 
     public Iterable<String> getRequires() {
         return Iterables.concat(requires, parsedRequires);
@@ -83,13 +95,19 @@ public class ConfigurationItem implements ResourceParent {
     }
 
     public boolean isReloadable() {
-        return reloadable && !isRemote();
+        return reloadable && !isAllRemote();
     }
 
     public boolean isRemote() {
         Optional<RequestPath> remoteJs = FluentIterable.from(js).firstMatch(RequestPath.isRemote);
         Optional<RequestPath> remoteCss = FluentIterable.from(css).firstMatch(RequestPath.isRemote);
         return remoteJs.isPresent() || remoteCss.isPresent();
+    }
+
+    public boolean isAllRemote() {
+        Optional<RequestPath> localJs = FluentIterable.from(js).firstMatch(Predicates.not(RequestPath.isRemote));
+        Optional<RequestPath> localCss = FluentIterable.from(css).firstMatch(Predicates.not(RequestPath.isRemote));
+        return !localJs.isPresent() && !localCss.isPresent();
     }
 
     public void setReloadable(final boolean reloadable) {
@@ -106,11 +124,19 @@ public class ConfigurationItem implements ResourceParent {
 
     @Override
     public void addJavascript(final String js) {
+        if (js.toLowerCase().endsWith(".css")) {
+            throw new IllegalArgumentException("Adding '" + js + "' as javascript looks incorrect.");
+        }
+
         this.js.add(new RequestPath(js));
     }
 
     @Override
     public void addCss(final String css) {
+        if (css.toLowerCase().endsWith(".js")) {
+            throw new IllegalArgumentException("Adding '" + css + "' as css looks incorrect.");
+        }
+
         this.css.add(new RequestPath(css));
     }
 
@@ -179,7 +205,7 @@ public class ConfigurationItem implements ResourceParent {
         ResourceType[] values = ResourceType.values();
         for (ResourceType resourceType : values) {
             List<ManagedResource> realPaths = FluentIterable.from(getPaths(resourceType))
-                    .transform(new ServerPathToManagedResource(servletContext)).toList();
+                    .transform(new ServerPathToManagedResource(servletContext, true)).toList();
             if (!realPaths.isEmpty()) {
                 result.put(resourceType, realPaths);
             }
@@ -189,7 +215,7 @@ public class ConfigurationItem implements ResourceParent {
     }
 
     public boolean shouldBeCombined() {
-        if (isRemote()) {
+        if (isAllRemote()) {
             return false;
         }
 
@@ -260,5 +286,25 @@ public class ConfigurationItem implements ResourceParent {
 
     public int getSize() {
         return js.size() + css.size();
+    }
+
+    public String getConditional() {
+        return conditional;
+    }
+
+    public void setConditional(final String conditional) {
+        this.conditional = Strings.nullToEmpty(conditional).replace("if ", "");
+    }
+
+    public boolean hasConditional() {
+        return !Strings.nullToEmpty(this.conditional).trim().isEmpty();
+    }
+
+    public boolean isSupportsDynamicCss() {
+        return supportsDynamicCss;
+    }
+
+    public void setSupportsDynamicCss(final boolean supportsDynamicCss) {
+        this.supportsDynamicCss = supportsDynamicCss;
     }
 }

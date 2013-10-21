@@ -105,8 +105,8 @@ public class CombineJsonConfiguration {
             return Optional.absent();
         }
 
-        ManagedResource webinf = new ServerPathToManagedResource(servletContext.get()).apply(new RequestPath("/WEB-INF"
-                + JSON_CONFIGURATION));
+        ManagedResource webinf = new ServerPathToManagedResource(servletContext.get(), false).apply(new RequestPath(
+                "/WEB-INF" + JSON_CONFIGURATION));
         if (webinf.exists()) {
             return Optional.of(webinf);
         }
@@ -133,10 +133,11 @@ public class CombineJsonConfiguration {
                     throw new IllegalArgumentException("Could not find file " + file);
                 }
 
-                return Optional.of(new ManagedResource(JSON_CONFIGURATION, file.getPath(), url.get().openStream()));
+                return Optional
+                        .of(new ManagedResource(JSON_CONFIGURATION, null, file.getPath(), url.get().openStream()));
 
             } catch (URISyntaxException e) {
-                return Optional.of(new ManagedResource(JSON_CONFIGURATION, null, url.get().openStream()));
+                return Optional.of(new ManagedResource(JSON_CONFIGURATION, null, null, url.get().openStream()));
             }
         } catch (IOException e) {
             log.error("Could not open url " + url, e);

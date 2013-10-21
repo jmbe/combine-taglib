@@ -48,4 +48,22 @@ public class RequestPath {
         return path.contains("://") || path.startsWith("//");
     }
 
+    public String dirname() {
+
+        int index = path.lastIndexOf("/");
+        if (index > -1) {
+            return path.substring(0, index);
+        }
+
+        return "";
+    }
+
+    private boolean isAbsolute() {
+        return path.startsWith("/");
+    }
+
+    public boolean isRelative() {
+        return !isRemote() && !isAbsolute() && !path.startsWith("data:");
+    }
+
 }

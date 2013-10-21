@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import se.intem.web.taglib.combined.RequestPath;
 import se.intem.web.taglib.combined.ResourceType;
 import se.intem.web.taglib.combined.configuration.ConfigurationItemsCollection;
+import se.intem.web.taglib.combined.configuration.InlineContent;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 
 public class LayoutCssTag extends LayoutTagSupport {
@@ -28,13 +29,19 @@ public class LayoutCssTag extends LayoutTagSupport {
     }
 
     @Override
-    protected String format(final RequestPath path) {
+    protected String format(final RequestPath path, final String elementId) {
         String mediaAttribute = "";
         if (!Strings.isNullOrEmpty(media)) {
             mediaAttribute = "media=\"" + media + "\" ";
         }
 
-        return String.format("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\" %s/>", path, mediaAttribute);
+        String idAttribute = "";
+        if (!Strings.isNullOrEmpty(elementId)) {
+            idAttribute = "id=\"" + elementId + "\" ";
+        }
+
+        return String.format("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\" %s%s/>", path, mediaAttribute,
+                idAttribute);
     }
 
     public void setMedia(final String media) {
@@ -52,7 +59,7 @@ public class LayoutCssTag extends LayoutTagSupport {
 
     @Override
     protected void outputInlineResources(final ConfigurationItemsCollection configurationItems) throws JspException {
-        List<String> inlineStyles = configurationItems.getInlineStyles();
+        List<InlineContent> inlineStyles = configurationItems.getInlineStyles();
 
         if (inlineStyles.isEmpty()) {
             return;
@@ -61,16 +68,21 @@ public class LayoutCssTag extends LayoutTagSupport {
         addInline(inlineStyles);
     }
 
-    public void addInline(final List<String> inlineStyles) throws JspException {
-        for (String inline : inlineStyles) {
-            String output = String.format("<style>%s</style>", inline);
+    public void addInline(final List<InlineContent> inlineStyles) throws JspException {
+        for (InlineContent inline : inlineStyles) {
+
+            writeConditionalStart(inline);
+
+            String output = String.format("<style>%s</style>", inline.getContents());
             println(output);
+
+            writeConditionalEnd(inline);
         }
     }
 
     @Override
     protected void outputInlineResourcesBefore(final ConfigurationItemsCollection cic) throws JspException {
-        List<String> styles = cic.getInlineStyleEarlies();
+        List<InlineContent> styles = cic.getInlineStyleEarlies();
         if (styles.isEmpty()) {
             return;
         }

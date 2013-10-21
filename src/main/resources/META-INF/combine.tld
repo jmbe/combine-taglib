@@ -119,6 +119,12 @@
             <rtexprvalue>true</rtexprvalue>
             <description>space-separated list of resource names which this resource depends on.</description>
         </attribute>
+        <attribute>
+            <name>conditional</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Conditional expression for IE, without the surrounding comment.</description>
+        </attribute>
     </tag>
     <tag>
         <name>script-early</name>
@@ -130,6 +136,12 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>Space-separated list of resource names which this resource depends on.</description>
+        </attribute>
+        <attribute>
+            <name>conditional</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Conditional expression for IE, without the surrounding comment.</description>
         </attribute>
     </tag>
     <tag>
@@ -143,6 +155,12 @@
             <rtexprvalue>true</rtexprvalue>
             <description>Comma-separated list of resource names which this resource depends on.</description>
         </attribute>
+        <attribute>
+            <name>conditional</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Conditional expression for IE, without the surrounding comment.</description>
+        </attribute>
     </tag>
     <tag>
         <name>style-early</name>
@@ -154,6 +172,12 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>Comma-separated list of resource names which this resource depends on.</description>
+        </attribute>
+        <attribute>
+            <name>conditional</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Conditional expression for IE, without the surrounding comment.</description>
         </attribute>
     </tag>
 

@@ -1,10 +1,12 @@
 package se.intem.web.taglib.combined.configuration;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Stopwatch;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import java.io.IOException;
@@ -27,6 +29,7 @@ import se.intem.web.taglib.combined.node.CombineCommentParser;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 import se.intem.web.taglib.combined.node.ParseResult;
 import se.intem.web.taglib.combined.resources.CombinedBundle;
+import se.intem.web.taglib.combined.resources.RemoteBundle;
 import se.intem.web.taglib.combined.resources.ResourceGroup;
 import se.intem.web.taglib.combined.resources.ResourceName;
 
@@ -37,13 +40,13 @@ public class DependencyCache {
 
     private Cache<String, DependencyCacheEntry> cache;
 
-    private CombineCommentParser jsParser;
+    private CombineCommentParser commentParser;
 
     private CombinedResourceRepository repository;
 
     public DependencyCache() {
         this.cache = CacheBuilder.newBuilder().build();
-        this.jsParser = new CombineCommentParser();
+        this.commentParser = new CombineCommentParser();
         this.repository = CombinedResourceRepository.get();
     }
 
@@ -57,7 +60,7 @@ public class DependencyCache {
     }
 
     public void readDependenciesFromResources(final ServletContext servletContext, final ConfigurationItem ci) {
-        if (ci.isRemote() || ci.isEmpty()) {
+        if (ci.isAllRemote() || ci.isEmpty()) {
             return;
         }
 
@@ -100,15 +103,44 @@ public class DependencyCache {
             int counter = 0;
             for (Entry<ResourceType, List<ManagedResource>> entry : entrySet) {
 
-                ResourceName name = new ResourceName(ci.getName()).derive(counter++);
-                CombinedBundle bundle = new CombinedBundle(name, entry.getKey(), lastread);
-                group.addBundle(bundle);
+                RemoteBundle currentRemote = null;
+                CombinedBundle currentLocal = null;
 
                 for (ManagedResource mr : entry.getValue()) {
+
+                    if (mr.isRemote()) {
+                        /* Finish previous local */
+                        if (currentLocal != null) {
+                            repository.addCombinedResource(currentLocal);
+                            currentLocal = null;
+                        }
+
+                        /* Start new remote if necessary */
+                        if (currentRemote == null) {
+                            currentRemote = new RemoteBundle(entry.getKey());
+                            group.addBundle(currentRemote);
+                        }
+
+                        currentRemote.addPath(mr.getRequestPath());
+                        continue;
+                    }
+
+                    /* Finish previous remote */
+                    currentRemote = null;
+
+                    /* Start new local if necessary */
+                    if (currentLocal == null) {
+                        ResourceName name = new ResourceName(ci.getName()).derive(counter++);
+                        currentLocal = new CombinedBundle(name, entry.getKey(), lastread);
+                        group.addBundle(currentLocal);
+                    }
+
                     log.debug("Parsing {}", mr.getName());
                     try {
-                        ParseResult parsed = jsParser.parse(mr.getInput());
-                        bundle.addContents(parsed.getContents());
+                        ParseResult parsed = commentParser.parse(mr.getInput(),
+                                createLinePreprocessors(entry.getKey(), mr));
+
+                        currentLocal.addContents(parsed.getContents());
 
                         Iterables.addAll(requires, parsed.getRequires());
                         Iterables.addAll(provides, parsed.getProvides());
@@ -117,7 +149,11 @@ public class DependencyCache {
                         log.error("Could not parse js", e);
                     }
                 }
-                repository.addCombinedResource(bundle);
+
+                /* Finish any still open local bundle */
+                if (currentLocal != null) {
+                    repository.addCombinedResource(currentLocal);
+                }
             }
 
             repository.addResourceGroup(ci.getName(), group);
@@ -132,6 +168,17 @@ public class DependencyCache {
             ci.replaceParsedRequires(optional.get().getRequires());
         }
 
+    }
+
+    private List<Function<String, String>> createLinePreprocessors(final ResourceType type, final ManagedResource mr) {
+        if (ResourceType.js.equals(type)) {
+            /* nothing to do for js */
+            return null;
+        }
+
+        List<Function<String, String>> result = Lists.newArrayList();
+        result.add(new AbsolutizeCssUrlFunction(mr.getRequestPath()));
+        return result;
     }
 
     public static DependencyCache get() {

@@ -13,6 +13,7 @@ import javax.servlet.jsp.tagext.BodyContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import se.intem.web.taglib.combined.configuration.InlineContent;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 
 public abstract class InlineTagSupport extends ConfigurationItemAwareTagSupport {
@@ -22,7 +23,7 @@ public abstract class InlineTagSupport extends ConfigurationItemAwareTagSupport 
 
     private ConfigurationItem configurationItem = new ConfigurationItem();
 
-    protected abstract void addContents(String contents);
+    protected abstract void addContents(InlineContent contents);
 
     @Override
     public int doAfterBody() throws JspException {
@@ -38,7 +39,9 @@ public abstract class InlineTagSupport extends ConfigurationItemAwareTagSupport 
                 configurationItem.setName(md5);
 
                 /* Add content */
-                addContents(contents);
+                InlineContent inline = new InlineContent(contents, configurationItem.getConditional());
+
+                addContents(inline);
             }
 
             if (configurationItem.hasDependencies()) {
@@ -63,4 +66,9 @@ public abstract class InlineTagSupport extends ConfigurationItemAwareTagSupport 
     public void setRequires(final String requires) {
         this.configurationItem.addRequires(requires);
     }
+
+    public void setConditional(final String conditional) {
+        this.configurationItem.setConditional(conditional);
+    }
+
 }

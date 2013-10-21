@@ -6,16 +6,21 @@ import com.google.common.io.InputSupplier;
 import java.io.File;
 import java.io.InputStream;
 
+import se.intem.web.taglib.combined.RequestPath;
+
 public class ManagedResource {
 
     private String name;
     private String realPath;
     private InputStream input;
+    private RequestPath requestPath;
 
-    public ManagedResource(final String name, final String realPath, final InputStream input) {
+    public ManagedResource(final String name, final RequestPath requestPath, final String realPath,
+            final InputStream input) {
         this.name = name;
         this.realPath = realPath;
         this.input = input;
+        this.requestPath = requestPath;
     }
 
     public boolean isTimestampSupported() {
@@ -74,10 +79,18 @@ public class ManagedResource {
         return this.input != null;
     }
 
+    public RequestPath getRequestPath() {
+        return requestPath;
+    }
+
     @Override
     public String toString() {
         return Objects.toStringHelper(this).add("name", name).add("realPath", realPath)
                 .add("input", exists() ? "provided" : "missing").toString();
+    }
+
+    public boolean isRemote() {
+        return requestPath.isRemote();
     }
 
 }

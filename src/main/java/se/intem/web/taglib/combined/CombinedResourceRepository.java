@@ -2,6 +2,7 @@ package se.intem.web.taglib.combined;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
 import java.util.Collections;
@@ -56,6 +57,8 @@ public class CombinedResourceRepository {
     }
 
     public RequestPath addCombinedResource(final CombinedBundle bundle) {
+        Preconditions.checkNotNull(bundle);
+
         RequestPath requestPath = createRequestPath(bundle.getName().getName(), bundle.getType(), bundle.getChecksum());
         bundle.setRequestPath(requestPath);
 

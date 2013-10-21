@@ -10,7 +10,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.intem.web.taglib.combined.configuration.ConfigurationItemsCollection;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 
 public class ConfigurationItemsCollectionTest {
@@ -51,19 +50,19 @@ public class ConfigurationItemsCollectionTest {
 
     @Test
     public void should_remove_extra_style_when_adding_inline_style() {
-        String contents = "<style>body{}</style>";
+        InlineContent contents = new InlineContent("<style>body{}</style>");
 
         items.addInlineStyle(contents);
-        String added = items.getInlineStyles().get(0);
+        String added = items.getInlineStyles().get(0).getContents();
         assertEquals("body{}", added);
     }
 
     @Test
     public void should_remove_extra_script_when_adding_inline_style() {
-        String contents = "<script type=\"text/javascript\">contents</script>";
+        InlineContent contents = new InlineContent("<script type=\"text/javascript\">contents</script>");
 
         items.addInlineScript(contents);
-        String added = items.getInlineScripts().get(0);
+        String added = items.getInlineScripts().get(0).getContents();
         assertEquals("contents", added);
     }
 

@@ -1,5 +1,5 @@
 # Combine-taglib #
-Combine-taglib is a JSP taglib to concatenate and serve combined CSS and Javascript resources, in the vein of [wro4j](http://alexo.github.io/wro4j/),
+Combine-taglib is a JSP taglib to concatenate and serve combined CSS and Javascript resources, similar to tools such as [Grails Resources plugin](http://grails-plugins.github.io/grails-resources/), [wro4j](http://alexo.github.io/wro4j/),
 [JAWR](https://jawr.java.net/) and [pack:tag](https://github.com/ajkovar/packtag).
 
 
@@ -11,6 +11,8 @@ Combine-taglib is a JSP taglib to concatenate and serve combined CSS and Javascr
  * Will transitively add any required dependencies and load them in the correct order. Declare dependencies on what you directly use and let the dependency graph figure out what is needed.
  * Declare dependencies as granular or coarsely as fits the way you work
  * Supports development mode for use with live reload tools such as [Tincr](http://tin.cr/).
+ * Supports IE conditionals.
+ * Compatible with dynamic stylesheet libraries such as [YUI Stylesheet](http://yuilibrary.com/yui/docs/stylesheet/)
 
 
 ## Setup ##
@@ -20,8 +22,10 @@ Add maven dependency
     <dependency>
         <groupId>se.intem</groupId>
         <artifactId>combine-taglib</artifactId>
-        <version>1.4.0</version>
+        <version>1.5.0</version>
     </dependency>
+
+#### Add servlet mapping
 
 Add the following method and call it from onStartup(:ServletContext) in WebApplicationInitializer
 
@@ -29,8 +33,9 @@ Add the following method and call it from onStartup(:ServletContext) in WebAppli
         servletContext.addServlet("combinedtag", new CombinedServlet()).addMapping("*.combined");
     }
 
+#### Add servlet mapping (legacy)
 
-Or add servlet to web.xml
+Add servlet to web.xml
 
     <servlet>
         <servlet-name>CombinedServlet</servlet-name>
@@ -43,7 +48,9 @@ Or add servlet to web.xml
     </servlet-mapping>
     
 
-Configure logging (sample for logback)
+#### Configure logging 
+
+Sample for logback:
 
     <!-- For development you might want to use INFO -->
     <logger name="se.intem.web.taglib.combined" level="WARN" />
@@ -188,11 +195,27 @@ Add **supportsDevMode: true** to the bundle either in json configuration or whil
     }
 
 
+## IE Conditionals
+Use **conditional** to control which IE versions some bundles will be loaded in.
 
+    {
+        name : "ie8-support",
+        conditional : "lte IE 8",
+        css : "/css/ie8.css"
+    }
+
+## Dynamic stylesheet
+
+Set the attribute **supportsDynamicCss** for bundles which you would like to edit at runtime using Javascript. This will add an id the combined stylesheet so that you can easily access it using e.g. [YUI Stylesheet](http://yuilibrary.com/yui/docs/stylesheet/). 
+
+    {
+        name : "dynamic",
+        supportsDynamicCss: true,
+        css : [ ... ]
+    }
 
 ## Current limitations
 
- * Cannot combine remote and local resources in same resource group (workaround: define different groups)
  * No support for media attribute for css (workaround: put media query in css file)
  * No minification of files
  * No support for transcompiling LESS or SASS files

@@ -7,4 +7,10 @@
 }, {
     name : "angular",
     js : "angular.js"
-} ];
+}, {
+    name : "ie-support",
+    conditional : "IE lt 10",
+    css : "ie-support.css"
+}
+
+]};
