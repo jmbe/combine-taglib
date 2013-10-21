@@ -25,14 +25,17 @@ Add maven dependency
         <version>1.5.0-SNAPSHOT</version>
     </dependency>
 
+#### Add servlet mapping
+
 Add the following method and call it from onStartup(:ServletContext) in WebApplicationInitializer
 
     private void addCombinedTagServlet(final ServletContext servletContext) {
         servletContext.addServlet("combinedtag", new CombinedServlet()).addMapping("*.combined");
     }
 
+#### Add servlet mapping (legacy)
 
-Or add servlet to web.xml
+Add servlet to web.xml
 
     <servlet>
         <servlet-name>CombinedServlet</servlet-name>
@@ -45,7 +48,9 @@ Or add servlet to web.xml
     </servlet-mapping>
     
 
-Configure logging (sample for logback)
+#### Configure logging 
+
+Sample for logback:
 
     <!-- For development you might want to use INFO -->
     <logger name="se.intem.web.taglib.combined" level="WARN" />
