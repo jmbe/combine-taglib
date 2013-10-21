@@ -1,5 +1,5 @@
 # Combine-taglib #
-Combine-taglib is a JSP taglib to concatenate and serve combined CSS and Javascript resources, in the vein of [wro4j](http://alexo.github.io/wro4j/),
+Combine-taglib is a JSP taglib to concatenate and serve combined CSS and Javascript resources, similar to tools such as [Grails Resources plugin](http://grails-plugins.github.io/grails-resources/), [wro4j](http://alexo.github.io/wro4j/),
 [JAWR](https://jawr.java.net/) and [pack:tag](https://github.com/ajkovar/packtag).
 
 
