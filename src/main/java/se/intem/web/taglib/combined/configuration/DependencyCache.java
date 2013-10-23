@@ -72,6 +72,8 @@ public class DependencyCache {
             return;
         }
 
+        Stopwatch stopwatch = Stopwatch.createStarted();
+
         boolean hasChanges = false;
         if (optional.isPresent()) {
             DependencyCacheEntry cached = optional.get();
@@ -89,7 +91,7 @@ public class DependencyCache {
             } else {
                 log.debug("Changes detected for {}. Rebuilding dependency cache...", ci.getName());
             }
-            Stopwatch stopwatch = Stopwatch.createStarted();
+
             long lastread = new Date().getTime();
             Map<ResourceType, List<ManagedResource>> realPaths = ci.getRealPaths(servletContext);
             Set<Entry<ResourceType, List<ManagedResource>>> entrySet = realPaths.entrySet();
