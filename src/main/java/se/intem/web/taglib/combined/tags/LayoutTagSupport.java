@@ -108,7 +108,7 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
         }
 
         outputInlineResources(configurationItems);
-        log.info(String.format("Handled %s %s bundles in %s ms.", total, getType(),
+        log.debug(String.format("Handled %s %s bundles in %s ms.", total, getType(),
                 stopwatch.elapsed(TimeUnit.MILLISECONDS)));
 
         return EVAL_PAGE;
