@@ -60,12 +60,12 @@ public class DependencyCache {
     }
 
     public void readDependenciesFromResources(final ServletContext servletContext, final ConfigurationItem ci) {
-        if (ci.isAllRemote() || ci.isEmpty()) {
-            return;
-        }
-
         String cacheKey = ci.getName();
         Optional<DependencyCacheEntry> optional = get(cacheKey);
+
+        if ((ci.isAllRemote() || ci.isEmpty()) && !optional.isPresent()) {
+            return;
+        }
 
         if (optional.isPresent() && !ci.isReloadable()) {
             /* entry exists and is not reloadable - nothing to do */

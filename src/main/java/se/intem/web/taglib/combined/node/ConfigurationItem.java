@@ -95,7 +95,7 @@ public class ConfigurationItem implements ResourceParent, SupportsConditional {
     }
 
     public boolean isReloadable() {
-        return reloadable && !isAllRemote();
+        return reloadable;
     }
 
     public boolean isRemote() {
