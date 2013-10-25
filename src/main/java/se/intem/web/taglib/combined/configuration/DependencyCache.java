@@ -60,6 +60,8 @@ public class DependencyCache {
     }
 
     public void readDependenciesFromResources(final ServletContext servletContext, final ConfigurationItem ci) {
+        Stopwatch stopwatch = Stopwatch.createStarted();
+
         String cacheKey = ci.getName();
         Optional<DependencyCacheEntry> optional = get(cacheKey);
 
@@ -71,8 +73,6 @@ public class DependencyCache {
             /* entry exists and is not reloadable - nothing to do */
             return;
         }
-
-        Stopwatch stopwatch = Stopwatch.createStarted();
 
         boolean hasChanges = false;
         if (optional.isPresent()) {
