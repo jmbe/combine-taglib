@@ -60,12 +60,14 @@ public class DependencyCache {
     }
 
     public void readDependenciesFromResources(final ServletContext servletContext, final ConfigurationItem ci) {
-        if (ci.isAllRemote() || ci.isEmpty()) {
-            return;
-        }
+        Stopwatch stopwatch = Stopwatch.createStarted();
 
         String cacheKey = ci.getName();
         Optional<DependencyCacheEntry> optional = get(cacheKey);
+
+        if ((ci.isAllRemote() || ci.isEmpty()) && !optional.isPresent()) {
+            return;
+        }
 
         if (optional.isPresent() && !ci.isReloadable()) {
             /* entry exists and is not reloadable - nothing to do */
@@ -89,7 +91,7 @@ public class DependencyCache {
             } else {
                 log.debug("Changes detected for {}. Rebuilding dependency cache...", ci.getName());
             }
-            Stopwatch stopwatch = Stopwatch.createStarted();
+
             long lastread = new Date().getTime();
             Map<ResourceType, List<ManagedResource>> realPaths = ci.getRealPaths(servletContext);
             Set<Entry<ResourceType, List<ManagedResource>>> entrySet = realPaths.entrySet();
