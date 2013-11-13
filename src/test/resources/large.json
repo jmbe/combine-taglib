@@ -1,0 +1,184 @@
+[
+        {
+            name : "jquery",
+            js : [ "//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" ]
+        },
+
+        {
+            name : "angular",
+            requires : "jquery",
+            js : [ "//ajax.googleapis.com/ajax/libs/angularjs/1.1.4/angular.min.js",
+                    "//ajax.googleapis.com/ajax/libs/angularjs/1.1.4/angular-resource.min.js" ]
+        },
+
+        {
+            name : "underscorejs",
+            js : "http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"
+        },
+
+        {
+            name : "placeholders-polyfill",
+            js : "http://static.pictosys.se/placeholders.js/2.1.1/Placeholders.min.js"
+        },
+
+        {
+            name : "bootstrap-base",
+            requires : "jquery",
+            /*
+             * Does not really need extjs3-gui, but it is added to make sure extjs css loads first, since extjs resets
+             * many styles.
+             */
+            optional : "extjs3-gui",
+            css : [ "//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" ],
+            js : "//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"
+        },
+
+        {
+            name : "bootstrap",
+            requires : "bootstrap-base",
+            conditional : "lte IE 8",
+            css : "/static/css/bootstrap3-ie8.css"
+        },
+
+        {
+            name : "bootstrap-slider",
+            requires : "jquery bootstrap",
+            css : "http://static.pictosys.se/bootstrap-slider/2.0.0-seiyria/css/slider.css",
+            js : "http://static.pictosys.se/bootstrap-slider/2.0.0-seiyria/js/bootstrap-slider.js"
+        },
+
+        {
+            name : "font-awesome",
+            optional : "bootstrap",
+            css : "//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css"
+        },
+
+        {
+            /*
+             * YUI
+             * http://developer.yahoo.com/yui/articles/hosting/?animation&connection&container&dragdrop&element&yahoo-dom-event&MIN
+             */
+            name : "yui2",
+            css : "http://yui.yahooapis.com/combo?2.9.0/build/container/assets/skins/sam/container.css",
+            js : "http://yui.yahooapis.com/combo?2.9.0/build/utilities/utilities.js&2.9.0/build/container/container-min.js"
+        },
+
+        {
+            name : "yahoo-bubbling",
+            requires : "yui2",
+            js : "http://static.pictosys.se/bubbling/2.1/bubbling-min.js"
+        },
+
+        {
+            name : "extjs3",
+            js : "http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"
+        },
+
+        {
+            name : "extjs3-gui",
+            requires : "extjs3",
+            js : "http://extjs.cachefly.net/ext-3.4.0/ext-all.js",
+            css : "http://extjs.cachefly.net/ext-3.4.0/resources/css/ext-all.css"
+        },
+
+        {
+            name : "reglib",
+            js : "http://static.pictosys.se/reglib/reg1.0.6.js"
+        },
+
+        {
+            name : "json2",
+            js : "http://cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.js"
+        },
+
+        {
+            name : "backbone",
+            requires : "underscorejs,json2,jquery",
+            js : "http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.5.1/backbone-min.js"
+        },
+
+        {
+            name : "customer-js",
+            requires : "bootstrap",
+            js : [ "/static/js/StringUtils.js", "/static/js/Metrics.js", "/static/js/ExtJsInit.js",
+                    "/static/js/Arrays.js", "/static/js/TestMode.js", "/static/js/Pages.js",
+                    "/static/js/EndlessScrolling-ExtJs.js", "/static/js/Search.js", "/static/js/BrowseListSupport.js",
+                    "/static/js/BrowseList.js", "/static/js/DelayedImageLoader.js", "/static/js/DelayedBatchLoader.js",
+                    "/static/js/ChangeLanguage.js", "/static/js/BlissImage.js", "/static/js/DraggablesRepository.js",
+                    "/static/js/News.js", "/static/js/InvoicePage.js", "/static/js/CountryCodeListener.js",
+                    "/static/js/GlossKeyAutoComplete.js", "/static/js/Pinger.js", "/static/js/QuickSuggest.js",
+                    "/static/js/SubscribeAccount.js" ]
+        },
+
+        {
+            name : "bliss-angular",
+            js : "/static/js/BlissAngular.js"
+        },
+
+        {
+            name : "quick-notification",
+            js : "/static/js/QuickNotification.js",
+            css : "/static/css/quick-notification.css"
+        },
+
+        {
+            name : "document-support",
+            requires : "font-awesome",
+            js : [ "/static/js/DocumentName.js", "/static/js/ToolbarFillingTextfield.js", "/static/js/BrowseTree.js",
+                    "/static/js/DocumentWindow.js" ],
+            css : "/static/css/document-support.css"
+        },
+
+        {
+            name : "chart-page",
+            requires : "customer-js,document-support,quick-notification",
+            js : [ "/static/js/AddSymbolToChartAnimation.js", "/static/js/DraggableSymbol.js",
+                    "/static/js/UserChartPage.js", "/static/js/ChartSizeSelector.js", "/static/js/BlissChart.js",
+                    "/static/js/QuickWrite.js", "/static/js/PrintSettings.js", "/static/js/BlissChartOverlayMenu.js",
+                    "/static/js/BlissChartAsyncPersistence.js", "/static/js/DocumentNotification.js" ]
+        },
+
+        {
+            name : "standard-chart-page",
+            requires : "customer-js,document-support,quick-notification",
+            js : [ "/static/js/SpryMap.js", "/static/js/DraggableStandardChartSymbol.js",
+                    "/static/js/StandardChartContextMenu.js", "/static/js/StandardChartSettings.js",
+                    "/static/js/StandardChartAngular.js", "/static/js/StandardChart.js",
+                    "/static/js/StandardChartSearch.js", "/static/js/StandardChartPage.js" ]
+        },
+
+        {
+            name : "dictionary-page",
+            requires : "customer-js quick-notification",
+            js : [ "/static/js/DictionaryBrowser.js", "/static/js/CategoryTree.js", "/static/js/DictionaryPage.js" ]
+        },
+
+        {
+            name : "download-symbols-page",
+            requires : "customer-js quick-notification",
+            js : [ "/static/js/DownloadSymbols.js", "/static/js/DownloadSymbolsPage.js" ]
+        },
+
+        {
+            name : "customer-css",
+            requires : "bootstrap placeholders-polyfill",
+            supportsDevMode : true,
+            css : [ "/static/css/extjs3-transitional.css", "/static/css/bootstrap3-overrides.css",
+                    "/static/css/bootstrap3-additions.css", "/static/css/pictosys-common.css",
+                    "/static/css/bliss-common.css", "/static/css/search.css", "/static/css/subscribe.css",
+                    "/static/css/customer.css", "/static/css/download-popup.css", "/static/css/download.css",
+                    "/static/css/chart.css", "/static/css/standard-chart.css", "/static/css/dictionary.css",
+                    "/static/css/category-tree.css", "/static/css/tree.css", "/static/css/help.css",
+                    "/static/css/links.css", "/static/css/icons.css", "/static/css/bootstrap3-theme.css",
+                    "/static/css/license-management.css", "/static/css/yui-overrides.css" ]
+        },
+
+        {
+            name : "customer-front-page",
+            supportsDevMode : true,
+            requires : "bootstrap customer-css",
+            css : [ "/static/css/front-page-animations.css", "/static/css/front-page.css", "/static/css/carousel.css" ],
+            js : "/static/js/FrontPageAngular.js"
+        }
+
+]

@@ -22,6 +22,7 @@ public class TreeBuilderTest {
     private TreeBuilder builder;
     private InputStream illegal;
     private InputStream optional;
+    private InputStream large;
     private InputStream optionalRequired;
 
     @Before
@@ -30,6 +31,7 @@ public class TreeBuilderTest {
         this.illegal = this.getClass().getResourceAsStream("/illegal.js");
         this.optional = this.getClass().getResourceAsStream("/optional.json");
         this.optionalRequired = this.getClass().getResourceAsStream("/optional-required.json");
+        this.large = this.getClass().getResourceAsStream("/large.json");
         this.builder = new TreeBuilder();
     }
 
@@ -39,6 +41,7 @@ public class TreeBuilderTest {
         assertNotNull(illegal);
         assertNotNull(optional);
         assertNotNull(optionalRequired);
+        assertNotNull(large);
     }
 
     @Test
@@ -96,5 +99,11 @@ public class TreeBuilderTest {
         List<ConfigurationItem> resolved = builder.resolve(items);
 
         assertEquals("[jquery, angular, news]", resolved.toString());
+    }
+
+    @Test
+    public void output_tree_for_large() throws JsonParseException, JsonMappingException, IOException {
+        ConfigurationItemsCollection config = builder.parse(large);
+        builder.resolve(config);
     }
 }

@@ -3,6 +3,7 @@ package se.intem.web.taglib.combined.node;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
@@ -16,11 +17,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import se.intem.web.taglib.combined.configuration.ConfigurationItemsCollection;
 import se.intem.web.taglib.combined.configuration.DependencyCache;
 import se.intem.web.taglib.combined.configuration.DependencyCacheEntry;
 
 public class TreeBuilder {
+
+    /** Logger for this class. */
+    private static final Logger log = LoggerFactory.getLogger(TreeBuilder.class);
 
     private CombineObjectMapper mapper;
     private DependencyCache dependencyCache;
@@ -157,6 +164,8 @@ public class TreeBuilder {
         /* List contains same nodes, but re-ordered so that optional nodes will load before nodes that depend on them. */
         resolved = root.resolve();
 
+        logDependencyHierarchy(resolved);
+
         return FluentIterable.from(resolved).transform(new Function<ResourceNode, ConfigurationItem>() {
 
             public ConfigurationItem apply(final ResourceNode input) {
@@ -164,5 +173,62 @@ public class TreeBuilder {
             }
         }).toList();
 
+    }
+
+    private void logDependencyHierarchy(final List<ResourceNode> resolved) {
+        if (!log.isDebugEnabled()) {
+            return;
+        }
+
+        log.debug("Dependency tree of {} members:", resolved.size());
+        logDependencyHierarchy(resolved, null, "");
+
+    }
+
+    private void logDependencyHierarchy(final List<ResourceNode> resolved, final ResourceNode parent,
+            final String prefix) {
+
+        if (!log.isDebugEnabled()) {
+            return;
+        }
+
+        if (prefix.length() > 25) {
+            /* Abort outputting very deep hierarchies */
+            log.debug(prefix + "<...>");
+            return;
+        }
+
+        if (resolved.isEmpty()) {
+            return;
+        }
+
+        int count = 0;
+
+        for (ResourceNode node : resolved) {
+
+            if (Strings.nullToEmpty(prefix).isEmpty() && node.getItem().isLibrary()) {
+                continue;
+            }
+
+            if (node.equals(parent)) {
+                /* Break endless loop */
+                continue;
+            }
+
+            boolean isLast = ++count == resolved.size();
+
+            if (isLast) {
+                log.debug(prefix.replace("+- ", "\\- ") + node.getName());
+            } else {
+                log.debug(prefix + node.getName());
+            }
+
+            String p = prefix.replace("+- ", "|  ");
+            if (isLast) {
+                p = p.replaceAll("\\|  $", "   ");
+            }
+
+            logDependencyHierarchy(node.getEdges(), node, p + "+- ");
+        }
     }
 }

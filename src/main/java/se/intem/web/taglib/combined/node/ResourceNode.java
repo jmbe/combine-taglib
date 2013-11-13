@@ -136,4 +136,8 @@ public class ResourceNode {
         optionals.remove(optional);
         edges.add(optional);
     }
+
+    List<ResourceNode> getEdges() {
+        return edges;
+    }
 }
