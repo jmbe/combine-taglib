@@ -5,13 +5,15 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 
 public class ResourceNode {
 
-    private List<ResourceNode> edges;
+    private LinkedHashSet<ResourceNode> edges;
     private String name;
 
     private static final Random random = new Random();
@@ -22,7 +24,7 @@ public class ResourceNode {
      */
     private boolean virtual;
     private ConfigurationItem item;
-    private List<ResourceNode> optionals;
+    private LinkedHashSet<ResourceNode> optionals;
 
     /**
      * Is an actual node, i.e. not a virtual node.
@@ -48,8 +50,8 @@ public class ResourceNode {
     }
 
     public ResourceNode(final String name, final ConfigurationItem item) {
-        this.edges = Lists.newArrayList();
-        this.optionals = Lists.newArrayList();
+        this.edges = Sets.newLinkedHashSet();
+        this.optionals = Sets.newLinkedHashSet();
         this.name = name;
         this.item = item;
 
@@ -128,7 +130,7 @@ public class ResourceNode {
         return item;
     }
 
-    public List<ResourceNode> getOptionals() {
+    public Iterable<ResourceNode> getOptionals() {
         return optionals;
     }
 
@@ -137,7 +139,7 @@ public class ResourceNode {
         edges.add(optional);
     }
 
-    List<ResourceNode> getEdges() {
+    Iterable<ResourceNode> getEdges() {
         return edges;
     }
 }

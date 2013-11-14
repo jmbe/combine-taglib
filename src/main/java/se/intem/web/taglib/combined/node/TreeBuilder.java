@@ -7,6 +7,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
@@ -228,7 +229,7 @@ public class TreeBuilder {
                 p = p.replaceAll("\\|  $", "   ");
             }
 
-            logDependencyHierarchy(node.getEdges(), node, p + "+- ");
+            logDependencyHierarchy(Lists.newArrayList(node.getEdges()), node, p + "+- ");
         }
     }
 }
