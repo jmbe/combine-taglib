@@ -1,6 +1,7 @@
 package se.intem.web.taglib.combined.node;
 
 import com.google.common.base.Function;
+import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
@@ -141,5 +142,21 @@ public class ResourceNode {
 
     Iterable<ResourceNode> getEdges() {
         return edges;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof ResourceNode)) {
+            return false;
+        }
+
+        ResourceNode that = (ResourceNode) obj;
+
+        return Objects.equal(this.name, that.name);
     }
 }
