@@ -6,7 +6,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.Map;
 
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 
-public class ConfigurationItemsCollection implements Iterable<ConfigurationItem>, Serializable {
+public class ConfigurationItemsCollection implements Iterable<ConfigurationItem> {
 
     /**
      * Use LinkedHashMap since it maintains insertion order.

@@ -8,7 +8,7 @@ import se.intem.web.taglib.combined.node.ConfigurationItem;
 
 public class RequiresTag extends ConfigurationItemAwareTagSupport {
 
-    private ConfigurationItem configurationItem = new ConfigurationItem();
+    private transient ConfigurationItem configurationItem = new ConfigurationItem();
 
     @Override
     public int doEndTag() throws JspException {

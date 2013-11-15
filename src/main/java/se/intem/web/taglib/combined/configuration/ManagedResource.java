@@ -60,6 +60,11 @@ public class ManagedResource {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hashCode(this.name);
+    }
+
+    @Override
     public boolean equals(final Object o) {
         if (!(o instanceof ManagedResource)) {
             return false;
