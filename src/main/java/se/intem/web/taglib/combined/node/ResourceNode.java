@@ -1,5 +1,6 @@
 package se.intem.web.taglib.combined.node;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
@@ -75,9 +76,19 @@ public class ResourceNode {
         edge.addSatisfies(this);
     }
 
-    private void addSatisfies(final ResourceNode node) {
+    @VisibleForTesting
+    void addSatisfies(final ResourceNode node) {
         if (node.isVirtual()) {
             return;
+        }
+
+        if (equals(node)) {
+            return;
+        }
+
+        if (isRoot()) {
+            throw new IllegalStateException(String.format("Adding satisfies '%s' but '%s' is marked as root.",
+                    node.getName(), name));
         }
 
         this.satisfies.add(node);
