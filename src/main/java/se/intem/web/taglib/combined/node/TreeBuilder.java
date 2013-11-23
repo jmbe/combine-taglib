@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -227,9 +228,13 @@ public class TreeBuilder {
 
             List<ResourceNode> children = Lists.newArrayList(node.getEdges());
 
+            String sameLineSeparator = " -> ";
+            String lineContinuation = "|  ";
+            String lastNodeSeparator = "\\- ";
+            String moreChildrenSeparator = "+- ";
+
             /* Grow tree horizontally if there is only one child */
             while (children.size() == 1) {
-                String sameLineSeparator = " -> ";
                 padding += Strings.repeat(" ", sameLineSeparator.length() + node.getName().length());
 
                 node = children.get(0);
@@ -239,17 +244,17 @@ public class TreeBuilder {
             }
 
             if (isLast) {
-                log.debug(prefix.replace("+- ", "\\- ") + level);
+                log.debug(prefix.replace(moreChildrenSeparator, lastNodeSeparator) + level);
             } else {
                 log.debug(prefix + level);
             }
 
-            String p = prefix.replace("+- ", "|  ");
+            String p = prefix.replace(moreChildrenSeparator, lineContinuation);
             if (isLast) {
-                p = p.replaceAll("\\|  $", "   ");
+                p = p.replaceAll(Pattern.quote(lineContinuation) + "$", "   ");
             }
 
-            logDependencyHierarchy(children, node, p + padding + "+- ", depth + 1);
+            logDependencyHierarchy(children, node, p + padding + moreChildrenSeparator, depth + 1);
 
         }
     }
