@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
+import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -13,7 +14,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 
-public class ResourceNode {
+public class ResourceNode implements Comparable<ResourceNode> {
 
     private LinkedHashSet<ResourceNode> requires;
 
@@ -194,5 +195,10 @@ public class ResourceNode {
         ResourceNode that = (ResourceNode) obj;
 
         return Objects.equal(this.name, that.name);
+    }
+
+    @Override
+    public int compareTo(final ResourceNode other) {
+        return Strings.nullToEmpty(this.name).compareTo(Strings.nullToEmpty(other.name));
     }
 }
