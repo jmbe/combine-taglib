@@ -193,13 +193,13 @@ public class TreeBuilder {
             return;
         }
 
-        if (prefix.length() > 25) {
-            /* Abort outputting very deep hierarchies */
-            log.debug(prefix + "<...>");
+        if (resolved.isEmpty()) {
             return;
         }
 
-        if (resolved.isEmpty()) {
+        if (prefix.length() > 25) {
+            /* Abort outputting very deep hierarchies */
+            log.debug(prefix + "<...>");
             return;
         }
 
