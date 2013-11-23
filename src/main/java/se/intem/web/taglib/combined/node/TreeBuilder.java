@@ -182,12 +182,12 @@ public class TreeBuilder {
         }
 
         log.debug("Dependency tree of {} members:", resolved.size());
-        logDependencyHierarchy(resolved, null, "");
+        logDependencyHierarchy(resolved, null, "", 0);
 
     }
 
     private void logDependencyHierarchy(final List<ResourceNode> resolved, final ResourceNode parent,
-            final String prefix) {
+            final String prefix, final int depth) {
 
         if (!log.isDebugEnabled()) {
             return;
@@ -197,7 +197,7 @@ public class TreeBuilder {
             return;
         }
 
-        if (prefix.length() > 25) {
+        if (depth > 8) {
             /* Abort outputting very deep hierarchies */
             log.debug(prefix + "<...>");
             return;
@@ -218,10 +218,26 @@ public class TreeBuilder {
 
             boolean isLast = ++count == resolved.size();
 
+            String level = node.getName();
+            String padding = "";
+
+            List<ResourceNode> children = Lists.newArrayList(node.getEdges());
+
+            /* Grow tree horizontally if there is only one child */
+            while (children.size() == 1) {
+                String sameLineSeparator = " -> ";
+                padding += Strings.repeat(" ", sameLineSeparator.length() + node.getName().length());
+
+                node = children.get(0);
+                level += sameLineSeparator + node.getName();
+
+                children = Lists.newArrayList(node.getEdges());
+            }
+
             if (isLast) {
-                log.debug(prefix.replace("+- ", "\\- ") + node.getName());
+                log.debug(prefix.replace("+- ", "\\- ") + level);
             } else {
-                log.debug(prefix + node.getName());
+                log.debug(prefix + level);
             }
 
             String p = prefix.replace("+- ", "|  ");
@@ -229,7 +245,8 @@ public class TreeBuilder {
                 p = p.replaceAll("\\|  $", "   ");
             }
 
-            logDependencyHierarchy(Lists.newArrayList(node.getEdges()), node, p + "+- ");
+            logDependencyHierarchy(children, node, p + padding + "+- ", depth + 1);
+
         }
     }
 }
