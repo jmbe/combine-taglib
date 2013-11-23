@@ -14,6 +14,7 @@ import com.google.common.collect.Multimap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -116,6 +117,8 @@ public class TreeBuilder {
             }
         }
 
+        // contractEdges(nodes.values());
+
         return nodes;
     }
 
@@ -174,6 +177,28 @@ public class TreeBuilder {
             }
         }).toList();
 
+    }
+
+    private void contractEdges(final Iterable<ResourceNode> resolved) {
+
+        List<ResourceNode> sorted = Lists.newArrayList(resolved);
+        Collections.sort(sorted);
+
+        for (ResourceNode node : sorted) {
+            if (node.isVirtual()) {
+                throw new IllegalStateException(String.format(
+                        "Virtual node '%s' is not expected in edge contraction. ", node.getName()));
+            }
+
+            if (node.getSatisfies().size() == 1) {
+                ResourceNode satisfies = node.getSatisfies().get(0);
+                if (!satisfies.isRoot()) {
+                    log.debug("(1) {} is only used once in {}", node.getName(), satisfies.getName());
+                }
+            } else if (!node.isRoot() && node.getSatisfies().size() == 0) {
+                log.debug("( ) {} is never used", node.getName());
+            }
+        }
     }
 
     private void logDependencyHierarchy(final List<ResourceNode> resolved) {
