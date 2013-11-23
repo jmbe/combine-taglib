@@ -228,10 +228,12 @@ public class TreeBuilder {
 
             List<ResourceNode> children = Lists.newArrayList(node.getEdges());
 
-            String sameLineSeparator = " -> ";
-            String lineContinuation = "|  ";
-            String lastNodeSeparator = "\\- ";
-            String moreChildrenSeparator = "+- ";
+            String sameLineSeparator = " ── ";
+
+            /* These three symbols must all have same length. */
+            String lineContinuation = "│  ";
+            String lastNodeSeparator = "└─ ";
+            String moreChildrenSeparator = "├─ ";
 
             /* Grow tree horizontally if there is only one child */
             while (children.size() == 1) {
@@ -251,7 +253,7 @@ public class TreeBuilder {
 
             String p = prefix.replace(moreChildrenSeparator, lineContinuation);
             if (isLast) {
-                p = p.replaceAll(Pattern.quote(lineContinuation) + "$", "   ");
+                p = p.replaceAll(Pattern.quote(lineContinuation) + "$", Strings.repeat(" ", lineContinuation.length()));
             }
 
             logDependencyHierarchy(children, node, p + padding + moreChildrenSeparator, depth + 1);
