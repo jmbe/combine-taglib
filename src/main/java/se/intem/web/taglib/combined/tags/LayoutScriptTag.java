@@ -75,7 +75,11 @@ public class LayoutScriptTag extends LayoutTagSupport {
             return false;
         }
 
-        pageContext.getRequest().setAttribute(SCRIPT_PASS_COMPLETE, Boolean.TRUE);
         return true;
+    }
+
+    @Override
+    protected void afterResolve() {
+        pageContext.getRequest().setAttribute(SCRIPT_PASS_COMPLETE, Boolean.TRUE);
     }
 }

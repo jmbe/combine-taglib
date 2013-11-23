@@ -99,8 +99,12 @@ public class LayoutCssTag extends LayoutTagSupport {
             return false;
         }
 
-        pageContext.getRequest().setAttribute(CSS_PASS_COMPLETE, Boolean.TRUE);
         return true;
+    }
+
+    @Override
+    protected void afterResolve() {
+        pageContext.getRequest().setAttribute(CSS_PASS_COMPLETE, Boolean.TRUE);
     }
 
 }
