@@ -32,6 +32,7 @@ public abstract class InlineTagSupport extends ConfigurationItemAwareTagSupport 
             String contents = CharStreams.toString(b.getReader());
 
             configurationItem.setName("inline-" + UUID.randomUUID().toString());
+            configurationItem.setRoot(true);
 
             if (!Strings.nullToEmpty(contents).trim().isEmpty()) {
 

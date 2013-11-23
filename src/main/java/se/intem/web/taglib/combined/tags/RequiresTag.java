@@ -15,6 +15,7 @@ public class RequiresTag extends ConfigurationItemAwareTagSupport {
 
         if (configurationItem.hasDependencies()) {
             configurationItem.setName("requires-" + UUID.randomUUID().toString());
+            configurationItem.setRoot(true);
             addConfigurationItem(configurationItem);
         }
 
