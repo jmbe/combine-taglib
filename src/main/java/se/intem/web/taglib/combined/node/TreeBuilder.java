@@ -14,6 +14,7 @@ import com.google.common.collect.Multimap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -186,14 +187,17 @@ public class TreeBuilder {
 
     }
 
-    private void logDependencyHierarchy(final List<ResourceNode> resolved, final ResourceNode parent,
+    private void logDependencyHierarchy(final Iterable<ResourceNode> resolved, final ResourceNode parent,
             final String prefix, final int depth) {
 
         if (!log.isDebugEnabled()) {
             return;
         }
 
-        if (resolved.isEmpty()) {
+        List<ResourceNode> sorted = Lists.newArrayList(resolved);
+        Collections.sort(sorted);
+
+        if (sorted.isEmpty()) {
             return;
         }
 
@@ -205,7 +209,7 @@ public class TreeBuilder {
 
         int count = 0;
 
-        for (ResourceNode node : resolved) {
+        for (ResourceNode node : sorted) {
 
             if (Strings.nullToEmpty(prefix).isEmpty() && node.getItem().isLibrary()) {
                 continue;
@@ -216,7 +220,7 @@ public class TreeBuilder {
                 continue;
             }
 
-            boolean isLast = ++count == resolved.size();
+            boolean isLast = ++count == sorted.size();
 
             String level = node.getName();
             String padding = "";
