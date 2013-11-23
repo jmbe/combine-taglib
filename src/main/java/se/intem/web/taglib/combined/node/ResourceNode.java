@@ -14,7 +14,11 @@ import java.util.Random;
 
 public class ResourceNode {
 
-    private LinkedHashSet<ResourceNode> edges;
+    private LinkedHashSet<ResourceNode> requires;
+
+    /* Inverse of requires. */
+    private LinkedHashSet<ResourceNode> satisfies;
+
     private String name;
 
     private static final Random random = new Random();
@@ -51,19 +55,36 @@ public class ResourceNode {
     }
 
     public ResourceNode(final String name, final ConfigurationItem item) {
-        this.edges = Sets.newLinkedHashSet();
+        this.requires = Sets.newLinkedHashSet();
         this.optionals = Sets.newLinkedHashSet();
+        this.satisfies = Sets.newLinkedHashSet();
         this.name = name;
         this.item = item;
-
     }
 
     public ResourceNode addEdges(final ResourceNode... dependencies) {
         for (ResourceNode edge : dependencies) {
-            this.edges.add(edge);
+            addEdge(edge);
         }
 
         return this;
+    }
+
+    private void addEdge(final ResourceNode edge) {
+        this.requires.add(edge);
+        edge.addSatisfies(this);
+    }
+
+    private void addSatisfies(final ResourceNode node) {
+        if (node.isVirtual()) {
+            return;
+        }
+
+        this.satisfies.add(node);
+    }
+
+    List<ResourceNode> getSatisfies() {
+        return Lists.newArrayList(this.satisfies);
     }
 
     public ResourceNode addOptionalEdges(final ResourceNode... optional) {
@@ -86,7 +107,7 @@ public class ResourceNode {
      */
     private void resolve(final List<ResourceNode> resolved, final List<ResourceNode> unresolved) {
         unresolved.add(this);
-        for (ResourceNode node : edges) {
+        for (ResourceNode node : requires) {
             if (this.equals(node)) {
                 continue;
             }
@@ -107,7 +128,7 @@ public class ResourceNode {
     @Override
     public String toString() {
 
-        ImmutableList<String> edgeNames = FluentIterable.from(edges).transform(toName).toList();
+        ImmutableList<String> edgeNames = FluentIterable.from(requires).transform(toName).toList();
         ImmutableList<String> optionalNames = FluentIterable.from(optionals).transform(toName).toList();
 
         String format = String.format("%s  R%s O%s", name, edgeNames, optionalNames);
@@ -121,6 +142,10 @@ public class ResourceNode {
 
     public boolean isVirtual() {
         return virtual;
+    }
+
+    public boolean isRoot() {
+        return this.item != null && this.item.isRoot();
     }
 
     public String getName() {
@@ -137,11 +162,11 @@ public class ResourceNode {
 
     public void promoteToRequired(final ResourceNode optional) {
         optionals.remove(optional);
-        edges.add(optional);
+        addEdge(optional);
     }
 
-    Iterable<ResourceNode> getEdges() {
-        return edges;
+    Iterable<ResourceNode> getRequires() {
+        return requires;
     }
 
     @Override

@@ -122,8 +122,8 @@ public class TreeBuilder {
     public List<ConfigurationItem> resolve(final ConfigurationItemsCollection configurationItemsCollection) {
         Map<String, ResourceNode> build = build(configurationItemsCollection);
 
-        ResourceNode root = new ResourceNode();
-        root.setVirtual(true);
+        ResourceNode base = new ResourceNode("virtual");
+        base.setVirtual(true);
 
         /**
          * Pass 0. Populate optionals map.
@@ -141,12 +141,12 @@ public class TreeBuilder {
          */
         for (ConfigurationItem configurationItem : configurationItemsCollection) {
             if (!configurationItem.isLibrary()) {
-                root.addEdges(build.get(configurationItem.getName()));
+                base.addEdges(build.get(configurationItem.getName()));
             }
         }
 
         /* List contains only required resources now. */
-        List<ResourceNode> resolved = root.resolve();
+        List<ResourceNode> resolved = base.resolve();
 
         /**
          * Pass 2. Promote optionals that were included anyway and resolve again.
@@ -163,7 +163,7 @@ public class TreeBuilder {
         }
 
         /* List contains same nodes, but re-ordered so that optional nodes will load before nodes that depend on them. */
-        resolved = root.resolve();
+        resolved = base.resolve();
 
         logDependencyHierarchy(resolved);
 
@@ -229,7 +229,7 @@ public class TreeBuilder {
                 p = p.replaceAll("\\|  $", "   ");
             }
 
-            logDependencyHierarchy(Lists.newArrayList(node.getEdges()), node, p + "+- ");
+            logDependencyHierarchy(Lists.newArrayList(node.getRequires()), node, p + "+- ");
         }
     }
 }
