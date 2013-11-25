@@ -1,5 +1,6 @@
 package se.intem.web.taglib.combined.tags;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Stopwatch;
 
 import java.io.IOException;
@@ -20,6 +21,8 @@ import se.intem.web.taglib.combined.node.ConfigurationItem;
 import se.intem.web.taglib.combined.node.TreeBuilder;
 
 public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport {
+
+    private static final String KEY_COMBINED_RESOLVED = "COMBINED_RESOLVED";
 
     /** Logger for this class. */
     private static final Logger log = LoggerFactory.getLogger(LayoutTagSupport.class);
@@ -67,6 +70,8 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
      */
     protected abstract boolean beforeResolve(ConfigurationItemsCollection configurationItems);
 
+    protected abstract void afterResolve();
+
     @Override
     public int doEndTag() throws JspException {
 
@@ -78,7 +83,14 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
             return EVAL_PAGE;
         }
 
-        List<ConfigurationItem> resolved = tb.resolve(configurationItems);
+        List<ConfigurationItem> resolved = null;
+        Optional<List<ConfigurationItem>> cached = null;
+        if (hasLayoutBeenCalled() && (cached = getResolved()).isPresent()) {
+            resolved = cached.get();
+        } else {
+            resolved = tb.resolve(configurationItems);
+            setResolved(resolved);
+        }
 
         outputInlineResourcesBefore(configurationItems);
 
@@ -111,7 +123,21 @@ public abstract class LayoutTagSupport extends ConfigurationItemAwareTagSupport 
         log.debug(String.format("Handled %s %s bundles in %s ms.", total, getType(),
                 stopwatch.elapsed(TimeUnit.MILLISECONDS)));
 
+        afterResolve();
+
         return EVAL_PAGE;
+    }
+
+    private Optional<List<ConfigurationItem>> getResolved() {
+        @SuppressWarnings("unchecked")
+        List<ConfigurationItem> attribute = (List<ConfigurationItem>) pageContext.getRequest().getAttribute(
+                KEY_COMBINED_RESOLVED);
+
+        return Optional.fromNullable(attribute);
+    }
+
+    private void setResolved(final List<ConfigurationItem> resolved) {
+        pageContext.getRequest().setAttribute(KEY_COMBINED_RESOLVED, resolved);
     }
 
     public String generateElementId(final ConfigurationItem ci) {

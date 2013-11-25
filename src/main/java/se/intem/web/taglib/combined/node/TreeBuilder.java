@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -207,22 +208,25 @@ public class TreeBuilder {
         }
 
         log.debug("Dependency tree of {} members:", resolved.size());
-        logDependencyHierarchy(resolved, null, "");
+        logDependencyHierarchy(resolved, null, "", 0);
 
     }
 
-    private void logDependencyHierarchy(final List<ResourceNode> resolved, final ResourceNode parent,
-            final String prefix) {
+    private void logDependencyHierarchy(final Iterable<ResourceNode> resolved, final ResourceNode parent,
+            final String prefix, final int depth) {
 
         if (!log.isDebugEnabled()) {
             return;
         }
 
-        if (resolved.isEmpty()) {
+        List<ResourceNode> sorted = Lists.newArrayList(resolved);
+        Collections.sort(sorted);
+
+        if (sorted.isEmpty()) {
             return;
         }
 
-        if (prefix.length() > 25) {
+        if (depth > 8) {
             /* Abort outputting very deep hierarchies */
             log.debug(prefix + "<...>");
             return;
@@ -230,7 +234,7 @@ public class TreeBuilder {
 
         int count = 0;
 
-        for (ResourceNode node : resolved) {
+        for (ResourceNode node : sorted) {
 
             if (Strings.nullToEmpty(prefix).isEmpty() && node.getItem().isLibrary()) {
                 continue;
@@ -241,20 +245,42 @@ public class TreeBuilder {
                 continue;
             }
 
-            boolean isLast = ++count == resolved.size();
+            boolean isLast = ++count == sorted.size();
+
+            String level = node.getName();
+            String padding = "";
+
+            List<ResourceNode> children = Lists.newArrayList(node.getRequires());
+
+            String sameLineSeparator = " ── ";
+
+            /* These three symbols must all have same length. */
+            String lineContinuation = "│  ";
+            String lastNodeSeparator = "└─ ";
+            String moreChildrenSeparator = "├─ ";
+
+            /* Grow tree horizontally if there is only one child */
+            while (children.size() == 1) {
+                padding += Strings.repeat(" ", sameLineSeparator.length() + node.getName().length());
+
+                node = children.get(0);
+                level += sameLineSeparator + node.getName();
+
+                children = Lists.newArrayList(node.getRequires());
+            }
 
             if (isLast) {
-                log.debug(prefix.replace("+- ", "\\- ") + node.getName());
+                log.debug(prefix.replace(moreChildrenSeparator, lastNodeSeparator) + level);
             } else {
-                log.debug(prefix + node.getName());
+                log.debug(prefix + level);
             }
 
-            String p = prefix.replace("+- ", "|  ");
+            String p = prefix.replace(moreChildrenSeparator, lineContinuation);
             if (isLast) {
-                p = p.replaceAll("\\|  $", "   ");
+                p = p.replaceAll(Pattern.quote(lineContinuation) + "$", Strings.repeat(" ", lineContinuation.length()));
             }
 
-            logDependencyHierarchy(Lists.newArrayList(node.getRequires()), node, p + "+- ");
+            logDependencyHierarchy(children, node, p + padding + moreChildrenSeparator, depth + 1);
         }
     }
 }
