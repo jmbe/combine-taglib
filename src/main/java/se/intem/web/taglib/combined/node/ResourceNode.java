@@ -73,6 +73,10 @@ public class ResourceNode implements Comparable<ResourceNode> {
     }
 
     private void addEdge(final ResourceNode edge) {
+        if (equals(edge)) {
+            return;
+        }
+
         this.requires.add(edge);
         edge.addSatisfies(this);
     }
