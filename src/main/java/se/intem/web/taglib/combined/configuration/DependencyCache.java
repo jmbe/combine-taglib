@@ -142,7 +142,10 @@ public class DependencyCache {
                         ParseResult parsed = commentParser.parse(mr.getInput(),
                                 createLinePreprocessors(entry.getKey(), mr));
 
+                        currentLocal.addContents(String.format("/* --- @Combine %s --- */", mr.getRequestPath()));
+                        currentLocal.addContents(""); // extra blank line
                         currentLocal.addContents(parsed.getContents());
+                        currentLocal.addContents(""); // extra blank line
 
                         Iterables.addAll(requires, parsed.getRequires());
                         Iterables.addAll(provides, parsed.getProvides());

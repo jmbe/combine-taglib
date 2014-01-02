@@ -20,7 +20,7 @@ import se.intem.web.taglib.combined.resources.CombinedBundle;
 
 public class CombinedServlet extends HttpServlet {
 
-    private CombinedResourceRepository repository;
+    private transient CombinedResourceRepository repository;
 
     /** Logger for this class. */
     private static final Logger log = LoggerFactory.getLogger(CombinedServlet.class);

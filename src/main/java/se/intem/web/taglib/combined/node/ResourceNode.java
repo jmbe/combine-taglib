@@ -1,17 +1,26 @@
 package se.intem.web.taglib.combined.node;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
+import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
+import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 
-public class ResourceNode {
+public class ResourceNode implements Comparable<ResourceNode> {
 
-    private List<ResourceNode> edges;
+    private LinkedHashSet<ResourceNode> requires;
+
+    /* Inverse of requires. */
+    private LinkedHashSet<ResourceNode> satisfies;
+
     private String name;
 
     private static final Random random = new Random();
@@ -22,7 +31,7 @@ public class ResourceNode {
      */
     private boolean virtual;
     private ConfigurationItem item;
-    private List<ResourceNode> optionals;
+    private LinkedHashSet<ResourceNode> optionals;
 
     /**
      * Is an actual node, i.e. not a virtual node.
@@ -48,19 +57,50 @@ public class ResourceNode {
     }
 
     public ResourceNode(final String name, final ConfigurationItem item) {
-        this.edges = Lists.newArrayList();
-        this.optionals = Lists.newArrayList();
+        this.requires = Sets.newLinkedHashSet();
+        this.optionals = Sets.newLinkedHashSet();
+        this.satisfies = Sets.newLinkedHashSet();
         this.name = name;
         this.item = item;
-
     }
 
     public ResourceNode addEdges(final ResourceNode... dependencies) {
         for (ResourceNode edge : dependencies) {
-            this.edges.add(edge);
+            addEdge(edge);
         }
 
         return this;
+    }
+
+    private void addEdge(final ResourceNode edge) {
+        if (equals(edge)) {
+            return;
+        }
+
+        this.requires.add(edge);
+        edge.addSatisfies(this);
+    }
+
+    @VisibleForTesting
+    void addSatisfies(final ResourceNode node) {
+        if (node.isVirtual()) {
+            return;
+        }
+
+        if (equals(node)) {
+            return;
+        }
+
+        if (isRoot()) {
+            throw new IllegalStateException(String.format("Adding satisfies '%s' but '%s' is marked as root.",
+                    node.getName(), name));
+        }
+
+        this.satisfies.add(node);
+    }
+
+    List<ResourceNode> getSatisfies() {
+        return Lists.newArrayList(this.satisfies);
     }
 
     public ResourceNode addOptionalEdges(final ResourceNode... optional) {
@@ -83,7 +123,7 @@ public class ResourceNode {
      */
     private void resolve(final List<ResourceNode> resolved, final List<ResourceNode> unresolved) {
         unresolved.add(this);
-        for (ResourceNode node : edges) {
+        for (ResourceNode node : requires) {
             if (this.equals(node)) {
                 continue;
             }
@@ -104,7 +144,7 @@ public class ResourceNode {
     @Override
     public String toString() {
 
-        ImmutableList<String> edgeNames = FluentIterable.from(edges).transform(toName).toList();
+        ImmutableList<String> edgeNames = FluentIterable.from(requires).transform(toName).toList();
         ImmutableList<String> optionalNames = FluentIterable.from(optionals).transform(toName).toList();
 
         String format = String.format("%s  R%s O%s", name, edgeNames, optionalNames);
@@ -120,6 +160,10 @@ public class ResourceNode {
         return virtual;
     }
 
+    public boolean isRoot() {
+        return this.item != null && this.item.isRoot();
+    }
+
     public String getName() {
         return name;
     }
@@ -128,12 +172,37 @@ public class ResourceNode {
         return item;
     }
 
-    public List<ResourceNode> getOptionals() {
+    public Iterable<ResourceNode> getOptionals() {
         return optionals;
     }
 
     public void promoteToRequired(final ResourceNode optional) {
         optionals.remove(optional);
-        edges.add(optional);
+        addEdge(optional);
+    }
+
+    Iterable<ResourceNode> getRequires() {
+        return requires;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof ResourceNode)) {
+            return false;
+        }
+
+        ResourceNode that = (ResourceNode) obj;
+
+        return Objects.equal(this.name, that.name);
+    }
+
+    @Override
+    public int compareTo(final ResourceNode other) {
+        return Strings.nullToEmpty(this.name).compareTo(Strings.nullToEmpty(other.name));
     }
 }

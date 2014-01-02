@@ -55,6 +55,12 @@ public class ConfigurationItem implements ResourceParent, SupportsConditional {
      */
     private String conditional;
 
+    /*
+     * This item represents a root of the tree, such as a requires or inline tag or a page library; no other depends on
+     * this node.
+     */
+    private boolean root;
+
     public Iterable<String> getRequires() {
         return Iterables.concat(requires, parsedRequires);
     }
@@ -306,5 +312,13 @@ public class ConfigurationItem implements ResourceParent, SupportsConditional {
 
     public void setSupportsDynamicCss(final boolean supportsDynamicCss) {
         this.supportsDynamicCss = supportsDynamicCss;
+    }
+
+    public void setRoot(final boolean root) {
+        this.root = root;
+    }
+
+    public boolean isRoot() {
+        return root;
     }
 }

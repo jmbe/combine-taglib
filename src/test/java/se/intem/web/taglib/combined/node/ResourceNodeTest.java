@@ -84,4 +84,19 @@ public class ResourceNodeTest {
         assertThat(a.resolve(), is(Arrays.asList(d, e, c, b, a)));
     }
 
+    @Test
+    public void do_not_add_self_as_satifies() {
+        assertEquals(0, a.getSatisfies().size());
+        a.addSatisfies(a);
+        assertEquals(0, a.getSatisfies().size());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void do_not_allow_adding_satisfies_to_root() {
+        ConfigurationItem item = new ConfigurationItem();
+        item.setRoot(true);
+        ResourceNode node = new ResourceNode("root", item);
+        node.addSatisfies(a);
+    }
+
 }

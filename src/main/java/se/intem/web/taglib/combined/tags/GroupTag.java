@@ -8,9 +8,9 @@ import se.intem.web.taglib.combined.node.ResourceParent;
 
 public class GroupTag extends ConfigurationItemAwareTagSupport implements ResourceParent {
 
-    private ConfigurationItem ci = new ConfigurationItem();
+    private transient ConfigurationItem ci = new ConfigurationItem();
 
-    private DependencyCache cache;
+    private transient DependencyCache cache;
 
     public GroupTag() {
         this.cache = DependencyCache.get();

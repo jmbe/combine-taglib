@@ -3,24 +3,34 @@ package se.intem.web.taglib.combined.node;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import se.intem.web.taglib.combined.configuration.ConfigurationItemsCollection;
 import se.intem.web.taglib.combined.configuration.DependencyCache;
 import se.intem.web.taglib.combined.configuration.DependencyCacheEntry;
 
 public class TreeBuilder {
+
+    /** Logger for this class. */
+    private static final Logger log = LoggerFactory.getLogger(TreeBuilder.class);
 
     private CombineObjectMapper mapper;
     private DependencyCache dependencyCache;
@@ -108,14 +118,16 @@ public class TreeBuilder {
             }
         }
 
+        // contractEdges(nodes.values());
+
         return nodes;
     }
 
     public List<ConfigurationItem> resolve(final ConfigurationItemsCollection configurationItemsCollection) {
         Map<String, ResourceNode> build = build(configurationItemsCollection);
 
-        ResourceNode root = new ResourceNode();
-        root.setVirtual(true);
+        ResourceNode base = new ResourceNode("virtual");
+        base.setVirtual(true);
 
         /**
          * Pass 0. Populate optionals map.
@@ -133,12 +145,12 @@ public class TreeBuilder {
          */
         for (ConfigurationItem configurationItem : configurationItemsCollection) {
             if (!configurationItem.isLibrary()) {
-                root.addEdges(build.get(configurationItem.getName()));
+                base.addEdges(build.get(configurationItem.getName()));
             }
         }
 
         /* List contains only required resources now. */
-        List<ResourceNode> resolved = root.resolve();
+        List<ResourceNode> resolved = base.resolve();
 
         /**
          * Pass 2. Promote optionals that were included anyway and resolve again.
@@ -155,7 +167,9 @@ public class TreeBuilder {
         }
 
         /* List contains same nodes, but re-ordered so that optional nodes will load before nodes that depend on them. */
-        resolved = root.resolve();
+        resolved = base.resolve();
+
+        logDependencyHierarchy(resolved);
 
         return FluentIterable.from(resolved).transform(new Function<ResourceNode, ConfigurationItem>() {
 
@@ -164,5 +178,109 @@ public class TreeBuilder {
             }
         }).toList();
 
+    }
+
+    private void contractEdges(final Iterable<ResourceNode> resolved) {
+
+        List<ResourceNode> sorted = Lists.newArrayList(resolved);
+        Collections.sort(sorted);
+
+        for (ResourceNode node : sorted) {
+            if (node.isVirtual()) {
+                throw new IllegalStateException(String.format(
+                        "Virtual node '%s' is not expected in edge contraction. ", node.getName()));
+            }
+
+            if (node.getSatisfies().size() == 1) {
+                ResourceNode satisfies = node.getSatisfies().get(0);
+                if (!satisfies.isRoot()) {
+                    log.debug("(1) {} is only used once in {}", node.getName(), satisfies.getName());
+                }
+            } else if (!node.isRoot() && node.getSatisfies().size() == 0) {
+                log.debug("( ) {} is never used", node.getName());
+            }
+        }
+    }
+
+    private void logDependencyHierarchy(final List<ResourceNode> resolved) {
+        if (!log.isDebugEnabled()) {
+            return;
+        }
+
+        log.debug("Dependency tree of {} members:", resolved.size());
+        logDependencyHierarchy(resolved, null, "", 0);
+
+    }
+
+    private void logDependencyHierarchy(final Iterable<ResourceNode> resolved, final ResourceNode parent,
+            final String prefix, final int depth) {
+
+        if (!log.isDebugEnabled()) {
+            return;
+        }
+
+        List<ResourceNode> sorted = Lists.newArrayList(resolved);
+        Collections.sort(sorted);
+
+        if (sorted.isEmpty()) {
+            return;
+        }
+
+        if (depth > 8) {
+            /* Abort outputting very deep hierarchies */
+            log.debug(prefix + "<...>");
+            return;
+        }
+
+        int count = 0;
+
+        for (ResourceNode node : sorted) {
+
+            if (Strings.nullToEmpty(prefix).isEmpty() && node.getItem().isLibrary()) {
+                continue;
+            }
+
+            if (node.equals(parent)) {
+                /* Break endless loop */
+                continue;
+            }
+
+            boolean isLast = ++count == sorted.size();
+
+            String level = node.getName();
+            String padding = "";
+
+            List<ResourceNode> children = Lists.newArrayList(node.getRequires());
+
+            String sameLineSeparator = " ── ";
+
+            /* These three symbols must all have same length. */
+            String lineContinuation = "│  ";
+            String lastNodeSeparator = "└─ ";
+            String moreChildrenSeparator = "├─ ";
+
+            /* Grow tree horizontally if there is only one child */
+            while (children.size() == 1) {
+                padding += Strings.repeat(" ", sameLineSeparator.length() + node.getName().length());
+
+                node = children.get(0);
+                level += sameLineSeparator + node.getName();
+
+                children = Lists.newArrayList(node.getRequires());
+            }
+
+            if (isLast) {
+                log.debug(prefix.replace(moreChildrenSeparator, lastNodeSeparator) + level);
+            } else {
+                log.debug(prefix + level);
+            }
+
+            String p = prefix.replace(moreChildrenSeparator, lineContinuation);
+            if (isLast) {
+                p = p.replaceAll(Pattern.quote(lineContinuation) + "$", Strings.repeat(" ", lineContinuation.length()));
+            }
+
+            logDependencyHierarchy(children, node, p + padding + moreChildrenSeparator, depth + 1);
+        }
     }
 }

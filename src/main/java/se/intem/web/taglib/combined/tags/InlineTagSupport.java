@@ -32,11 +32,12 @@ public abstract class InlineTagSupport extends ConfigurationItemAwareTagSupport 
             String contents = CharStreams.toString(b.getReader());
 
             configurationItem.setName("inline-" + UUID.randomUUID().toString());
+            configurationItem.setRoot(true);
 
             if (!Strings.nullToEmpty(contents).trim().isEmpty()) {
 
                 String md5 = Hashing.md5().hashUnencodedChars(contents).toString();
-                configurationItem.setName(md5);
+                configurationItem.setName("inline-" + md5);
 
                 /* Add content */
                 InlineContent inline = new InlineContent(contents, configurationItem.getConditional());

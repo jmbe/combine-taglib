@@ -1,6 +1,7 @@
 package se.intem.web.taglib.combined.node;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.io.CharStreams;
 import com.google.common.io.LineProcessor;
@@ -25,7 +26,7 @@ public class CombineCommentParser {
 
     public ParseResult parse(final InputStream input, final List<Function<String, String>> transform)
             throws IOException {
-        return findCombineComment(new InputStreamReader(input), transform);
+        return findCombineComment(new InputStreamReader(input, Charsets.UTF_8), transform);
     }
 
     @VisibleForTesting
