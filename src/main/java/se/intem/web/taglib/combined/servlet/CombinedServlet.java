@@ -47,9 +47,15 @@ public class CombinedServlet extends HttpServlet {
 
         RequestPath path = new RequestPath(request.getRequestURI());
         CombinedBundle resource = repository.getCombinedResource(path);
-        response.setContentType(resource.getContentType() + CHARSET_UTF8);
-        cacheResource(response, 365);
-        resource.write(response.getWriter());
+
+        if (resource != null) {
+            response.setContentType(resource.getContentType() + CHARSET_UTF8);
+            cacheResource(response, 365);
+            resource.write(response.getWriter());
+        } else {
+            log.debug("Could not find resource for {}", request.getRequestURI());
+        }
+
         response.getWriter().flush();
         response.getWriter().close();
     }
