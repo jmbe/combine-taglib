@@ -47,8 +47,10 @@ public class ParseResult {
                 provides.add(token);
             } else if (TokenType.requires.equals(tokenType)) {
                 requires.add(token);
-            } else {
+            } else if (TokenType.optional.equals(tokenType)) {
                 optionals.add(token);
+            } else {
+                throw new IllegalStateException("Don't know what to do with token '" + token + "'");
             }
         }
 
