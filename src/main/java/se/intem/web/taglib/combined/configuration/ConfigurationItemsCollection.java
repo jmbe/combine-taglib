@@ -71,6 +71,11 @@ public class ConfigurationItemsCollection implements Iterable<ConfigurationItem>
         return (parent.isPresent() ? parent.get().size() : 0) + nameToItem.size();
     }
 
+    @VisibleForTesting
+    public ConfigurationItem getItem(final String name) {
+        return nameToItem.get(name);
+    }
+
     public void addInlineScript(final InlineContent js) {
         inlineScripts.add(js);
     }

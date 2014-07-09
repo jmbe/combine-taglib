@@ -38,12 +38,18 @@ public class ConfigurationItem implements ResourceParent, SupportsConditional {
 
     /* Requires that were set on group */
     private LinkedHashSet<String> requires = Sets.newLinkedHashSet();
+
     /* Requires that were parsed from contents needs to be tracked separately so that it can be replaced on changes. */
     private LinkedHashSet<String> parsedRequires = Sets.newLinkedHashSet();
+
     private LinkedHashSet<String> optional = Sets.newLinkedHashSet();
+
     private List<RequestPath> js = Lists.newArrayList();
     private List<RequestPath> css = Lists.newArrayList();
+
     private boolean supportsDevMode;
+
+    private Map<String, String> replace = Maps.newLinkedHashMap();
 
     /**
      * True to generate an id to be used with dynamic css libraries such as YUI Stylesheet.
@@ -77,7 +83,12 @@ public class ConfigurationItem implements ResourceParent, SupportsConditional {
     }
 
     public List<RequestPath> getJs() {
-        return js;
+
+        if (replace.isEmpty()) {
+            return js;
+        }
+
+        return FluentIterable.from(js).transform(new ResolvePlaceholders(replace)).toList();
     }
 
     public void setJs(final List<RequestPath> js) {
@@ -85,7 +96,12 @@ public class ConfigurationItem implements ResourceParent, SupportsConditional {
     }
 
     public List<RequestPath> getCss() {
-        return css;
+
+        if (replace.isEmpty()) {
+            return css;
+        }
+
+        return FluentIterable.from(css).transform(new ResolvePlaceholders(replace)).toList();
     }
 
     public void setCss(final List<RequestPath> css) {
@@ -262,7 +278,7 @@ public class ConfigurationItem implements ResourceParent, SupportsConditional {
     /**
      * Add optional dependency. An optional dependency would not normally be included, but if some other resource
      * depends on it, then this resource will use it (i.e. include it before this resource).
-     * 
+     *
      * For example: angular optionally requires jquery. Angular will use jquery if included, but jquery is not required.
      * However if jquery is included, then it must be loaded before angular.
      */
@@ -320,5 +336,13 @@ public class ConfigurationItem implements ResourceParent, SupportsConditional {
 
     public boolean isRoot() {
         return root;
+    }
+
+    public Map<String, String> getReplace() {
+        return replace;
+    }
+
+    public void setReplace(final Map<String, String> replace) {
+        this.replace = replace;
     }
 }

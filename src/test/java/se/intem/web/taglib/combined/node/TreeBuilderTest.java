@@ -24,6 +24,7 @@ public class TreeBuilderTest {
     private InputStream optional;
     private InputStream large;
     private InputStream optionalRequired;
+    private InputStream replaceTokens;
 
     @Before
     public void setup() {
@@ -31,6 +32,7 @@ public class TreeBuilderTest {
         this.illegal = this.getClass().getResourceAsStream("/illegal.js");
         this.optional = this.getClass().getResourceAsStream("/optional.json");
         this.optionalRequired = this.getClass().getResourceAsStream("/optional-required.json");
+        this.replaceTokens = this.getClass().getResourceAsStream("/replace-tokens.json");
         this.large = this.getClass().getResourceAsStream("/large.json");
         this.builder = new TreeBuilder();
     }
@@ -105,5 +107,13 @@ public class TreeBuilderTest {
     public void output_tree_for_large() throws JsonParseException, JsonMappingException, IOException {
         ConfigurationItemsCollection config = builder.parse(large);
         builder.resolve(config);
+    }
+
+    @Test
+    public void should_replace_tokens() throws IOException {
+        ConfigurationItemsCollection config = builder.parse(replaceTokens);
+        ConfigurationItem item = config.getItem("angular");
+        assertEquals("/1.2.0/angular.js", item.getJs().get(0).getPath());
+        assertEquals("/1.2.0/angular.css", item.getCss().get(0).getPath());
     }
 }

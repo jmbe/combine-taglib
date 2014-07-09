@@ -4,6 +4,9 @@ import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 public class RequestPath {
     private String path;
 
@@ -64,6 +67,14 @@ public class RequestPath {
 
     public boolean isRelative() {
         return !isRemote() && !isAbsolute() && !path.startsWith("data:");
+    }
+
+    public RequestPath resolvePlaceholders(final Map<String, String> replace) {
+        for (Entry<String, String> entry : replace.entrySet()) {
+            path = path.replace(entry.getKey(), entry.getValue());
+        }
+
+        return this;
     }
 
 }
