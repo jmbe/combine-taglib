@@ -13,6 +13,7 @@ Combine-taglib is a JSP taglib to concatenate and serve combined CSS and Javascr
  * Supports development mode for use with live reload tools such as [Tincr](http://tin.cr/).
  * Supports IE conditionals.
  * Compatible with dynamic stylesheet libraries such as [YUI Stylesheet](http://yuilibrary.com/yui/docs/stylesheet/)
+ * Supports replacing placeholders in paths, such as versions
 
 
 ## Setup ##
@@ -22,7 +23,7 @@ Add maven dependency
     <dependency>
         <groupId>se.intem</groupId>
         <artifactId>combine-taglib</artifactId>
-        <version>1.8.0-SNAPSHOT</version>
+        <version>1.9.0</version>
     </dependency>
 
 #### Add servlet mapping
@@ -66,6 +67,7 @@ Local files will be scanned for dependencies and added to dependency graph.
  * Name must be given
  * The **css** and **js** attributes can either have a single string or an array of strings.
  * Add dependencies in **requires** or **optional** attribute, either as comma or space separated string or as an array of strings.
+ * If several related files have a common version in the path, you can move it to a **replace** map so that you only need to change it in one place when upgrading (see Angular sample below)
 
 *Optional* dependencies are included only if some other resource actually requires it, but if it is included then it will be loaded before resources that optionally depends on it. For example: Angular optionally requires jquery. Angular will use jquery if included, but jquery is not required. However if jquery is included, then it must be loaded before angular.
     
@@ -79,15 +81,18 @@ Local files will be scanned for dependencies and added to dependency graph.
         {
             name : "angular",
             optional : "jquery",
-            js : [ "//ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js",
-                    "//ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular-resource.min.js" ]
+            replace : {
+                # : "1.2.0"
+            },
+            js : [ "//ajax.googleapis.com/ajax/libs/angularjs/#/angular.min.js",
+                   "//ajax.googleapis.com/ajax/libs/angularjs/#/angular-resource.min.js" ]
         },
 
         {
             name : "bootstrap",
             requires : "jquery",
-            css : "//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css",
-            js : "//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"
+            css : "//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css",
+            js : "//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"
         }
 
     ]
@@ -99,7 +104,7 @@ comments per file, for example if you are declaring several components in the sa
 
     /* combine @requires atmosphere angular */
 
-Using @provides allows other files to pull in a given resource without knowing the name of the bundle it belongs to.
+Using **@provides** allows other files to pull in a given resource without knowing the name of the bundle it belongs to.
 
     /* 
      * combine
