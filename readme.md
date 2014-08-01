@@ -91,11 +91,8 @@ Local files will be scanned for dependencies and added to dependency graph.
         {
             name : "bootstrap",
             requires : "jquery",
-            replace : {
-                # : "3.1.1"
-            },
-            css : "//netdna.bootstrapcdn.com/bootstrap/#/css/bootstrap.min.css",
-            js : "//netdna.bootstrapcdn.com/bootstrap/#/js/bootstrap.min.js"
+            css : "//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css",
+            js : "//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"
         }
 
     ]
