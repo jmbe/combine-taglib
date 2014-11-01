@@ -1,0 +1,13 @@
+[ {
+    name : "a",
+    requires : "b",
+    js : [ "a.js" ]
+}, {
+    name : "b",
+    requires : "c",
+    js : [ "b.js" ]
+}, {
+    name : "c",
+    requires : "a",
+    js : [ "c.js" ]
+} ]

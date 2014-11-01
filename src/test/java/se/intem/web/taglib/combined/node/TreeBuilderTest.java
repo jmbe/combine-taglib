@@ -21,6 +21,7 @@ public class TreeBuilderTest {
     private InputStream stream;
     private TreeBuilder builder;
     private InputStream illegal;
+    private InputStream cycle;
     private InputStream optional;
     private InputStream large;
     private InputStream optionalRequired;
@@ -30,6 +31,7 @@ public class TreeBuilderTest {
     public void setup() {
         this.stream = this.getClass().getResourceAsStream("/combine.json");
         this.illegal = this.getClass().getResourceAsStream("/illegal.js");
+        this.cycle = this.getClass().getResourceAsStream("/cycle.json");
         this.optional = this.getClass().getResourceAsStream("/optional.json");
         this.optionalRequired = this.getClass().getResourceAsStream("/optional-required.json");
         this.replaceTokens = this.getClass().getResourceAsStream("/replace-tokens.json");
@@ -41,6 +43,7 @@ public class TreeBuilderTest {
     public void test_resources_should_exist() {
         assertNotNull(stream);
         assertNotNull(illegal);
+        assertNotNull(cycle);
         assertNotNull(optional);
         assertNotNull(optionalRequired);
         assertNotNull(large);
@@ -115,5 +118,20 @@ public class TreeBuilderTest {
         ConfigurationItem item = config.getItem("angular");
         assertEquals("/1.2.0/angular.js", item.getJs().get(0).getPath());
         assertEquals("/1.2.0/angular.css", item.getCss().get(0).getPath());
+    }
+
+    @Test
+    public void should_detect_cycle() throws IOException {
+        try {
+            ConfigurationItemsCollection items = builder.parse(cycle);
+            builder.resolve(items);
+        } catch (IllegalStateException e) {
+            assertEquals("Circular dependency detected: c -> a", e.getMessage());
+        }
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void parse_should_fail_on_null_stream() throws IOException {
+        builder.parse(null);
     }
 }

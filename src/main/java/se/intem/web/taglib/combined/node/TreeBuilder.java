@@ -3,6 +3,7 @@ package se.intem.web.taglib.combined.node;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.FluentIterable;
@@ -41,6 +42,7 @@ public class TreeBuilder {
     }
 
     public ConfigurationItemsCollection parse(final InputStream stream) throws IOException {
+        Preconditions.checkNotNull(stream);
 
         List<ConfigurationItem> items = mapper.readValue(stream, new TypeReference<List<ConfigurationItem>>() {
         });
@@ -49,6 +51,8 @@ public class TreeBuilder {
     }
 
     public Map<String, ResourceNode> build(final InputStream stream) throws IOException {
+        Preconditions.checkNotNull(stream);
+
         ConfigurationItemsCollection items = parse(stream);
         return build(items);
     }
