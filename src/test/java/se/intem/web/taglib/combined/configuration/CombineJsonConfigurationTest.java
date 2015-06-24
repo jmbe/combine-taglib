@@ -18,7 +18,7 @@ public class CombineJsonConfigurationTest {
 
     @Before
     public void setup() {
-        this.loader = new CombineJsonConfiguration();
+        this.loader = new CombineJsonConfiguration("/combine-test.json");
     }
 
     @Test
