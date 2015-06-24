@@ -2,7 +2,6 @@ package se.intem.web.taglib.combined.configuration;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.google.common.base.Optional;
-import com.google.common.io.Resources;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import se.intem.web.taglib.combined.RequestPath;
+import se.intem.web.taglib.combined.io.ClasspathResourceLoader;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 import se.intem.web.taglib.combined.node.TreeBuilder;
 
@@ -35,6 +35,8 @@ public class CombineJsonConfiguration {
     private Optional<ConfigurationItemsCollection> configuration = Optional.absent();
 
     private Optional<ServletContext> servletContext = Optional.absent();
+
+    private ClasspathResourceLoader classpathResourceLoader = new ClasspathResourceLoader();
 
     CombineJsonConfiguration() {
         this.tb = new TreeBuilder();
@@ -146,17 +148,7 @@ public class CombineJsonConfiguration {
     }
 
     private Optional<URL> getClassPathConfigurationUrl() {
-        try {
-            return Optional.of(Resources.getResource(JSON_CONFIGURATION));
-        } catch (IllegalArgumentException e) {
-            /* fall-through to next */
-        }
-
-        try {
-            return Optional.of(Resources.getResource(Resources.class, JSON_CONFIGURATION));
-        } catch (IllegalArgumentException e) {
-            return Optional.absent();
-        }
+        return classpathResourceLoader.findInClasspath(JSON_CONFIGURATION);
     }
 
     public static CombineJsonConfiguration get() {
