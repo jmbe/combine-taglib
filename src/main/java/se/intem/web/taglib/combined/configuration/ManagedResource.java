@@ -1,5 +1,6 @@
 package se.intem.web.taglib.combined.configuration;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.io.ByteSource;
 
@@ -91,7 +92,7 @@ public class ManagedResource {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this).add("name", name).add("realPath", realPath)
+        return MoreObjects.toStringHelper(this).add("name", name).add("realPath", realPath)
                 .add("input", exists() ? "provided" : "missing").toString();
     }
 
