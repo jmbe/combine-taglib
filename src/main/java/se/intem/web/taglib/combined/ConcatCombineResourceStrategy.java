@@ -1,7 +1,6 @@
 package se.intem.web.taglib.combined;
 
 import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -28,8 +27,7 @@ public class ConcatCombineResourceStrategy {
                     timestamp = Math.max(timestamp, realPath.lastModified());
                 }
 
-                String contents = CharStreams.toString(CharStreams.newReaderSupplier(realPath.getInputSupplier(),
-                        Charsets.UTF_8));
+                String contents = realPath.getByteSource().asCharSource(Charsets.UTF_8).read();
 
                 writer.println(contents);
             } catch (IOException e) {

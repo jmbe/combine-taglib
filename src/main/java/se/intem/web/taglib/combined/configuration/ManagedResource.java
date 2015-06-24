@@ -1,9 +1,10 @@
 package se.intem.web.taglib.combined.configuration;
 
 import com.google.common.base.Objects;
-import com.google.common.io.InputSupplier;
+import com.google.common.io.ByteSource;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 import se.intem.web.taglib.combined.RequestPath;
@@ -51,9 +52,9 @@ public class ManagedResource {
         this.input = input;
     }
 
-    public InputSupplier<InputStream> getInputSupplier() {
-        return new InputSupplier<InputStream>() {
-            public InputStream getInput() {
+    public ByteSource getByteSource() {
+        return new ByteSource() {
+            public InputStream openStream() throws IOException {
                 return input;
             }
         };
