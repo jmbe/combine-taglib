@@ -28,7 +28,7 @@ public class TreeBuilderTest {
 
     @Before
     public void setup() {
-        this.stream = this.getClass().getResourceAsStream("/combine.json");
+        this.stream = this.getClass().getResourceAsStream("/combine-test.json");
         this.illegal = this.getClass().getResourceAsStream("/illegal.js");
         this.optional = this.getClass().getResourceAsStream("/optional.json");
         this.optionalRequired = this.getClass().getResourceAsStream("/optional-required.json");
@@ -115,5 +115,10 @@ public class TreeBuilderTest {
         ConfigurationItem item = config.getItem("angular");
         assertEquals("/1.2.0/angular.js", item.getJs().get(0).getPath());
         assertEquals("/1.2.0/angular.css", item.getCss().get(0).getPath());
+    }
+
+    @Test
+    public void with_parent() {
+
     }
 }
