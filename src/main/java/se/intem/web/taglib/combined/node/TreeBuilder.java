@@ -48,6 +48,13 @@ public class TreeBuilder {
         return new ConfigurationItemsCollection(items);
     }
 
+    public ConfigurationItemsCollection parse(final InputStream stream, final ConfigurationItemsCollection parent)
+            throws IOException {
+        List<ConfigurationItem> items = mapper.readValue(stream, new TypeReference<List<ConfigurationItem>>() {
+        });
+        return new ConfigurationItemsCollection(parent, items);
+    }
+
     public Map<String, ResourceNode> build(final InputStream stream) throws IOException {
         ConfigurationItemsCollection items = parse(stream);
         return build(items);

@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.google.common.collect.Lists;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,10 +26,12 @@ public class TreeBuilderTest {
     private InputStream large;
     private InputStream optionalRequired;
     private InputStream replaceTokens;
+    private InputStream child;
 
     @Before
     public void setup() {
         this.stream = this.getClass().getResourceAsStream("/combine-test.json");
+        this.child = this.getClass().getResourceAsStream("/combine-child.json");
         this.illegal = this.getClass().getResourceAsStream("/illegal.js");
         this.optional = this.getClass().getResourceAsStream("/optional.json");
         this.optionalRequired = this.getClass().getResourceAsStream("/optional-required.json");
@@ -118,7 +121,15 @@ public class TreeBuilderTest {
     }
 
     @Test
-    public void with_parent() {
+    public void with_parent() throws IOException {
+        ConfigurationItemsCollection parent = builder.parse(stream);
+        ConfigurationItemsCollection child = builder.parse(this.child, parent);
 
+        Map<String, ResourceNode> build = builder.build(child);
+        assertEquals(4, build.size());
+
+        ResourceNode start = build.get("start");
+        assertNotNull(start);
+        assertEquals(1, Lists.newArrayList(start.getRequires()).size());
     }
 }
