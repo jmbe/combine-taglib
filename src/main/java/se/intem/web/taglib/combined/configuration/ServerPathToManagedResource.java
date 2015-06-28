@@ -10,10 +10,16 @@ import java.net.URL;
 
 import javax.servlet.ServletContext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import se.intem.web.taglib.combined.RequestPath;
 import se.intem.web.taglib.combined.io.ClasspathResourceLoader;
 
 public class ServerPathToManagedResource implements Function<RequestPath, ManagedResource> {
+
+    /** Logger for this class. */
+    private static final Logger log = LoggerFactory.getLogger(ServerPathToManagedResource.class);
 
     private ServletContext servletContext;
     private boolean required = true;
@@ -32,6 +38,9 @@ public class ServerPathToManagedResource implements Function<RequestPath, Manage
         }
 
         String realPath = servletContext.getRealPath(requestPath.getPath());
+
+        log.trace("Found file in context path {}", realPath);
+
         InputStream input = servletContext.getResourceAsStream(requestPath.getPath());
 
         if (input == null) {
@@ -53,6 +62,7 @@ public class ServerPathToManagedResource implements Function<RequestPath, Manage
         try {
             URL resource = url.get();
             String file = resource.getFile();
+            log.trace("Found file in classpath {}", file);
             return new ManagedResource(requestPath.getPath(), requestPath, file, resource.openStream());
         } catch (IOException e) {
             throw new RuntimeException(e);
