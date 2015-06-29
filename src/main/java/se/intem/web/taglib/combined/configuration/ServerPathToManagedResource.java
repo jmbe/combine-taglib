@@ -33,9 +33,28 @@ public class ServerPathToManagedResource implements Function<RequestPath, Manage
     }
 
     public ManagedResource apply(final RequestPath requestPath) {
-        if (requestPath.isRemote()) {
-            return new ManagedResource(requestPath.getPath(), requestPath, null, null);
+
+        /* Prefer classpath since Eclipse wtp will sometimes fail to update file in servlet context path. */
+        Optional<ManagedResource> result = tryRemote(requestPath).or(
+                tryClassPath(requestPath).or(tryServletContextPath(requestPath)));
+
+        if (required && !result.isPresent()) {
+            throw new RuntimeException("Could not find local file '" + requestPath.getPath()
+                    + "'. Check spelling or path.");
         }
+
+        return result.get();
+    }
+
+    private Optional<ManagedResource> tryRemote(final RequestPath requestPath) {
+        if (requestPath.isRemote()) {
+            return Optional.of(new ManagedResource(requestPath.getPath(), requestPath, null, null));
+        }
+
+        return Optional.absent();
+    }
+
+    private Optional<ManagedResource> tryServletContextPath(final RequestPath requestPath) {
 
         String realPath = servletContext.getRealPath(requestPath.getPath());
 
@@ -44,26 +63,24 @@ public class ServerPathToManagedResource implements Function<RequestPath, Manage
         InputStream input = servletContext.getResourceAsStream(requestPath.getPath());
 
         if (input == null) {
-            return tryClassPath(requestPath);
+            return Optional.absent();
         }
 
-        return new ManagedResource(requestPath.getPath(), requestPath, realPath, input);
-
+        return Optional.of(new ManagedResource(requestPath.getPath(), requestPath, realPath, input));
     }
 
-    private ManagedResource tryClassPath(final RequestPath requestPath) {
+    private Optional<ManagedResource> tryClassPath(final RequestPath requestPath) {
         Optional<URL> url = classpathResourceLoader.findInClasspath(requestPath.getPath());
 
-        if (required && !url.isPresent()) {
-            throw new RuntimeException("Could not find local file '" + requestPath.getPath()
-                    + "'. Check spelling or path.");
+        if (!url.isPresent()) {
+            return Optional.absent();
         }
 
         try {
             URL resource = url.get();
             String file = resource.getFile();
             log.trace("Found file in classpath {}", file);
-            return new ManagedResource(requestPath.getPath(), requestPath, file, resource.openStream());
+            return Optional.of(new ManagedResource(requestPath.getPath(), requestPath, file, resource.openStream()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
