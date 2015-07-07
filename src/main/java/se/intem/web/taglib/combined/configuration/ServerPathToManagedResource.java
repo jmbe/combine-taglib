@@ -57,15 +57,13 @@ public class ServerPathToManagedResource implements Function<RequestPath, Manage
     private Optional<ManagedResource> tryServletContextPath(final RequestPath requestPath) {
 
         String realPath = servletContext.getRealPath(requestPath.getPath());
-
-        log.trace("Found file in context path {}", realPath);
-
         InputStream input = servletContext.getResourceAsStream(requestPath.getPath());
 
         if (input == null) {
             return Optional.absent();
         }
 
+        log.trace("Found file in context path {}", realPath);
         return Optional.of(new ManagedResource(requestPath.getPath(), requestPath, realPath, input));
     }
 
