@@ -57,14 +57,4 @@ public class ConfigurationItemTest {
         assertEquals("lt IE 9", ci.getConditional());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void fail_when_adding_css_as_js() {
-        ci.addJavascript("some.css");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void fail_when_adding_js_as_css() {
-        ci.addCss("some.js");
-    }
-
 }
