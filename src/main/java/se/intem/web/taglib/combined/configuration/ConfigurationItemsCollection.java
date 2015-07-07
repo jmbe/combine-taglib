@@ -36,6 +36,11 @@ public class ConfigurationItemsCollection implements Iterable<ConfigurationItem>
         addAll(items);
     }
 
+    public ConfigurationItemsCollection(final ConfigurationItemsCollection parent, final List<ConfigurationItem> items) {
+        this.parent = Optional.fromNullable(parent);
+        addAll(items);
+    }
+
     @Override
     public Iterator<ConfigurationItem> iterator() {
         if (parent.isPresent()) {

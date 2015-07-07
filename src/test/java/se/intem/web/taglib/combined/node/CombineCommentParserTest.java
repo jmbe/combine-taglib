@@ -34,7 +34,7 @@ public class CombineCommentParserTest {
         this.multiple = this.getClass().getResourceAsStream("/multiple-dependencies.js");
         this.multiplePerLine = this.getClass().getResourceAsStream("/multiple-dependencies-per-line.js");
         this.nochanges = this.getClass().getResourceAsStream("/nochanges.js");
-        this.other = this.getClass().getResourceAsStream("/combine.json");
+        this.other = this.getClass().getResourceAsStream("/combine-test.json");
         this.bug1 = this.getClass().getResourceAsStream("/bug1.js");
         this.bug2 = this.getClass().getResourceAsStream("/bug2.js");
         this.parser = new CombineCommentParser();

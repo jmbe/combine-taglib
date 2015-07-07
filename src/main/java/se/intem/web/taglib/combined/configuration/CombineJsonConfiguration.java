@@ -1,8 +1,8 @@
 package se.intem.web.taglib.combined.configuration;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
-import com.google.common.io.Resources;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import se.intem.web.taglib.combined.RequestPath;
+import se.intem.web.taglib.combined.io.ClasspathResourceLoader;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
 import se.intem.web.taglib.combined.node.TreeBuilder;
 
@@ -29,6 +30,8 @@ public class CombineJsonConfiguration {
     private long lastRead = 0;
     private TreeBuilder tb;
 
+    private String configurationPath = JSON_CONFIGURATION;
+
     /* Assume reloadable */
     private boolean reloadable = true;
 
@@ -36,9 +39,17 @@ public class CombineJsonConfiguration {
 
     private Optional<ServletContext> servletContext = Optional.absent();
 
+    private ClasspathResourceLoader classpathResourceLoader = new ClasspathResourceLoader();
+
     CombineJsonConfiguration() {
         this.tb = new TreeBuilder();
         this.lastRead = 0;
+    }
+
+    @VisibleForTesting
+    CombineJsonConfiguration(final String configurationPath) {
+        this();
+        this.configurationPath = configurationPath;
     }
 
     public CombineJsonConfiguration withServletContext(final ServletContext servletContext) {
@@ -55,7 +66,7 @@ public class CombineJsonConfiguration {
         Optional<ManagedResource> optional = findWebInfConfiguration().or(findClasspathConfiguration());
 
         if (!optional.isPresent()) {
-            log.info("Could not find " + JSON_CONFIGURATION + " in either classpath or WEB-INF");
+            log.info("Could not find " + configurationPath + " in either classpath or WEB-INF");
             this.configuration = Optional.absent();
             return this.configuration;
         }
@@ -72,11 +83,11 @@ public class CombineJsonConfiguration {
         }
 
         if (lastModified < lastRead) {
-            log.debug("No changes, re-using last " + JSON_CONFIGURATION);
+            log.debug("No changes, re-using last " + configurationPath);
             return configuration;
         }
 
-        log.info("Refreshing " + JSON_CONFIGURATION + ", last modified {} > {}", lastModified, lastRead);
+        log.info("Refreshing " + configurationPath + ", last modified {} > {}", lastModified, lastRead);
 
         long lastRead = new Date().getTime();
         try {
@@ -92,9 +103,9 @@ public class CombineJsonConfiguration {
             /* Update timestamp only if file was successfully read. */
             this.lastRead = lastRead;
         } catch (JsonParseException e) {
-            throw new RuntimeException("Syntax error in " + JSON_CONFIGURATION, e);
+            throw new RuntimeException("Syntax error in " + configurationPath, e);
         } catch (IOException e) {
-            log.error("Could not parse " + JSON_CONFIGURATION, e);
+            log.error("Could not parse " + configurationPath, e);
         }
 
         return this.configuration;
@@ -106,7 +117,7 @@ public class CombineJsonConfiguration {
         }
 
         ManagedResource webinf = new ServerPathToManagedResource(servletContext.get(), false).apply(new RequestPath(
-                "/WEB-INF" + JSON_CONFIGURATION));
+                "/WEB-INF" + configurationPath));
         if (webinf.exists()) {
             return Optional.of(webinf);
         }
@@ -134,10 +145,10 @@ public class CombineJsonConfiguration {
                 }
 
                 return Optional
-                        .of(new ManagedResource(JSON_CONFIGURATION, null, file.getPath(), url.get().openStream()));
+                        .of(new ManagedResource(configurationPath, null, file.getPath(), url.get().openStream()));
 
             } catch (URISyntaxException e) {
-                return Optional.of(new ManagedResource(JSON_CONFIGURATION, null, null, url.get().openStream()));
+                return Optional.of(new ManagedResource(configurationPath, null, null, url.get().openStream()));
             }
         } catch (IOException e) {
             log.error("Could not open url " + url, e);
@@ -146,17 +157,7 @@ public class CombineJsonConfiguration {
     }
 
     private Optional<URL> getClassPathConfigurationUrl() {
-        try {
-            return Optional.of(Resources.getResource(JSON_CONFIGURATION));
-        } catch (IllegalArgumentException e) {
-            /* fall-through to next */
-        }
-
-        try {
-            return Optional.of(Resources.getResource(Resources.class, JSON_CONFIGURATION));
-        } catch (IllegalArgumentException e) {
-            return Optional.absent();
-        }
+        return classpathResourceLoader.findInClasspath(configurationPath);
     }
 
     public static CombineJsonConfiguration get() {
