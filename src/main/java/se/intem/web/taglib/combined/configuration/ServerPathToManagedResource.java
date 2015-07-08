@@ -68,7 +68,12 @@ public class ServerPathToManagedResource implements Function<RequestPath, Manage
     }
 
     private Optional<ManagedResource> tryClassPath(final RequestPath requestPath) {
-        Optional<URL> url = classpathResourceLoader.findInClasspath(requestPath.getPath());
+        String path = requestPath.getPath();
+        return tryClassPath(requestPath, path).or(tryClassPath(requestPath, "/META-INF/resources" + path));
+    }
+
+    private Optional<ManagedResource> tryClassPath(final RequestPath requestPath, final String path) {
+        Optional<URL> url = classpathResourceLoader.findInClasspath(path);
 
         if (!url.isPresent()) {
             return Optional.absent();
@@ -78,7 +83,7 @@ public class ServerPathToManagedResource implements Function<RequestPath, Manage
             URL resource = url.get();
             String file = resource.getFile();
             log.trace("Found file in classpath {}", file);
-            return Optional.of(new ManagedResource(requestPath.getPath(), requestPath, file, resource.openStream()));
+            return Optional.of(new ManagedResource(path, requestPath, file, resource.openStream()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
