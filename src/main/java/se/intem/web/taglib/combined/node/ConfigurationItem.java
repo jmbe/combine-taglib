@@ -29,7 +29,7 @@ import se.intem.web.taglib.combined.servlet.CombinedConfigurationHolder;
  * Limitation: ConfigurationItem can contain only either remote or local resources, not both. If they contain both, then
  * no combining will be made on any resources.
  */
-public class ConfigurationItem implements ResourceParent, SupportsConditional {
+public class ConfigurationItem implements SupportsConditional {
 
     private String name;
     private boolean reloadable = true;
@@ -142,24 +142,6 @@ public class ConfigurationItem implements ResourceParent, SupportsConditional {
 
     public void setLibrary(final boolean library) {
         this.library = library;
-    }
-
-    @Override
-    public void addJavascript(final String js) {
-        if (js.toLowerCase().endsWith(".css")) {
-            throw new IllegalArgumentException("Adding '" + js + "' as javascript looks incorrect.");
-        }
-
-        this.js.add(new RequestPath(js));
-    }
-
-    @Override
-    public void addCss(final String css) {
-        if (css.toLowerCase().endsWith(".js")) {
-            throw new IllegalArgumentException("Adding '" + css + "' as css looks incorrect.");
-        }
-
-        this.css.add(new RequestPath(css));
     }
 
     public void addRequires(final String requires) {

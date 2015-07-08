@@ -23,7 +23,7 @@ Add maven dependency
     <dependency>
         <groupId>se.intem</groupId>
         <artifactId>combine-taglib</artifactId>
-        <version>1.10.0</version>
+        <version>2.0.0</version>
     </dependency>
 
 #### Add servlet mapping
@@ -139,19 +139,6 @@ Output queued resources
             <combine:layout-javascript />
         </body>
     </html>
-
-#### Defining groups in JSP
-
-Normally you would define resource groups in combine.json but if preferred you can define them directly in jsp. When you
-define the group in jsp it will always be included, so it does not need to be explicitly required (set attribute 
-library=true, to turn off automatic inclusion).
-
-    <combine:group name="combined" requires="bootstrap">
-        <combine:js path="/js/AngularAtmosphere.js" />
-        <combine:js path="/js/Humanized.js" />
-        <combine:css path="/css/tpa.css"/>        
-        ...
-    </combine:group>
 
 #### Inline
 

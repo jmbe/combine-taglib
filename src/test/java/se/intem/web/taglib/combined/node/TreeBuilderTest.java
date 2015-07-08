@@ -122,8 +122,8 @@ public class TreeBuilderTest {
         assertEquals("/1.2.0/angular.js", item.getJs().get(0).getPath());
         assertEquals("/1.2.0/angular.css", item.getCss().get(0).getPath());
     }
-	
-	@Test
+
+    @Test
     public void with_parent() throws IOException {
         ConfigurationItemsCollection parent = builder.parse(stream);
         ConfigurationItemsCollection child = builder.parse(this.child, parent);
