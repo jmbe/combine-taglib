@@ -38,12 +38,18 @@ public class ServerPathToManagedResource implements Function<RequestPath, Manage
         Optional<ManagedResource> result = tryRemote(requestPath).or(
                 tryClassPath(requestPath).or(tryServletContextPath(requestPath)));
 
-        if (required && !result.isPresent()) {
-            throw new RuntimeException("Could not find local file '" + requestPath.getPath()
-                    + "'. Check spelling or path.");
+        if (result.isPresent()) {
+            return result.get();
         }
 
-        return result.get();
+        if (required) {
+            throw new RuntimeException("Could not find local file '" + requestPath.getPath()
+                    + "'. Check spelling or path.");
+        } else {
+            /* Not present, but not required. Use empty ManagedResource. */
+            return new ManagedResource(requestPath.getPath(), requestPath, null, null);
+        }
+
     }
 
     private Optional<ManagedResource> tryRemote(final RequestPath requestPath) {
