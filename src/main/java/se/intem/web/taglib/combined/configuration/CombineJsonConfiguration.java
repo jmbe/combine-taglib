@@ -2,6 +2,7 @@ package se.intem.web.taglib.combined.configuration;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 import java.io.File;
@@ -87,7 +88,7 @@ public class CombineJsonConfiguration {
             for (ManagedResource config : configs) {
 
                 log.debug("Reading configuration {}", config);
-                log.info("Refreshing " + config.getName() + ", last modified {} > {}", lastModified, lastRead);
+                log.info("Refreshing " + config.getDisplayName() + ", last modified {} > {}", lastModified, lastRead);
 
                 parsed = Optional.of(tb.parse(config.getInput(), parsed));
             }
@@ -126,8 +127,9 @@ public class CombineJsonConfiguration {
     }
 
     private List<ManagedResource> collectConfiguration() {
-        Iterable<ManagedResource> presentInstances = Optional.presentInstances(Arrays.asList(
-                findClasspathConfiguration(), findWebInfConfiguration()));
+        Iterable<ManagedResource> presentInstances = Iterables.concat(
+                Optional.presentInstances(findClasspathConfiguration()),
+                Optional.presentInstances(Arrays.asList(findWebInfConfiguration())));
         return Lists.newArrayList(presentInstances);
     }
 
@@ -149,26 +151,27 @@ public class CombineJsonConfiguration {
     /**
      * Try to find configuration file in classpath.
      */
-    private Optional<ManagedResource> findClasspathConfiguration() {
-        Optional<URL> url = getClassPathConfigurationUrl();
-
-        if (!url.isPresent()) {
-            return Optional.absent();
+    private List<Optional<ManagedResource>> findClasspathConfiguration() {
+        List<URL> urls = getClassPathConfigurationUrl();
+        List<Optional<ManagedResource>> resources = Lists.newArrayList();
+        for (URL url : urls) {
+            resources.add(urlToManagedResource(url));
         }
+        return resources;
+    }
 
+    private Optional<ManagedResource> urlToManagedResource(final URL url) {
         try {
-
             try {
-                File file = new File(url.get().toURI());
+                File file = new File(url.toURI());
                 if (!file.exists()) {
                     throw new IllegalArgumentException("Could not find file " + file);
                 }
 
-                return Optional
-                        .of(new ManagedResource(configurationPath, null, file.getPath(), url.get().openStream()));
+                return Optional.of(new ManagedResource(configurationPath, null, file.getPath(), url.openStream()));
 
             } catch (URISyntaxException e) {
-                return Optional.of(new ManagedResource(configurationPath, null, null, url.get().openStream()));
+                return Optional.of(new ManagedResource(configurationPath, null, null, url.openStream()));
             }
         } catch (IOException e) {
             log.error("Could not open url " + url, e);
@@ -176,8 +179,8 @@ public class CombineJsonConfiguration {
         }
     }
 
-    private Optional<URL> getClassPathConfigurationUrl() {
-        return classpathResourceLoader.findInClasspath(configurationPath);
+    private List<URL> getClassPathConfigurationUrl() {
+        return classpathResourceLoader.findResourcesInClasspath(configurationPath);
     }
 
     public static CombineJsonConfiguration get() {
