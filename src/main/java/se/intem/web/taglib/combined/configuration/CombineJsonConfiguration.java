@@ -82,27 +82,25 @@ public class CombineJsonConfiguration {
 
         long lastRead = new Date().getTime();
 
-        try {
-            Optional<ConfigurationItemsCollection> parsed = Optional.absent();
+        Optional<ConfigurationItemsCollection> parsed = Optional.absent();
 
-            for (ManagedResource config : configs) {
+        for (ManagedResource config : configs) {
 
-                log.debug("Reading configuration {}", config);
-                log.info("Refreshing " + config.getDisplayName() + ", last modified {} > {}", lastModified, lastRead);
-
+            log.debug("Reading configuration {}", config);
+            log.info("Refreshing " + config.getDisplayName() + ", last modified {} > {}", lastModified, lastRead);
+            try {
                 parsed = Optional.of(tb.parse(config.getInput(), parsed));
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to parse " + config.getDisplayName(), e);
             }
+        }
 
-            this.configuration = parsed;
-            /* Items read from file are by default library items. */
-            if (configuration.isPresent()) {
-                for (ConfigurationItem item : configuration.get()) {
-                    item.setLibrary(true);
-                }
+        this.configuration = parsed;
+        /* Items read from file are by default library items. */
+        if (configuration.isPresent()) {
+            for (ConfigurationItem item : configuration.get()) {
+                item.setLibrary(true);
             }
-
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to parse " + configurationPath, e);
         }
 
         /* Update timestamp only if files were successfully read. */
