@@ -2,6 +2,7 @@ package se.intem.web.taglib.combined.configuration;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -84,6 +85,8 @@ public class CombineJsonConfiguration {
 
         Optional<ConfigurationItemsCollection> parsed = Optional.absent();
 
+        Stopwatch stopwatch = Stopwatch.createStarted();
+
         for (ManagedResource config : configs) {
 
             log.debug("Reading configuration {}", config);
@@ -94,6 +97,8 @@ public class CombineJsonConfiguration {
                 throw new RuntimeException("Failed to parse " + config.getDisplayName(), e);
             }
         }
+
+        log.debug("Parsed {} combine.json in {}", configs.size(), stopwatch);
 
         this.configuration = parsed;
         /* Items read from file are by default library items. */
