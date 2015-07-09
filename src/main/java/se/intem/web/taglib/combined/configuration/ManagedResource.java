@@ -100,4 +100,12 @@ public class ManagedResource {
         return requestPath.isRemote();
     }
 
+    public String getDisplayName() {
+        if (isTimestampSupported()) {
+            return realPath;
+        }
+
+        return name;
+    }
+
 }
