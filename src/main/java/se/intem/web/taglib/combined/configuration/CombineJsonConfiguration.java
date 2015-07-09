@@ -1,14 +1,16 @@
 package se.intem.web.taglib.combined.configuration;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 
@@ -63,36 +65,34 @@ public class CombineJsonConfiguration {
             return configuration;
         }
 
-        Optional<ManagedResource> optional = findWebInfConfiguration().or(findClasspathConfiguration());
+        List<ManagedResource> configs = collectConfiguration();
 
-        if (!optional.isPresent()) {
-            log.info("Could not find " + configurationPath + " in either classpath or WEB-INF");
+        if (configs.isEmpty()) {
+            log.info("Could not find {} in either classpath or WEB-INF", configurationPath);
             this.configuration = Optional.absent();
             return this.configuration;
         }
 
-        ManagedResource managedResource = optional.get();
-        log.debug("Using configuration {}", managedResource);
-
-        long lastModified = 0;
-        if (managedResource.isTimestampSupported()) {
-            lastModified = managedResource.lastModified();
-        } else {
-            /* expected for war files */
-            reloadable = false;
-        }
-
+        long lastModified = checkLastModified(configs);
         if (lastModified < lastRead) {
-            log.debug("No changes, re-using last " + configurationPath);
+            log.debug("No changes, re-using last {}", configurationPath);
             return configuration;
         }
 
-        log.info("Refreshing " + configurationPath + ", last modified {} > {}", lastModified, lastRead);
-
         long lastRead = new Date().getTime();
-        try {
-            this.configuration = Optional.of(tb.parse(managedResource.getInput()));
 
+        try {
+            Optional<ConfigurationItemsCollection> parsed = Optional.absent();
+
+            for (ManagedResource config : configs) {
+
+                log.debug("Reading configuration {}", config);
+                log.info("Refreshing " + config.getName() + ", last modified {} > {}", lastModified, lastRead);
+
+                parsed = Optional.of(tb.parse(config.getInput(), parsed));
+            }
+
+            this.configuration = parsed;
             /* Items read from file are by default library items. */
             if (configuration.isPresent()) {
                 for (ConfigurationItem item : configuration.get()) {
@@ -100,15 +100,35 @@ public class CombineJsonConfiguration {
                 }
             }
 
-            /* Update timestamp only if file was successfully read. */
-            this.lastRead = lastRead;
-        } catch (JsonParseException e) {
-            throw new RuntimeException("Syntax error in " + configurationPath, e);
         } catch (IOException e) {
-            log.error("Could not parse " + configurationPath, e);
+            throw new RuntimeException("Failed to parse " + configurationPath, e);
         }
 
+        /* Update timestamp only if files were successfully read. */
+        this.lastRead = lastRead;
         return this.configuration;
+    }
+
+    private long checkLastModified(final List<ManagedResource> configs) {
+
+        long lastModified = 0;
+
+        for (ManagedResource managedResource : configs) {
+            if (managedResource.isTimestampSupported()) {
+                lastModified = Math.max(lastModified, managedResource.lastModified());
+            } else {
+                /* expected for deployed war files */
+                reloadable = false;
+            }
+        }
+
+        return lastModified;
+    }
+
+    private List<ManagedResource> collectConfiguration() {
+        Iterable<ManagedResource> presentInstances = Optional.presentInstances(Arrays.asList(
+                findClasspathConfiguration(), findWebInfConfiguration()));
+        return Lists.newArrayList(presentInstances);
     }
 
     private Optional<ManagedResource> findWebInfConfiguration() {
