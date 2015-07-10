@@ -1,14 +1,22 @@
 package se.intem.web.taglib.combined.configuration;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
+import com.google.common.base.Stopwatch;
+import com.google.common.base.Strings;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 
@@ -63,52 +71,101 @@ public class CombineJsonConfiguration {
             return configuration;
         }
 
-        Optional<ManagedResource> optional = findWebInfConfiguration().or(findClasspathConfiguration());
+        List<ManagedResource> configs = collectConfiguration();
 
-        if (!optional.isPresent()) {
-            log.info("Could not find " + configurationPath + " in either classpath or WEB-INF");
+        if (configs.isEmpty()) {
+            log.info("Could not find {} in either classpath or WEB-INF", configurationPath);
             this.configuration = Optional.absent();
             return this.configuration;
         }
 
-        ManagedResource managedResource = optional.get();
-        log.debug("Using configuration {}", managedResource);
-
-        long lastModified = 0;
-        if (managedResource.isTimestampSupported()) {
-            lastModified = managedResource.lastModified();
-        } else {
-            /* expected for war files */
-            reloadable = false;
-        }
-
+        long lastModified = checkLastModified(configs);
         if (lastModified < lastRead) {
-            log.debug("No changes, re-using last " + configurationPath);
+            log.debug("No changes, re-using last {}", configurationPath);
             return configuration;
         }
 
-        log.info("Refreshing " + configurationPath + ", last modified {} > {}", lastModified, lastRead);
-
         long lastRead = new Date().getTime();
-        try {
-            this.configuration = Optional.of(tb.parse(managedResource.getInput()));
 
-            /* Items read from file are by default library items. */
-            if (configuration.isPresent()) {
-                for (ConfigurationItem item : configuration.get()) {
-                    item.setLibrary(true);
-                }
+        Optional<ConfigurationItemsCollection> parsed = Optional.absent();
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
+
+        log.info("Refreshing ({}) combine.json [ {} ]", configs.size(), configsForLogging(configs));
+        for (ManagedResource config : configs) {
+
+            log.debug("Reading configuration {}", config.getDisplayName());
+            try {
+                parsed = Optional.of(tb.parse(config.getInput(), parsed));
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to parse " + config.getDisplayName(), e);
             }
-
-            /* Update timestamp only if file was successfully read. */
-            this.lastRead = lastRead;
-        } catch (JsonParseException e) {
-            throw new RuntimeException("Syntax error in " + configurationPath, e);
-        } catch (IOException e) {
-            log.error("Could not parse " + configurationPath, e);
         }
 
+        log.debug("Parsed {} combine.json in {}", configs.size(), stopwatch);
+
+        this.configuration = parsed;
+        /* Items read from file are by default library items. */
+        if (configuration.isPresent()) {
+            for (ConfigurationItem item : configuration.get()) {
+                item.setLibrary(true);
+            }
+        }
+
+        /* Update timestamp only if files were successfully read. */
+        this.lastRead = lastRead;
         return this.configuration;
+    }
+
+    private String configsForLogging(final List<ManagedResource> configs) {
+
+        if (configs.isEmpty()) {
+            return "";
+        }
+
+        if (configs.size() == 1) {
+            return configs.get(0).getDisplayName();
+        }
+
+        String prefix = configs.get(0).getDisplayName();
+
+        for (ManagedResource resource : configs) {
+            prefix = Strings.commonPrefix(prefix, resource.getDisplayName());
+        }
+
+        final String remove = prefix;
+
+        String joined = FluentIterable.from(configs).transform(new Function<ManagedResource, String>() {
+
+            public String apply(final ManagedResource input) {
+                return input.getDisplayName().replace(remove, "");
+            }
+        }).join(Joiner.on(", "));
+
+        return joined;
+    }
+
+    private long checkLastModified(final List<ManagedResource> configs) {
+
+        long lastModified = 0;
+
+        for (ManagedResource managedResource : configs) {
+            if (managedResource.isTimestampSupported()) {
+                lastModified = Math.max(lastModified, managedResource.lastModified());
+            } else {
+                /* expected for deployed war files */
+                reloadable = false;
+            }
+        }
+
+        return lastModified;
+    }
+
+    private List<ManagedResource> collectConfiguration() {
+        Iterable<ManagedResource> presentInstances = Iterables.concat(
+                Optional.presentInstances(findClasspathConfiguration()),
+                Optional.presentInstances(Arrays.asList(findWebInfConfiguration())));
+        return Lists.newArrayList(presentInstances);
     }
 
     private Optional<ManagedResource> findWebInfConfiguration() {
@@ -129,26 +186,29 @@ public class CombineJsonConfiguration {
     /**
      * Try to find configuration file in classpath.
      */
-    private Optional<ManagedResource> findClasspathConfiguration() {
-        Optional<URL> url = getClassPathConfigurationUrl();
-
-        if (!url.isPresent()) {
-            return Optional.absent();
+    private List<Optional<ManagedResource>> findClasspathConfiguration() {
+        List<URL> urls = getClassPathConfigurationUrl();
+        List<Optional<ManagedResource>> resources = Lists.newArrayList();
+        for (URL url : urls) {
+            resources.add(urlToManagedResource(url));
         }
+        return resources;
+    }
 
+    private Optional<ManagedResource> urlToManagedResource(final URL url) {
         try {
-
             try {
-                File file = new File(url.get().toURI());
+                File file = new File(url.toURI());
                 if (!file.exists()) {
                     throw new IllegalArgumentException("Could not find file " + file);
                 }
 
-                return Optional
-                        .of(new ManagedResource(configurationPath, null, file.getPath(), url.get().openStream()));
+                return Optional.of(new ManagedResource(configurationPath, null, file.getPath(), url.openStream()));
 
             } catch (URISyntaxException e) {
-                return Optional.of(new ManagedResource(configurationPath, null, null, url.get().openStream()));
+                return Optional.of(new ManagedResource(configurationPath, null, null, url.openStream()));
+            } catch (IllegalArgumentException e) {
+                return Optional.absent();
             }
         } catch (IOException e) {
             log.error("Could not open url " + url, e);
@@ -156,8 +216,8 @@ public class CombineJsonConfiguration {
         }
     }
 
-    private Optional<URL> getClassPathConfigurationUrl() {
-        return classpathResourceLoader.findInClasspath(configurationPath);
+    private List<URL> getClassPathConfigurationUrl() {
+        return classpathResourceLoader.findManyInClasspath(configurationPath);
     }
 
     public static CombineJsonConfiguration get() {

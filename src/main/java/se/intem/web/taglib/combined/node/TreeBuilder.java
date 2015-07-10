@@ -57,6 +57,15 @@ public class TreeBuilder {
         return new ConfigurationItemsCollection(parent, items);
     }
 
+    public ConfigurationItemsCollection parse(final InputStream input,
+            final Optional<ConfigurationItemsCollection> parent) throws IOException {
+        if (parent.isPresent()) {
+            return parse(input, parent.get());
+        }
+
+        return parse(input);
+    }
+
     public Map<String, ResourceNode> build(final InputStream stream) throws IOException {
         Preconditions.checkNotNull(stream);
 

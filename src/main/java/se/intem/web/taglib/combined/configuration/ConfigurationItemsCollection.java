@@ -44,7 +44,7 @@ public class ConfigurationItemsCollection implements Iterable<ConfigurationItem>
     @Override
     public Iterator<ConfigurationItem> iterator() {
         if (parent.isPresent()) {
-            return Iterables.concat(parent.get().nameToItem.values(), nameToItem.values()).iterator();
+            return Iterables.concat(parent.get(), nameToItem.values()).iterator();
         }
         return nameToItem.values().iterator();
     }
