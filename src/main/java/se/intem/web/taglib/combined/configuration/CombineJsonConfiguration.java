@@ -87,10 +87,10 @@ public class CombineJsonConfiguration {
 
         Stopwatch stopwatch = Stopwatch.createStarted();
 
+        log.info("Refreshing (" + configs.size() + ") combine.json. Last modified {} > {}", lastModified, lastRead);
         for (ManagedResource config : configs) {
 
-            log.debug("Reading configuration {}", config);
-            log.info("Refreshing " + config.getDisplayName() + ", last modified {} > {}", lastModified, lastRead);
+            log.debug("Reading configuration {}", config.getDisplayName());
             try {
                 parsed = Optional.of(tb.parse(config.getInput(), parsed));
             } catch (IOException e) {
