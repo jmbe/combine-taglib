@@ -207,6 +207,8 @@ public class CombineJsonConfiguration {
 
             } catch (URISyntaxException e) {
                 return Optional.of(new ManagedResource(configurationPath, null, null, url.openStream()));
+            } catch (IllegalArgumentException e) {
+                return Optional.absent();
             }
         } catch (IOException e) {
             log.error("Could not open url " + url, e);
