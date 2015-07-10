@@ -23,7 +23,7 @@ Add maven dependency
     <dependency>
         <groupId>se.intem</groupId>
         <artifactId>combine-taglib</artifactId>
-        <version>2.0.1-SNAPSHOT</version>
+        <version>2.0.1</version>
     </dependency>
 
 #### Add servlet mapping
@@ -47,16 +47,16 @@ Add servlet to web.xml
         <servlet-name>CombinedServlet</servlet-name>
         <url-pattern>*.combined</url-pattern>
     </servlet-mapping>
-    
 
-#### Configure logging 
+
+#### Configure logging
 
 Sample for logback:
 
     <!-- For development you might want to use INFO -->
     <logger name="se.intem.web.taglib.combined" level="WARN" />
-    
-    
+
+
 ## Usage ##
 
 ### Create combine.json (optional) ###
@@ -70,7 +70,7 @@ Local files will be scanned for dependencies and added to dependency graph.
  * If several related files have a common version in the path, you can move it to a **replace** map so that you only need to change it in one place when upgrading (see Angular sample below)
 
 *Optional* dependencies are included only if some other resource actually requires it, but if it is included then it will be loaded before resources that optionally depends on it. For example: Angular optionally requires jquery. Angular will use jquery if included, but jquery is not required. However if jquery is included, then it must be loaded before angular.
-    
+
 
     [
         {
@@ -99,14 +99,14 @@ Local files will be scanned for dependencies and added to dependency graph.
 
 
 ### Specify dependencies directly in resource files ###
-Optionally add a specially formatted comment to js or css files to declare relationships. You can have several of these 
+Optionally add a specially formatted comment to js or css files to declare relationships. You can have several of these
 comments per file, for example if you are declaring several components in the same file.
 
     /* combine @requires atmosphere angular */
 
 Using **@provides** allows other files to pull in a given resource without knowing the name of the bundle it belongs to.
 
-    /* 
+    /*
      * combine
      * @requires atmosphere angular
      * @provides MessageMultiplexer
@@ -121,7 +121,7 @@ Using **@provides** allows other files to pull in a given resource without knowi
 Add taglib to jsp
 
     <%@ taglib uri="http://combine.intem.se" prefix="combine" %>
-    
+
 Require some libraries on a page
 
     <combine:requires requires="bootstrap angular site-start-page" />
@@ -147,7 +147,7 @@ Add inline javascript. Inline javascript will be added last, after all other scr
     <combine:script requires="angular">
         ...
     </combine:script>
-    
+
 To trigger proper display and formatting in IDE editors you can wrap a plain script tag:
 
     <combine:script requires="angular">
@@ -155,7 +155,7 @@ To trigger proper display and formatting in IDE editors you can wrap a plain scr
         ...
     </script>
     </combine:script>
-    
+
 Add inline css style. Will be added after all other css links.
 
     <combine:style>
@@ -171,7 +171,7 @@ To trigger proper display and formatting in IDE editors you can wrap a plain sty
     </combine:style>
 
 ## Development mode
-Resources will be bundled and links will change based on content whether you run an unpacked (typically in an IDE) or 
+Resources will be bundled and links will change based on content whether you run an unpacked (typically in an IDE) or
 a packed war file. If you would rather output the individual file links to support live reload tools, you can enable
 development mode.
 
@@ -198,7 +198,7 @@ Use **conditional** to control which IE versions some bundles will be loaded in.
 
 ## Dynamic stylesheet
 
-Set the attribute **supportsDynamicCss** for bundles which you would like to edit at runtime using Javascript. This will add an id the combined stylesheet so that you can easily access it using e.g. [YUI Stylesheet](http://yuilibrary.com/yui/docs/stylesheet/). 
+Set the attribute **supportsDynamicCss** for bundles which you would like to edit at runtime using Javascript. This will add an id the combined stylesheet so that you can easily access it using e.g. [YUI Stylesheet](http://yuilibrary.com/yui/docs/stylesheet/).
 
     {
         name : "dynamic",
@@ -211,4 +211,3 @@ Set the attribute **supportsDynamicCss** for bundles which you would like to edi
  * No support for media attribute for css (workaround: put media query in css file)
  * No minification of files
  * No support for transcompiling LESS or SASS files
- 
