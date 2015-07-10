@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ClasspathResourceLoader {
 
-    public Optional<URL> findInClasspath(final String resourceName) {
+    public Optional<URL> findOneInClasspath(final String resourceName) {
         try {
             return Optional.of(Resources.getResource(resourceName));
         } catch (IllegalArgumentException e) {
@@ -25,7 +25,7 @@ public class ClasspathResourceLoader {
         }
     }
 
-    public List<URL> findResourcesInClasspath(final String resourceName) {
+    public List<URL> findManyInClasspath(final String resourceName) {
         try {
             Enumeration<URL> resources = this.getClass().getClassLoader().getResources(resourceName);
             return Collections.list(resources);

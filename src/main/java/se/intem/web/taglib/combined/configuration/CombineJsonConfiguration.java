@@ -183,7 +183,7 @@ public class CombineJsonConfiguration {
     }
 
     private List<URL> getClassPathConfigurationUrl() {
-        return classpathResourceLoader.findResourcesInClasspath(configurationPath);
+        return classpathResourceLoader.findManyInClasspath(configurationPath);
     }
 
     public static CombineJsonConfiguration get() {

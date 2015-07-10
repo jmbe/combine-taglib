@@ -79,7 +79,7 @@ public class ServerPathToManagedResource implements Function<RequestPath, Manage
     }
 
     private Optional<ManagedResource> tryClassPath(final RequestPath requestPath, final String path) {
-        Optional<URL> url = classpathResourceLoader.findInClasspath(path);
+        Optional<URL> url = classpathResourceLoader.findOneInClasspath(path);
 
         if (!url.isPresent()) {
             return Optional.absent();
