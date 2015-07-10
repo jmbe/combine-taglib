@@ -1,8 +1,12 @@
 package se.intem.web.taglib.combined.configuration;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Stopwatch;
+import com.google.common.base.Strings;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -87,7 +91,7 @@ public class CombineJsonConfiguration {
 
         Stopwatch stopwatch = Stopwatch.createStarted();
 
-        log.info("Refreshing (" + configs.size() + ") combine.json. Last modified {} > {}", lastModified, lastRead);
+        log.info("Refreshing ({}) combine.json [ {} ]", configs.size(), configsForLogging(configs));
         for (ManagedResource config : configs) {
 
             log.debug("Reading configuration {}", config.getDisplayName());
@@ -111,6 +115,34 @@ public class CombineJsonConfiguration {
         /* Update timestamp only if files were successfully read. */
         this.lastRead = lastRead;
         return this.configuration;
+    }
+
+    private String configsForLogging(final List<ManagedResource> configs) {
+
+        if (configs.isEmpty()) {
+            return "";
+        }
+
+        if (configs.size() == 1) {
+            return configs.get(0).getDisplayName();
+        }
+
+        String prefix = configs.get(0).getDisplayName();
+
+        for (ManagedResource resource : configs) {
+            prefix = Strings.commonPrefix(prefix, resource.getDisplayName());
+        }
+
+        final String remove = prefix;
+
+        String joined = FluentIterable.from(configs).transform(new Function<ManagedResource, String>() {
+
+            public String apply(final ManagedResource input) {
+                return input.getDisplayName().replace(remove, "");
+            }
+        }).join(Joiner.on(", "));
+
+        return joined;
     }
 
     private long checkLastModified(final List<ManagedResource> configs) {
