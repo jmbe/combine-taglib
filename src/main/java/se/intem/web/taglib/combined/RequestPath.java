@@ -48,7 +48,8 @@ public class RequestPath {
     }
 
     public boolean isRemote() {
-        return path.contains("://") || path.startsWith("//") || path.startsWith("/webjars/");
+        return path.contains("://") || path.startsWith("//") || path.startsWith("/webjars/")
+                || path.startsWith("/webjarsjs");
     }
 
     public String dirname() {

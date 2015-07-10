@@ -23,4 +23,10 @@ public class RequestPathTest {
         RequestPath path = new RequestPath("/webjars/bootstrap/2.3.2/css/bootstrap.min.css");
         assertTrue(path.isRemote());
     }
+
+    @Test
+    public void webjars_locator_default_path_should_be_treated_as_remote() {
+        RequestPath path = new RequestPath("/webjarsjs");
+        assertTrue(path.isRemote());
+    }
 }
