@@ -165,29 +165,44 @@ public class CombineJsonConfiguration {
         Iterable<ManagedResource> presentInstances = Iterables.concat(
                 Optional.presentInstances(findClasspathConfiguration()),
                 Optional.presentInstances(Arrays.asList(findWebInfConfiguration())));
-        return Lists.newArrayList(presentInstances);
+
+        List<ManagedResource> list = Lists.newArrayList(presentInstances);
+
+        if (list.isEmpty()) {
+            /* Workaround for Grails */
+            log.debug("No configuration found. Trying Grails workaround.");
+            Optional<ManagedResource> workaround = findInClasspathUsingServletContext();
+            if (workaround.isPresent()) {
+                list.add(workaround.get());
+            }
+        }
+
+        log.debug("Found configurations {}", list);
+        return list;
     }
 
     private Optional<ManagedResource> findWebInfConfiguration() {
+        return findUsingServletContext("/WEB-INF" + configurationPath);
+    }
+
+    /*
+     * Try using servlet context to resolve outside WEB-INF, to fix issues finding files when running Grails 2.4.5 app
+     * as war.
+     */
+    private Optional<ManagedResource> findInClasspathUsingServletContext() {
+        return findUsingServletContext(configurationPath);
+    }
+
+    private Optional<ManagedResource> findUsingServletContext(final String path) {
         if (!servletContext.isPresent()) {
             return Optional.absent();
         }
 
         ServerPathToManagedResource toManagedResource = new ServerPathToManagedResource(servletContext.get(), false);
-        ManagedResource webinf = toManagedResource.apply(new RequestPath("/WEB-INF" + configurationPath));
+        ManagedResource config = toManagedResource.apply(new RequestPath(path));
 
-        if (webinf.exists()) {
-            return Optional.of(webinf);
-        }
-
-        /*
-         * Try using servlet context to resolve outside WEB-INF, to fix issues finding files when running Grails 2.4.5
-         * app as war.
-         */
-        webinf = toManagedResource.apply(new RequestPath(configurationPath));
-
-        if (webinf.exists()) {
-            return Optional.of(webinf);
+        if (config.exists()) {
+            return Optional.of(config);
         }
 
         return Optional.absent();
