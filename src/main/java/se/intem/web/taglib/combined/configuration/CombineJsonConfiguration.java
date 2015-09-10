@@ -173,8 +173,19 @@ public class CombineJsonConfiguration {
             return Optional.absent();
         }
 
-        ManagedResource webinf = new ServerPathToManagedResource(servletContext.get(), false).apply(new RequestPath(
-                "/WEB-INF" + configurationPath));
+        ServerPathToManagedResource toManagedResource = new ServerPathToManagedResource(servletContext.get(), false);
+        ManagedResource webinf = toManagedResource.apply(new RequestPath("/WEB-INF" + configurationPath));
+
+        if (webinf.exists()) {
+            return Optional.of(webinf);
+        }
+
+        /*
+         * Try using servlet context to resolve outside WEB-INF, to fix issues finding files when running Grails 2.4.5
+         * app as war.
+         */
+        webinf = toManagedResource.apply(new RequestPath(configurationPath));
+
         if (webinf.exists()) {
             return Optional.of(webinf);
         }
