@@ -33,7 +33,7 @@ public class TreeBuilderTest {
     public void setup() {
         this.stream = this.getClass().getResourceAsStream("/combine-test.json");
         this.child = this.getClass().getResourceAsStream("/combine-child.json");
-        this.illegal = this.getClass().getResourceAsStream("/illegal.js");
+        this.illegal = this.getClass().getResourceAsStream("/illegal.json");
         this.cycle = this.getClass().getResourceAsStream("/cycle.json");
         this.optional = this.getClass().getResourceAsStream("/optional.json");
         this.optionalRequired = this.getClass().getResourceAsStream("/optional-required.json");

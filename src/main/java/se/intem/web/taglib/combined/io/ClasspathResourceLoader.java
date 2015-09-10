@@ -9,12 +9,18 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Simple resource loader to avoid dependencies such as net.sf.corn:corn-cps (which is exhaustive, but too slow (200+ ms
  * scanning)) or org.springframework:spring-core (PathMatchingResourcePatternResolver is fast (less than 1 ms scanning
  * time)).
  */
 public class ClasspathResourceLoader {
+
+    /** Logger for this class. */
+    private static final Logger log = LoggerFactory.getLogger(ClasspathResourceLoader.class);
 
     public Optional<URL> findOneInClasspath(final String resourceName) {
         try {
@@ -48,7 +54,20 @@ public class ClasspathResourceLoader {
         try {
             ClassLoader cl = getDefaultClassLoader();
             Enumeration<URL> resourceUrls = (cl != null ? cl.getResources(path) : ClassLoader.getSystemResources(path));
-            return Collections.list(resourceUrls);
+            List<URL> result = Collections.list(resourceUrls);
+
+            if (result.isEmpty()) {
+
+                Optional<URL> one = findOneInClasspath(path);
+                if (one.isPresent()) {
+                    log.warn(
+                            "Could not find any results using 'many' strategy, but found single {}. Many strategy needs updating.",
+                            one.get());
+                    result.add(one.get());
+                }
+            }
+
+            return result;
         } catch (IOException e) {
             return Collections.emptyList();
         }
