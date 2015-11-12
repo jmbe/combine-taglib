@@ -94,7 +94,7 @@ public class DependencyCache {
 
     }
 
-    private void rebuildCacheFor(final ServletContext servletContext, final ConfigurationItem ci) {
+    private synchronized void rebuildCacheFor(final ServletContext servletContext, final ConfigurationItem ci) {
         String cacheKey = ci.getName();
 
         Stopwatch stopwatch = Stopwatch.createStarted();
