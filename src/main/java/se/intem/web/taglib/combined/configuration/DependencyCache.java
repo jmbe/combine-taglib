@@ -60,7 +60,6 @@ public class DependencyCache {
     }
 
     public void readDependenciesFromResources(final ServletContext servletContext, final ConfigurationItem ci) {
-        Stopwatch stopwatch = Stopwatch.createStarted();
 
         String cacheKey = ci.getName();
         Optional<DependencyCacheEntry> optional = get(cacheKey);
@@ -85,87 +84,7 @@ public class DependencyCache {
         }
 
         if (hasChanges) {
-            /* Rebuild cache */
-            if (!ci.shouldBeCombined()) {
-                log.debug("Reading dependencies for uncombined resource {}.", ci.getName());
-            } else {
-                log.debug("Changes detected for {}. Rebuilding dependency cache...", ci.getName());
-            }
-
-            long lastread = new Date().getTime();
-            Map<ResourceType, List<ManagedResource>> realPaths = ci.getRealPaths(servletContext);
-            Set<Entry<ResourceType, List<ManagedResource>>> entrySet = realPaths.entrySet();
-
-            LinkedHashSet<String> requires = Sets.newLinkedHashSet();
-            LinkedHashSet<String> provides = Sets.newLinkedHashSet();
-            LinkedHashSet<String> optionals = Sets.newLinkedHashSet();
-
-            ResourceGroup group = new ResourceGroup();
-
-            int counter = 0;
-            for (Entry<ResourceType, List<ManagedResource>> entry : entrySet) {
-
-                RemoteBundle currentRemote = null;
-                CombinedBundle currentLocal = null;
-
-                for (ManagedResource mr : entry.getValue()) {
-
-                    if (mr.isRemote()) {
-                        /* Finish previous local */
-                        if (currentLocal != null) {
-                            repository.addCombinedResource(currentLocal);
-                            currentLocal = null;
-                        }
-
-                        /* Start new remote if necessary */
-                        if (currentRemote == null) {
-                            currentRemote = new RemoteBundle(entry.getKey());
-                            group.addBundle(currentRemote);
-                        }
-
-                        currentRemote.addPath(mr.getRequestPath());
-                        continue;
-                    }
-
-                    /* Finish previous remote */
-                    currentRemote = null;
-
-                    /* Start new local if necessary */
-                    if (currentLocal == null) {
-                        ResourceName name = new ResourceName(ci.getName()).derive(counter++);
-                        currentLocal = new CombinedBundle(name, entry.getKey(), lastread);
-                        group.addBundle(currentLocal);
-                    }
-
-                    log.debug("Parsing {}", mr.getName());
-                    try {
-                        ParseResult parsed = commentParser.parse(mr.getInput(),
-                                createLinePreprocessors(entry.getKey(), mr));
-
-                        currentLocal.addContents(String.format("/* --- @Combine %s --- */", mr.getRequestPath()));
-                        currentLocal.addContents(""); // extra blank line
-                        currentLocal.addContents(parsed.getContents());
-                        currentLocal.addContents(""); // extra blank line
-
-                        Iterables.addAll(requires, parsed.getRequires());
-                        Iterables.addAll(provides, parsed.getProvides());
-                        Iterables.addAll(optionals, parsed.getOptionals());
-                    } catch (IOException e) {
-                        log.error("Could not parse js", e);
-                    }
-                }
-
-                /* Finish any still open local bundle */
-                if (currentLocal != null) {
-                    repository.addCombinedResource(currentLocal);
-                }
-            }
-
-            repository.addResourceGroup(ci.getName(), group);
-            put(cacheKey, new DependencyCacheEntry(lastread, requires, provides, optionals, ci));
-
-            log.info(String.format("Resource group %s (%s resources) rebuilt in %s ms.", ci.getName(), ci.getSize(),
-                    stopwatch.elapsed(TimeUnit.MILLISECONDS)));
+            rebuildCacheFor(servletContext, ci);
         }
 
         optional = get(cacheKey);
@@ -173,6 +92,93 @@ public class DependencyCache {
             ci.replaceParsedRequires(optional.get().getRequires());
         }
 
+    }
+
+    private synchronized void rebuildCacheFor(final ServletContext servletContext, final ConfigurationItem ci) {
+        String cacheKey = ci.getName();
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        /* Rebuild cache */
+        if (!ci.shouldBeCombined()) {
+            log.debug("Reading dependencies for uncombined resource {}.", ci.getName());
+        } else {
+            log.debug("Changes detected for {}. Rebuilding dependency cache...", ci.getName());
+        }
+
+        long lastread = new Date().getTime();
+        Map<ResourceType, List<ManagedResource>> realPaths = ci.getRealPaths(servletContext);
+        Set<Entry<ResourceType, List<ManagedResource>>> entrySet = realPaths.entrySet();
+
+        LinkedHashSet<String> requires = Sets.newLinkedHashSet();
+        LinkedHashSet<String> provides = Sets.newLinkedHashSet();
+        LinkedHashSet<String> optionals = Sets.newLinkedHashSet();
+
+        ResourceGroup group = new ResourceGroup();
+
+        int counter = 0;
+        for (Entry<ResourceType, List<ManagedResource>> entry : entrySet) {
+
+            RemoteBundle currentRemote = null;
+            CombinedBundle currentLocal = null;
+
+            for (ManagedResource mr : entry.getValue()) {
+
+                if (mr.isRemote()) {
+                    /* Finish previous local */
+                    if (currentLocal != null) {
+                        repository.addCombinedResource(currentLocal);
+                        currentLocal = null;
+                    }
+
+                    /* Start new remote if necessary */
+                    if (currentRemote == null) {
+                        currentRemote = new RemoteBundle(entry.getKey());
+                        group.addBundle(currentRemote);
+                    }
+
+                    currentRemote.addPath(mr.getRequestPath());
+                    continue;
+                }
+
+                /* Finish previous remote */
+                currentRemote = null;
+
+                /* Start new local if necessary */
+                if (currentLocal == null) {
+                    ResourceName name = new ResourceName(ci.getName()).derive(counter++);
+                    currentLocal = new CombinedBundle(name, entry.getKey(), lastread);
+                    group.addBundle(currentLocal);
+                }
+
+                log.debug("Parsing {}", mr.getName());
+                try {
+                    ParseResult parsed = commentParser.parse(mr.getInput(),
+                            createLinePreprocessors(entry.getKey(), mr));
+
+                    currentLocal.addContents(String.format("/* --- @Combine %s --- */", mr.getRequestPath()));
+                    currentLocal.addContents(""); // extra blank line
+                    currentLocal.addContents(parsed.getContents());
+                    currentLocal.addContents(""); // extra blank line
+
+                    Iterables.addAll(requires, parsed.getRequires());
+                    Iterables.addAll(provides, parsed.getProvides());
+                    Iterables.addAll(optionals, parsed.getOptionals());
+                } catch (IOException e) {
+                    log.error("Could not parse js", e);
+                }
+            }
+
+            /* Finish any still open local bundle */
+            if (currentLocal != null) {
+                repository.addCombinedResource(currentLocal);
+            }
+        }
+
+        repository.addResourceGroup(ci.getName(), group);
+        put(cacheKey, new DependencyCacheEntry(lastread, requires, provides, optionals, ci));
+
+        log.info(String.format("Resource group %s (%s resources) rebuilt in %s ms.", ci.getName(), ci.getSize(),
+                stopwatch.elapsed(TimeUnit.MILLISECONDS)));
     }
 
     private List<Function<String, String>> createLinePreprocessors(final ResourceType type, final ManagedResource mr) {

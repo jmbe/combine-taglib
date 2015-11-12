@@ -75,7 +75,9 @@ public class ServerPathToManagedResource implements Function<RequestPath, Manage
 
     private Optional<ManagedResource> tryClassPath(final RequestPath requestPath) {
         String path = requestPath.getPath();
-        return tryClassPath(requestPath, "/META-INF/resources" + path).or(tryClassPath(requestPath, path));
+        return tryClassPath(requestPath, "/META-INF/resources" + path).or(tryClassPath(requestPath, path))
+                .or(tryClassPath(requestPath, "/resources" + path)).or(tryClassPath(requestPath, "/static" + path))
+                .or(tryClassPath(requestPath, "/public" + path));
     }
 
     private Optional<ManagedResource> tryClassPath(final RequestPath requestPath, final String path) {
