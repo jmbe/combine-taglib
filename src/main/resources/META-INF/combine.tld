@@ -107,4 +107,17 @@
         </attribute>
     </tag>
 
+    <tag>
+        <name>ng-template</name>
+        <tag-class>se.intem.web.taglib.combined.tags.angular.NgTemplateTag</tag-class>
+        <body-content>scriptless</body-content>
+        <description>Output ng-template in place.</description>
+        <attribute>
+            <name>name</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Cache name of the template</description>
+        </attribute>
+    </tag>
+
 </taglib>
