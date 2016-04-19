@@ -25,7 +25,7 @@ public class CombinedResourceRepository {
     private Map<String, ResourceGroup> resourcePaths;
 
     /**
-     * requestPath -> CombinedResource
+     * requestPath (finger-printed) -> CombinedResource
      */
     private Map<RequestPath, CombinedBundle> combinedResourcePaths;
 

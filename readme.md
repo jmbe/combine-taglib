@@ -1,6 +1,6 @@
 # Combine-taglib #
 Combine-taglib is a JSP taglib to concatenate and serve combined CSS and Javascript resources, similar to tools such as [Grails Resources plugin](http://grails-plugins.github.io/grails-resources/), [wro4j](http://alexo.github.io/wro4j/),
-[JAWR](https://jawr.java.net/) and [pack:tag](https://github.com/ajkovar/packtag).
+[JAWR](https://jawr.java.net/) and [pack:tag](https://github.com/galan/packtag).
 
 
  * Bundles changed resources on the fly
@@ -23,7 +23,7 @@ Add maven dependency
     <dependency>
         <groupId>se.intem</groupId>
         <artifactId>combine-taglib</artifactId>
-        <version>2.0.4</version>
+        <version>2.0.5</version>
     </dependency>
 
 #### Add servlet mapping
