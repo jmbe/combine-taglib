@@ -7,6 +7,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import java.io.IOException;
@@ -24,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import se.intem.web.taglib.combined.CombinedResourceRepository;
+import se.intem.web.taglib.combined.RequestPath;
 import se.intem.web.taglib.combined.ResourceType;
 import se.intem.web.taglib.combined.node.CombineCommentParser;
 import se.intem.web.taglib.combined.node.ConfigurationItem;
@@ -152,8 +154,8 @@ public class DependencyCache {
 
                 log.debug("Parsing {}", mr.getName());
                 try {
-                    ParseResult parsed = commentParser.parse(mr.getInput(),
-                            createLinePreprocessors(entry.getKey(), mr));
+                    ParseResult parsed = commentParser
+                            .parse(mr.getInput(), createLinePreprocessors(entry.getKey(), mr));
 
                     currentLocal.addContents(String.format("/* --- @Combine %s --- */", mr.getRequestPath()));
                     currentLocal.addContents(""); // extra blank line
@@ -201,5 +203,20 @@ public class DependencyCache {
      */
     private static class InstanceHolder {
         private static final DependencyCache instance = new DependencyCache();
+    }
+
+    public void createSystemJsConfiguration() {
+        Map<String, String> map = Maps.newTreeMap();
+
+        Set<Entry<String, DependencyCacheEntry>> entrySet = cache.asMap().entrySet();
+        System.out.println(entrySet);
+
+        for (Entry<String, DependencyCacheEntry> entry : entrySet) {
+            Iterable<RequestPath> resourcePath = repository.getResourcePath(entry.getKey(), ResourceType.js);
+            System.out.println(entry.getKey());
+            System.out.println(resourcePath);
+
+        }
+
     }
 }
