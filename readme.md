@@ -23,7 +23,7 @@ Add maven dependency
     <dependency>
         <groupId>se.intem</groupId>
         <artifactId>combine-taglib</artifactId>
-        <version>2.0.5-SNAPSHOT</version>
+        <version>2.0.7-SNAPSHOT</version>
     </dependency>
 
 #### Add servlet mapping

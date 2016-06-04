@@ -89,5 +89,7 @@ public class CombinedServlet extends HttpServlet {
 
         String formatted = formatter.format(calendar.getTime());
         response.setHeader("Expires", formatted);
+        response.setHeader("Cache-Control", "max-age=" + days * 24 * 60 * 60);
+        response.setHeader("Pragma", "cache");
     }
 }

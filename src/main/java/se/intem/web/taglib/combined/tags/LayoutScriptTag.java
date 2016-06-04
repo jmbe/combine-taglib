@@ -49,8 +49,7 @@ public class LayoutScriptTag extends LayoutTagSupport {
         for (InlineContent inline : inlineScripts) {
             writeConditionalStart(inline);
 
-            String output = String.format("<script type=\"text/javascript\" charset=\"UTF-8\">%s</script>",
-                    inline.getContents());
+            String output = String.format("<script type=\"text/javascript\">%s</script>", inline.getContents());
             println(output);
 
             writeConditionalEnd(inline);
