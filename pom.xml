@@ -95,6 +95,21 @@
                         <generateBackupPoms>false</generateBackupPoms>
                     </configuration>
                 </plugin>
+
+                <plugin>
+                    <groupId>external.atlassian.jgitflow</groupId>
+                    <artifactId>jgitflow-maven-plugin</artifactId>
+                    <version>1.0-m5.1</version>
+                    <configuration>
+                        <scmCommentPrefix xml:space="preserve"><![CDATA[[jgitflow] ]]></scmCommentPrefix>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>
+                        <enableFeatureVersions>true</enableFeatureVersions>
+                        <pushFeatures>true</pushFeatures>
+                        <pushReleases>false</pushReleases>
+                        <noDeploy>true</noDeploy>
+                        <noReleaseBuild>true</noReleaseBuild>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
