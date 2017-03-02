@@ -2,6 +2,7 @@ package se.intem.web.taglib.combined.node;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.io.LineProcessor;
@@ -70,7 +71,9 @@ public class CombineCommentLineProcessor implements LineProcessor<ParseResult> {
         }
 
         if (foundCommentStart && !foundStart) {
-            if (replaced.startsWith("combine")) {
+            List<String> tokens = Splitter.on(" ").omitEmptyStrings().splitToList(replaced);
+
+            if (!tokens.isEmpty() && tokens.get(0).equals("combine")) {
                 foundStart = true;
             } else {
                 currentComment.add(contentLine);
