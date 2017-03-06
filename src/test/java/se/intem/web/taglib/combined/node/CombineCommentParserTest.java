@@ -1,19 +1,17 @@
 package se.intem.web.taglib.combined.node;
 
-import static java.util.Arrays.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-
 import com.google.common.io.CharStreams;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
+
+import static java.util.Arrays.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 public class CombineCommentParserTest {
 
@@ -26,6 +24,7 @@ public class CombineCommentParserTest {
     private InputStream bug2;
     private InputStream multiplePerLine;
     private InputStream nochanges;
+    private InputStream bugrx;
 
     @Before
     public void setup() {
@@ -37,6 +36,7 @@ public class CombineCommentParserTest {
         this.other = this.getClass().getResourceAsStream("/combine-test.json");
         this.bug1 = this.getClass().getResourceAsStream("/bug1.js");
         this.bug2 = this.getClass().getResourceAsStream("/bug2.js");
+        this.bugrx = this.getClass().getResourceAsStream("/bug-rx.js");
         this.parser = new CombineCommentParser();
     }
 
@@ -137,6 +137,14 @@ public class CombineCommentParserTest {
     @Test
     public void should_not_change_js_structure() throws IOException {
         String content = CharStreams.toString(new InputStreamReader(nochanges));
+
+        ParseResult parsed = parser.parse(content);
+        assertEquals(content, parsed.getContents());
+    }
+
+    @Test
+    public void bug_parse_rxjs() throws IOException {
+        String content = CharStreams.toString(new InputStreamReader(this.bugrx));
 
         ParseResult parsed = parser.parse(content);
         assertEquals(content, parsed.getContents());
