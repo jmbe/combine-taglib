@@ -28,6 +28,7 @@ public class CombineCommentParserTest {
     private InputStream bugrx;
     private InputStream bugtrailing;
     private InputStream withinstring;
+    private InputStream exclamation;
 
     @Before
     public void setup() {
@@ -42,6 +43,7 @@ public class CombineCommentParserTest {
         this.bugrx = this.getClass().getResourceAsStream("/bug-rx.js");
         this.bugtrailing = this.getClass().getResourceAsStream("/trailing-dependencies.js");
         this.withinstring = this.getClass().getResourceAsStream("/comment-start-within-string.js");
+        this.exclamation = this.getClass().getResourceAsStream("/exclamation-comment.js");
         this.parser = new CombineCommentParser();
     }
 
@@ -57,6 +59,7 @@ public class CombineCommentParserTest {
         assertNotNull(other);
         assertNotNull(bugtrailing);
         assertNotNull(withinstring);
+        assertNotNull(exclamation);
     }
 
     @Test
@@ -171,5 +174,12 @@ public class CombineCommentParserTest {
 
         ParseResult parsed = parser.parse(content);
         assertEquals(content, parsed.getContents());
+    }
+
+    @Test
+    public void should_support_exclamation_in_comment_start() throws IOException {
+        ParseResult parsed = parser.parse(this.exclamation);
+        List<String> requires = parsed.getRequiresList();
+        assertThat(requires, is(Arrays.asList("angularjs", "jquery")));
     }
 }

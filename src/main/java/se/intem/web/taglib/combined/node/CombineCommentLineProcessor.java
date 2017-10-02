@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 public class CombineCommentLineProcessor implements LineProcessor<ParseResult> {
 
-    private static final Pattern commentStart = Pattern.compile("^/\\*\\*?-?\\s*");
+    private static final Pattern commentStart = Pattern.compile("^/\\*\\*?!?-?\\s*");
     private static final Pattern continuationStart = Pattern.compile("^\\*\\s+");
 
     private boolean foundStart = false;
