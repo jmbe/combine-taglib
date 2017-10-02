@@ -6,8 +6,6 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.io.LineProcessor;
-
-import java.io.IOException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,7 +37,7 @@ public class CombineCommentLineProcessor implements LineProcessor<ParseResult> {
     }
 
     @Override
-    public boolean processLine(String line) throws IOException {
+    public boolean processLine(String line) {
 
         if (this.transforms != null) {
             for (Function<String, String> fn : this.transforms) {
