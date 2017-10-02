@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static java.util.Arrays.*;
@@ -25,6 +26,7 @@ public class CombineCommentParserTest {
     private InputStream multiplePerLine;
     private InputStream nochanges;
     private InputStream bugrx;
+    private InputStream bugtrailing;
 
     @Before
     public void setup() {
@@ -37,6 +39,7 @@ public class CombineCommentParserTest {
         this.bug1 = this.getClass().getResourceAsStream("/bug1.js");
         this.bug2 = this.getClass().getResourceAsStream("/bug2.js");
         this.bugrx = this.getClass().getResourceAsStream("/bug-rx.js");
+        this.bugtrailing = this.getClass().getResourceAsStream("/trailing-dependencies.js");
         this.parser = new CombineCommentParser();
     }
 
@@ -50,6 +53,7 @@ public class CombineCommentParserTest {
         assertNotNull(bug1);
         assertNotNull(bug2);
         assertNotNull(other);
+        assertNotNull(bugtrailing);
     }
 
     @Test
@@ -148,5 +152,13 @@ public class CombineCommentParserTest {
 
         ParseResult parsed = parser.parse(content);
         assertEquals(content, parsed.getContents());
+    }
+
+    @Test
+    @Ignore // not implemented
+    public void should_find_trailing_comments() throws IOException {
+        ParseResult parsed = parser.parse(this.bugtrailing);
+        List<String> requires = parsed.getRequiresList();
+        assertThat(requires, is(Arrays.asList("radio", "yui3")));
     }
 }
