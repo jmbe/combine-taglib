@@ -27,6 +27,7 @@ public class CombineCommentParserTest {
     private InputStream nochanges;
     private InputStream bugrx;
     private InputStream bugtrailing;
+    private InputStream withinstring;
 
     @Before
     public void setup() {
@@ -40,6 +41,7 @@ public class CombineCommentParserTest {
         this.bug2 = this.getClass().getResourceAsStream("/bug2.js");
         this.bugrx = this.getClass().getResourceAsStream("/bug-rx.js");
         this.bugtrailing = this.getClass().getResourceAsStream("/trailing-dependencies.js");
+        this.withinstring = this.getClass().getResourceAsStream("/comment-start-within-string.js");
         this.parser = new CombineCommentParser();
     }
 
@@ -54,6 +56,7 @@ public class CombineCommentParserTest {
         assertNotNull(bug2);
         assertNotNull(other);
         assertNotNull(bugtrailing);
+        assertNotNull(withinstring);
     }
 
     @Test
@@ -160,5 +163,13 @@ public class CombineCommentParserTest {
         ParseResult parsed = parser.parse(this.bugtrailing);
         List<String> requires = parsed.getRequiresList();
         assertThat(requires, is(Arrays.asList("radio", "yui3")));
+    }
+
+    @Test
+    public void comment_start_within_string() throws IOException {
+        String content = CharStreams.toString(new InputStreamReader(withinstring));
+
+        ParseResult parsed = parser.parse(content);
+        assertEquals(content, parsed.getContents());
     }
 }
