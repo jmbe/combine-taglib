@@ -107,9 +107,7 @@ comments per file, for example if you are declaring several components in the sa
 Using **@provides** allows other files to pull in a given resource without knowing the name of the bundle it belongs to.
 
     /*
-     * combine
-     * @requires atmosphere angular
-     * @provides MessageMultiplexer
+     * combine @requires atmosphere angular @provides MessageMultiplexer
      */
     ...
     // In another file (will pull in the bundle that MessageMultiplexer currently belongs to):

@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static java.util.Arrays.*;
@@ -18,11 +17,9 @@ public class CombineCommentParserTest {
 
     private InputStream singleline;
     private CombineCommentParser parser;
-    private InputStream multiline;
+    private InputStream prefix;
     private InputStream other;
     private InputStream multiple;
-    private InputStream bug1;
-    private InputStream bug2;
     private InputStream multiplePerLine;
     private InputStream nochanges;
     private InputStream bugrx;
@@ -33,13 +30,11 @@ public class CombineCommentParserTest {
     @Before
     public void setup() {
         this.singleline = this.getClass().getResourceAsStream("/singleline-dependencies.js");
-        this.multiline = this.getClass().getResourceAsStream("/multiline-dependencies.js");
+        this.prefix = this.getClass().getResourceAsStream("/prefix-dependencies.js");
         this.multiple = this.getClass().getResourceAsStream("/multiple-dependencies.js");
         this.multiplePerLine = this.getClass().getResourceAsStream("/multiple-dependencies-per-line.js");
         this.nochanges = this.getClass().getResourceAsStream("/nochanges.js");
         this.other = this.getClass().getResourceAsStream("/combine-test.json");
-        this.bug1 = this.getClass().getResourceAsStream("/bug1.js");
-        this.bug2 = this.getClass().getResourceAsStream("/bug2.js");
         this.bugrx = this.getClass().getResourceAsStream("/bug-rx.js");
         this.bugtrailing = this.getClass().getResourceAsStream("/trailing-dependencies.js");
         this.withinstring = this.getClass().getResourceAsStream("/comment-start-within-string.js");
@@ -50,12 +45,10 @@ public class CombineCommentParserTest {
     @Test
     public void test_resources_should_exist() {
         assertNotNull(singleline);
-        assertNotNull(multiline);
+        assertNotNull(prefix);
         assertNotNull(multiple);
         assertNotNull(multiplePerLine);
         assertNotNull(nochanges);
-        assertNotNull(bug1);
-        assertNotNull(bug2);
         assertNotNull(other);
         assertNotNull(bugtrailing);
         assertNotNull(withinstring);
@@ -70,8 +63,8 @@ public class CombineCommentParserTest {
     }
 
     @Test
-    public void should_find_multi_combine_comment() throws IOException {
-        ParseResult parsed = parser.parse(multiline);
+    public void should_support_code_on_same_line() throws IOException {
+        ParseResult parsed = parser.parse(prefix);
         List<String> requires = parsed.getRequiresList();
         assertThat(requires, is(asList("extjs", "angularjs", "jquery")));
         assertEquals("/* unrelated */" + System.lineSeparator() + "var code;", parsed.getContents().trim());
@@ -83,26 +76,6 @@ public class CombineCommentParserTest {
         assertEquals(2, requires.size());
         assertThat(requires, is(Arrays.asList("extjs", "angularjs")));
 
-    }
-
-    @Test
-    public void should_find_multiline_requires() throws IOException {
-        List<String> requires = parser.parse(multiline).getRequiresList();
-        assertEquals(3, requires.size());
-        assertThat(requires, is(Arrays.asList("extjs", "angularjs", "jquery")));
-    }
-
-    @Test
-    public void should_parse_bug1() throws IOException {
-        List<String> requires = parser.parse(bug1).getRequiresList();
-        assertEquals(4, requires.size());
-        assertThat(requires, is(Arrays.asList("a", "b", "c", "d")));
-    }
-
-    @Test
-    public void should_parse_bug2() throws IOException {
-        List<String> requires = parser.parse(bug2).getRequiresList();
-        assertThat(requires, is(Arrays.asList("a", "b", "c", "d")));
     }
 
     @Test
@@ -161,7 +134,6 @@ public class CombineCommentParserTest {
     }
 
     @Test
-    @Ignore // not implemented
     public void should_find_trailing_comments() throws IOException {
         ParseResult parsed = parser.parse(this.bugtrailing);
         List<String> requires = parsed.getRequiresList();
