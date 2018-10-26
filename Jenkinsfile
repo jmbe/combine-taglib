@@ -1,20 +1,50 @@
-#!groovy
+pipeline {
+  agent any
+  tools {
+    maven 'M3'
+    jdk 'java-8-oracle'
+  }
 
-node {
-   
-   stage 'Checkout'
-   checkout scm
+  stages {
+    stage("Initialization") {
+      steps {
+        sh '''
+              echo "PATH = ${PATH}"
+              echo "M2_HOME = ${M2_HOME}"
+              echo "Branch = ${BRANCH_NAME}"
+          '''
+      }
+    }
 
-   stage 'Build'
+    stage("Build") {
+      steps {
+        sh 'mvn -DskipTests clean package'
+      }
+    }
 
-   // Get the maven tool.
-   // ** NOTE: This 'M3' maven tool must be configured
-   // **       in the global configuration.           
-   def mvnHome = tool 'M3'
+    stage("Test") {
+      steps {
+        sh 'mvn test'
+      }
+      post {
+        always {
+          junit 'target/surefire-reports/*.xml'
+        }
+      }
+    }
 
-   sh "${mvnHome}/bin/mvn clean package"
-   
-   stage 'Deploy'
-   sh "${mvnHome}/bin/mvn deploy"
+    stage("Deploy") {
+      when {
+        anyOf {
+          branch "develop"
+          branch "master"
+        }
+      }
+
+      steps {
+        sh 'mvn deploy'
+      }
+    }
+
+  }
 }
-
