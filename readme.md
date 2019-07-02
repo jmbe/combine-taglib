@@ -10,7 +10,7 @@ Combine-taglib is a JSP taglib to concatenate and serve combined CSS and Javascr
  * Configure dependencies either directly in js file (recommended), as JSP tags or in json configuration file
  * Will transitively add any required dependencies and load them in the correct order. Declare dependencies on what you directly use and let the dependency graph figure out what is needed.
  * Declare dependencies as granular or coarsely as fits the way you work
- * Supports development mode for use with live reload tools such as [Tincr](http://tin.cr/).
+ * Supports development mode for use with live reload tools.
  * Supports IE conditionals.
  * Compatible with dynamic stylesheet libraries such as [YUI Stylesheet](http://yuilibrary.com/yui/docs/stylesheet/)
  * Supports replacing placeholders in paths, such as versions
